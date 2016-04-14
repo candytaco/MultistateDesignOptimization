@@ -13,7 +13,7 @@
 #include "SearchAlgorithm.h"
 #include "SimilarityMeasure.h"
 #include <string>
-#include "matrix.h"
+//#include "matrix.h"
 #include <map>
 #include <list>
 #include <vector>
