@@ -15,9 +15,9 @@ namespace OPTIMIZER
 
 		void readData(string *inFile);
 		void readMicrostateData(string *inFile);
-		void writeFrequenciesToFASTA(string *outName);
-		void writeFrequenciesToFASTA(string *outName, int precision);
-		void writeFrequenciesToFASTA(string *outName, int precision, mxArray *frequencies);
+		void writeFrequenciesToFASTA(string *outName) { this->writeFrequenciesToFASTA(outName, 3, this->optimizationAlgorithm->getBestFrequencies()); }
+		void writeFrequenciesToFASTA(string *outName, int precision) { this->writeFrequenciesToFASTA(outName, precision, this->optimizationAlgorithm->getBestFrequencies()); }
+		void writeFrequenciesToFASTA(string *outName, int precision, mat *frequencies);
 		void writeBestParamsToText(string *outName);
 
 		int calcParamsID(double param1, double param2, double param3);
@@ -27,7 +27,7 @@ namespace OPTIMIZER
 		void optimize();
 
 		float *getBestParameters();
-		mxArray *getBestFrequencies();
+		mat *getBestFrequencies();
 
 		string *toString();
 
@@ -38,7 +38,7 @@ namespace OPTIMIZER
 		SearchAlgorithm *optimizationAlgorithm;
 		int nPositions;
 		int minPosition;
-		mxArray *targetFrequencies;
+		mat *targetFrequencies;
 		string *macrostates;
 		int nMacrostates;
 		bool continuousBoltzmann;
