@@ -1,0 +1,203 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>f457a24f-acc4-4394-9d36-105af85f67f2</ProjectGuid>
+    <ProjectHome>.</ProjectHome>
+    <StartupFile>optimization.py</StartupFile>
+    <SearchPath>
+    </SearchPath>
+    <WorkingDirectory>.</WorkingDirectory>
+    <InterpreterId>{2af0f10d-7135-4994-9156-5d01c9c11b7e}</InterpreterId>
+    <LaunchProvider>Standard Python launcher</LaunchProvider>
+    <InterpreterVersion>3.5</InterpreterVersion>
+    <OutputPath>.</OutputPath>
+    <Name>optimization</Name>
+    <RootNamespace>optimization</RootNamespace>
+    <EnableNativeCodeDebugging>False</EnableNativeCodeDebugging>
+    <InterpreterArguments>-W ignore</InterpreterArguments>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <DebugSymbols>true</DebugSymbols>
+    <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <DebugSymbols>true</DebugSymbols>
+    <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
+  </PropertyGroup>
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
+    <PtvsTargetsFile>$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets</PtvsTargetsFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="optimization.py" />
+  </ItemGroup>
+  <ItemGroup>
+    <InterpreterReference Include="{2af0f10d-7135-4994-9156-5d01c9c11b7e}\3.5" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Chi2Kernel.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Chi2Test.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ChunkedSimilarity.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="convergenceTestMacrostates.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="convergenceTestMicrostates.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="CosineSimilarity.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="CosineSimilarityByPosition.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="CuckooSearch.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DHFRcomparemeasures.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="EntropyWeightedSimilarity.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="EntropyWeightsMixedSimilarity.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="enumeration.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="fileConvert.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="genUniformDist.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="JensenShannonDistance.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="JSDistByPos.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="KLDivergence.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="longRepeats.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Macrostate.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="microstates.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="model.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MutualInformation.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="newKLDTest.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Optimizer.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="outputProcess.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="override.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="PDZ2.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="PDZchi2.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="PDZchunkedJSD.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="PDZcosine.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="PDZGdeweighted.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="PDZHousekeepingScripts.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="PDZjsd.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="PDZKLD.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="PDZrunthrough1.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="PDZthings.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="PDZVarGensCos.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="PDZweightedJSD.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="PDZweightedJSDall.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="prevVals.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SearchAlgorithm.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SimilarityMeasure.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="similarityMeasuresCompare.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="smallTests.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="dataPreprocessingTools.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="tests2.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="TSonlyMacroAltCos.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="TSonlyMicro.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="unitTest.py">
+      <SubType>Code</SubType>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="documentation\EntropyWeightedSimilarity.html" />
+    <Content Include="documentation\EntropyWeightsMixedSimilarity.html" />
+    <Content Include="documentation\JensenShannonDistance.html" />
+    <Content Include="documentation\Model.html" />
+    <Content Include="documentation\Optimizer.Html" />
+    <Content Include="documentation\README.html" />
+    <Content Include="documentation\SearchAlgorithm.html" />
+    <Content Include="documentation\SimilarityMeasure.html" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="documentation\" />
+  </ItemGroup>
+  <Import Project="$(PtvsTargetsFile)" Condition="Exists($(PtvsTargetsFile))" />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.Common.targets" Condition="!Exists($(PtvsTargetsFile))" />
+</Project>

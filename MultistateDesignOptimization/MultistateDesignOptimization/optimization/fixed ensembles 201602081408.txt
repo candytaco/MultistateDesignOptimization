@@ -1,0 +1,9 @@
+Ensemble Size: 20
+Backrub temperature: 1.2
+Boltzmann averaging temperature: 5.000000000
+Steepness: 4.229701365
+Weights: 0.8995 0.0899 0.0000 0.1942 0.5921 0.6461 
+Match: 0.8895
+Algorithm: Cuckoo search, scale: 1.0000, elimination: 0.2500, population: 16, generations: 64
+Similarity measure: Jensen-Shannon distance
+Elapsed time: 0:01:11.701558

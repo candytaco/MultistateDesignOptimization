@@ -1,0 +1,95 @@
+<html>
+<head><title>SimilarityMeasure</title></head>
+<body>
+	<h2>Class <code>SimilarityMeasure</code></h2>
+	<h3>Overview</h3>
+	<p>An abstract class/interface defining the interface of a method for measuring the similarity between two distributions, in this case specifically for amino acid residue frequencies</p>
+
+	<h3>Fields</h3>
+	<table width="800" border="1">
+		<tr>
+			<th>Field</th>
+			<th>Type</th>
+			<th>Description</th>
+		</tr>
+		<tr>
+			<td><code>targetFrequencies</code></td>
+			<td><code>float[][] as numpy.array</code></td>
+			<td>The target residue frequencies to which to compare a calculated frequency set. The first index is position, and the second index is residue by alphabetical order of single-letter codes.</td>
+		</tr>
+	</table>
+
+	<h3>Methods</h3>
+	<h4><code>__init__(self, targetFrequencies = None)</code></h4>
+	<p>Default constructor.</p>
+	<table width="800" border="1">
+		<tr>
+			<th>Parameter</th>
+			<th>Type</th>
+			<th>Optional</th>
+			<th>Description</th>
+		</tr>
+		<tr>
+			<td><code>targetFrequencies</code></td>
+			<td><code>float[][] as numpy.array</code></td>
+			<td>yes</td>
+			<td>Target frequencies. First index is position, second is residue. Default is None</td>
+		</tr>
+	</table>
+
+	<h4><code>setTargetFreqs(self, targetFrequencies:numpy.array) -> None</code></h4>
+	<p>Sets what target frequencies to use. Should be double[position][residue].</p>
+	<table width="800" border="1">
+		<tr>
+			<th>Parameter</th>
+			<th>Type</th>
+			<th>Optional</th>
+			<th>Description</th>
+		</tr>
+		<tr>
+			<td><code>targetFrequencies</code></td>
+			<td><code>float[][] as numpy.array</code></td>
+			<td>No</td>
+			<td>Target frequencies. First index is position, second is residue.</td>
+		</tr>
+	</table>
+
+	<h4><code>clone(self) -> SimilarityMeasure</code></h4>
+	<p>Makes a copy of this similarity measure.</p>
+
+	<h4><code>copy(SM)</code></h4>
+	<p>Static method to copy an existing SimilarityMeasure.</p>
+	<table width="800" border="1">
+		<tr>
+			<th>Parameter</th>
+			<th>Type</th>
+			<th>Optional</th>
+			<th>Description</th>
+		</tr>
+		<tr>
+			<td><code>SM</code></td>
+			<td><code>SimilarityMeasure</code></td>
+			<td>No</td>
+			<td><code>SimilarityMeasure</code> object to clone</td>
+		</tr>
+	</table>
+
+	<h4><code>abstract getSimilarityMeasure(self, expFrequencies) -> float</code></h4>
+	<p>Sees how similar an experimental frequency set is to the target/natural set.
+	Inheriting subclasses are expected to provide an overriding implementation of this method.</p>
+	<table width="800" border="1">
+		<tr>
+			<th>Parameter</th>
+			<th>Type</th>
+			<th>Optional</th>
+			<th>Description</th>
+		</tr>
+		<tr>
+			<td><code>expFrequencies</code></td>
+			<td><code>float[][] as numpy.array</code></td>
+			<td>No</td>
+			<td>Frequencies to compare to the target frequencies. Should have same dimensions as the target frequencies.</td>
+		</tr>
+	</table>
+</body>
+</html>

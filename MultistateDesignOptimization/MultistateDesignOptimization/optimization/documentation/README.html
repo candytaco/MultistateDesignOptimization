@@ -1,0 +1,105 @@
+<html>
+<head>
+	<title>Multistate Design Optimization Documentation</title>
+</head>
+	<body>
+		<h1>Multistate Design Optimization</h1>
+		<p>This is a set of classes for optimizing a multistate design model. This README file includes documentation of the classes, their fuctions, and input/output formatting.</p>
+		<p>Numpy classes and functions are used in this implementation.</p>
+		<p>Syntactically these classes are written for Python 3.5.</p>
+		
+		<h2><a name="Classes Overview">Classes Overview</a></h2>
+		<p>Three main classes are included here: <code>Optimizer</code>, <code>SearchAlgorithm</code>, and <code>SimilarityMeasure</code>. <code>Optimizer</code> is a fully-fledged class, whereas the <code>SearchAlgorithm</code> and <code>SimilarityMeasure</code> are abstract classes designed to provide a unified interface for different functions.</p>
+		<h4>Optimizer</h4>
+		<p>
+			<code>Optimizer</code> is the main outward-facing class. It integrates the search algorithm and the models to perform parameter optimization.
+			This class handles file I/O and control of the search process and includes some housekeeping static functions.
+			It stores a set of models, i.e. residues and their associated energies, as a set of numpy numeric arrays.
+			The optimizer can work with both pre-averaged macrostate values, and also individual microstate values.
+			To perform optimization, an instance of <code>Optimizer</code> needs an attached <code>SearchAlgorithm</code> object, which in turn needs an attached <code>SimilarityMeasure</code> object.
+		</p>
+		<h4>SearchAlgorithm</h4>
+		<p>
+			The <code>SearchAlgorithm</code> class is an interface/abstract superclass for implementations of search algorithms that look for the best set of hyperparameters.
+			It has access to the set of models contained by an <code>Optimizer</code> object, which serves as the data pool, and its own set of models, upon/with which the search is performed.
+		Each <code>SearchAlgorithm</code> classes requires an attached <code>SimilarityMeasure</code> object to determine fitness. </p>
+		<p> <code>SearchAlgorithm</code> objects seek to maximize the similarity returned. </p>
+		<p> <code>CuckooSearch</code>, an implementation of <code>SearchAlgrithm</code> is included. </p>
+		<h4>SimilarityMeasure</h4>
+		<p> <code>SimilarityMeasure</code> provides a an interface/abstract superclass for implementation of ways to compare two frequency distributions.
+			It contains a reference/target distribution, against which experimental distributions can be compared.
+		The return value is always on a range of [0, 1], where 0 is zero similarity and 1 is a a perfect match. </p>
+		<p>
+			Several implementations, the Jensen-Shannon distance, Kullback-Liebler divergence, and cosine similarity, are included.
+		</p>
+		<h4>Enumeration</h4>
+		<p> <code>Enumeration</code> provides an emulation of enumerations found in C-based languages.
+		In this context, they are specifically used to keep track of macrostate names and convert them to integers. </p>
+		<h2><a name="Sample useage">Sample Usage</a></h2>
+		<p> The following statements provide an example of running optimization over pre-average macrostate data.</p>
+		<p><blockquote><code>
+			# enumerations of macrostates and AA residues <br>
+			MACROSTATES = enum("E-DHF-NADPH", "E-NADPH", "E-OPEN", "E-THF", "E-THF-NADPX", "TS"); <br>
+			RESIDUES = enum('A', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'K', 'L', 'M', 'N', 'P', 'Q', 'R', 'S', 'T', 'V', 'W', 'Y');<br>
+			<br>
+			# declaration of search space <br>
+			ensembleSizes = numpy.array([20, 50]);<br>
+			backrubTemps = numpy.array([0.3, 0.6, 0.9, 1.2, 1.5, 1.8]);<br>
+			boltzmannTemps = numpy.array([0, -1, 1, 5.0]);<br>
+			steepnessRange = numpy.array([0.5, 5]);<br>
+			minWeights = numpy.array([0, 0, 0, 0, 0, 0]);<br>
+			maxWeights = numpy.array([1, 1, 0, 1, 1, 1]);<br>
+			<br>
+			# initialize the Optimizer <br>
+			optimizer = Optimizer(MACROSTATES);<br>
+			optimizer.readTargetFrequencies("PATH_TO_TARGET_FREQS_FILE");	<br>
+			optimizer.readData("PATH_TO_DATA_FILE");<br>
+			<br>
+			# initialize the SearchAlgorithm <br>
+			search = CuckooSearch(optimizer.models, JensenShannonDistance(optimizer.targetFrequencies), False, 16, 1, 0.25);<br>
+			search.setMaxIterations(iterations);<br>
+			search.setParamBounds(ensembleSizes, backrubTemps, boltzmannTemps, steepnessRange, minWeights, maxWeights);<br>
+			search.setAllSearchToTrue();<br>
+			optimizer.useAlgorithm(search);<br>
+			<br>
+			# search and record best values <br>
+			optimizer.optimize();<br>
+			optimizer.writeFrequenciesToFASTA(optimizer.getBestFrequencies(), "path to output");<br>
+			optimizer.writeBestParamsToText("path to output");
+		</code></blockquote></p>
+		<p>
+			In the first two lines, we declare enumerations of the macrostate names and AA residue names.
+			While not strictly necessary, these enumerations are useful for debugging and recordkeeping.
+		</p>
+		<p>
+			In the second set of statements, the search space is declared.
+			For values that are discrete, each value must be specified. For continuous values, a lower and upper bound are specified, in that order.
+			The upper and lower bounds for the weights are two separate 1D arrays, with each index corresponding to the enumeration value of a macrostate.
+			Note that all must be specified as numpy arrays.
+		</p>
+		<p>
+			Next, an <code>Optimizer</code> is instantiated, and the target frequencies in a FASTA file are read in.
+		The model data in form of a tab-delimited file is next read in. Other <code>readData()</code> functions exist for reading .dat files. </p>
+		<p>
+			A search object, in this case a Cuckoo search, is then instantiated with its associated similarity measure anonymously instantiated at the same time.
+			The search space parameters are then given to the search object.
+			The <code>SearchAlgorithm</code> class can search over all, some, or none of the values. Here, the <code>setAllSearchToTrue()</code> function is used to instruct the object to search over everything.
+		The search object is then attached to the optimizer. </p>
+		<p>
+			Finally, the optimizer is used to start the search process.
+			After completion, the residue frequencies corresponding to the best model is written to a FASTA file.
+		The best parameters, along with the match value, and some data about the <code>SearchAlgorithm</code> and <code>SimilarityMeasure</code>, are writted to a text file. </p>
+		
+		<h2><a name="Classes">Detailed class documentations</a></h2>
+		<p><a href="Optimizer.html"><code>Optimizer</code></a></p>
+		<p><a href="SearchAlgorithm.html"><code>SearchAlgorithm</code></a></p>
+		<p><a href="SimilarityMeasure.html"><code>SimilarityMeasure</code></a></p>
+		<p><code>CuckooSearch</code></p>
+		<p><code>JesenShannonDistance</code></p>
+		<p><code>KLDivergence</code></p>
+		<p><code>CosineDistance</code></p>
+		
+		<h2><a name="File Formatting">File Formatting</a></h2>
+		The <code>Optimizer</code> classes can hand three file formations: tab-separated values, .dat files, and FASTA files.
+</body>
+</html>

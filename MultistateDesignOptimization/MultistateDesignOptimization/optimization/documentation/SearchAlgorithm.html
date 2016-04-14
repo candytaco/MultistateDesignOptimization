@@ -1,0 +1,407 @@
+<html>
+<head><title>SearchAlgorithm</title></head>
+<body>
+	<h2>Class <code>SearchAlgorithm</code></h2>
+	<h3>Overview</h3>
+	<p>Class <code>SearchAlgorithm</code> is an abstract class/interface defining the expected behaviour of an optimization algorithm</p>
+
+	<h3>Fields</h3>
+	<table width="800" border="1">
+		<tr>
+			<th>Field</th>
+			<th>Type</th>
+			<th>Description</th>
+		</tr>
+		<tr>
+			<td><code>model</code></td>
+			<td><code>Dict(str -&gt; Model)</code></td>
+			<td>A map of strings to models of the raw models used for the search</td>
+		</tr>
+		<tr>
+			<td><code>maxIterations</code></td>
+			<td><code>int</code></td>
+			<td>Maximum number of iterations of this algorithm</td>
+		</tr>
+		<tr>
+			<td><code>ensembleSizes</code></td>
+			<td><code>int[] as numpy.array</code></td>
+			<td>Set of ensemble sizes to search over</td>
+		</tr>
+		<tr>
+			<td><code>backrubTemps</code></td>
+			<td><code>float[] as numpy.array</code></td>
+			<td>Set of backrub temperatures to search over</td>
+		</tr>
+		<tr>
+			<td><code>boltzmannTemps</code></td>
+			<td><code>float[] as numpy array</code></td>
+			<td>Set or range of Boltzmann averaging temperatures to search over</td>
+		</tr>
+		<tr>
+			<td><code>bontinuousBoltzmann</code></td>
+			<td><code>bool</code></td>
+			<td>Is the Boltzmann average temperature search space continuous?</td>
+		</tr>
+		<tr>
+			<td><code>steepnessRange</code></td>
+			<td><code>float[] as numpy.array</code></td>
+			<td>Range of steepness values to search over</td>
+		</tr>
+		<tr>
+			<td><code>weightMins</code></td>
+			<td><code>float[] as numpy.array</code></td>
+			<td>Minimum weights for macrostates</td>
+		</tr>
+		<tr>
+			<td><code>weightMaxs</code></td>
+			<td><code>float[] as numpy.array</code></td>
+			<td>Maximum weights for macrostates</td>
+		</tr>
+		<tr>
+			<td><code>searchEnsemble</code></td>
+			<td><code>bool</code></td>
+			<td>Is ensemble sizes to be searched</td>
+		</tr>
+		<tr>
+			<td> <code> searchBackrub</code></td>
+			<td> <code> bool</code></td>
+			<td>Is backrub temperature to be searched</td>
+		</tr>
+		<tr>
+			<td><code>searchBoltzmann</code></td>
+			<td><code>bool</code></td>
+			<td>Is Boltzmann averaging temepratures to be searched</td>
+		</tr>
+		<tr>
+			<td><code>searchSteepness</code></td>
+			<td><code>bool</code></td>
+			<td>Is steepness to be searched</td>
+		</tr>
+		<tr>
+			<td><code>searchWeights</code></td>
+			<td><code>bool[] as numpy.array</code></td>
+			<td>Which, if any, macrostate weights are to be searched</td>
+		</tr>
+		<tr>
+			<td><code>bestEnsembleSize</code></td>
+			<td><code>int</code></td>
+			<td>Best ensemble size found so far</td>
+		</tr>
+		<tr>
+			<td><code>bestBackrubTemp</code></td>
+			<td><code>float</code></td>
+			<td>Best backrub temperature found so far</td>
+		</tr>
+		<tr>
+			<td><code>bestBoltzmannTemp</code></td>
+			<td><code>float</code></td>
+			<td>Best Boltzmann averaging temperature found so far</td>
+		</tr>
+		<tr>
+			<td><code>bestSteepness</code></td>
+			<td><code>float</code></td>
+			<td>Best steepness value found so far</td>
+		</tr>
+		<tr>
+			<td><code>bestWeights</code></td>
+			<td><code>float[] as numpy.array</code></td>
+			<td>Best weights found so far</td>
+		</tr>
+		<tr>
+			<td><code>bestMatchVal</code></td>
+			<td><code>float</code></td>
+			<td>How similar is the frequency set corresponding to the best parameters to the natural sequence as comapred by the SimilarityMeasure</td>
+		</tr>
+		<tr>
+			<td><code>bestFrequencies</code></td>
+			<td><code>float[][] as numpy.array</code></td>
+			<td>Best frequencies corresponding to the best parameters. Size nPositions x 20</td>
+		</tr>
+		<tr>
+			<td><code>suppressOutputs</code></td>
+			<td><code>bool</code></td>
+			<td>Whether to suppress search update/status bar output to standard out</td>
+		</tr>
+	</table>
+
+	<h3>Methods</h3>
+	<h4><code>__init__(self, models = None, similarityMeasure:SimilarityMeasure = None, continuousBoltzmann:bool = False)</code></h4>
+	<p>Default constructor</p>
+	<table width ="800" border="1">
+		<tr>
+			<th>Parameter</th>
+			<th>Type</th>
+			<th>Optional</th>
+			<th>Description</th>
+		</tr>
+		<tr>
+			<td><code>models</code></td>
+			<td><code>Dict(str -&gt; Model)</code></td>
+			<td>yes</td>
+			<td>Set of Models with the read in data. Default is None</td>
+		</tr>
+		<tr>
+			<td><code>similarityMeasure</code></td>
+			<td><code>SimilarityMeasure</code></td>
+			<td>yes</td>
+			<td>The similarity measure to use. Default is None</td>
+		</tr>
+		<tr>
+			<td><code>continuousBoltzmann</code></td>
+			<td><code>bool</code></td>
+			<td>yes</td>
+			<td>Whether the Boltzmann averaging temperature is searched on a discrete or continuous space. In other words, are individual microstate data available. Default is false</td>
+		</tr>
+	</table>
+
+	<h4><code>setSimilarityMeasure(self, similarityMeasure:SimilarityMeasure) -> None</code></h4>
+	<p>Sets the similarity measure to be used.</p>
+	<table width="800" border="1">
+		<tr>
+			<th>Parameter</th>
+			<th>Type</th>
+			<th>Optional</th>
+			<th>Description</th>
+		</tr>
+		<tr>
+			<td><code>similarityMeasure</code></td>
+			<td><code>SimilarityMeasure</code></td>
+			<td>no</td>
+			<td>new SimilarityMeasure to be used</td>
+		</tr>
+	</table>
+
+	<h4><code>setMaxIterations(self, iter:int) -> None</code></h4>
+	<p>Sets the max number of iterations of the algorithm.
+		Typically the algorithm *will* run for this number of iterations....</p>
+	<table width="800" border="1">
+		<tr>
+			<th>Parameter</th>
+			<th>Type</th>
+			<th>Optional</th>
+			<th>Description</th>
+		</tr>
+		<tr>
+			<td><code>iter</code></td>
+			<td><code>int</code></td>
+			<td>no</td>
+			<td>Max number of iterations of algorithm</td>
+		</tr>
+	</table>
+
+	<h4><code>setContinuousBoltzmann(self, yes:bool) -> None</code></h4>
+	<p>Sets the algorithm whether to search through a continuous range of boltzmann averaging temperatures or not</p>
+	<table width="800" border="1">
+		<tr>
+			<th>Parameter</th>
+			<th>Type</th>
+			<th>Optional</th>
+			<th>Description</th>
+		</tr>
+		<tr>
+			<td><code>yes</code></td>
+			<td><code>bool</code></td>
+			<td>no</td>
+			<td>Is Boltzmann averaging temperature to be on a continuous range?</td>
+		</tr>
+	</table>
+
+	<h4><code>setParamBounds(self, ensembleSizes:"int[]", backrubTemps:"float[]", boltzmannTemps:"float[]", steepnessRange:"float[]", weightMins:"float[]", weightMaxs:"float[]") -> None</code></h4>
+	<p>Sets the bounds on the parameter space to search through.</p>
+	<table width="800" border="1">
+		<tr>
+			<th>Parameter</th>
+			<th>Type</th>
+			<th>Optional</th>
+			<th>Description</th>
+		</tr>
+		<tr>
+			<td><code>ensembleSizes</code></td>
+			<td><code>int[] as numpy.array</code></td>
+			<td>no</td>
+			<td>List of ensemble sizes to search over</td>
+		</tr>
+		<tr>
+			<td><code>backrubTemps</code></td>
+			<td><code>float[] as numpy.array</code></td>
+			<td>no</td>
+			<td>List of backrub temperatures</td>
+		</tr>
+		<tr>
+			<td><code>boltzmannTemps</code></td>
+			<td><code>float[] as numpy.array</code></td>
+			<td>no</td>
+			<td>List of discrete Boltzmann averaging temperatures or the lower and upper bounds for range to search on</td>
+		</tr>
+		<tr>
+			<td><code>steepnessRange</code></td>
+			<td><code>float[] as numpy.array</code></td>
+			<td>no</td>
+			<td>Lower and upper bound of steepness value.</td>
+		</tr>
+		<tr>
+			<td><code>weightMins</code></td>
+			<td><code>float[] as numpy.array</code></td>
+			<td>no</td>
+			<td>Minimum weights for each macrostate</td>
+		</tr>
+		<tr>
+			<td><code>weightMaxs</code></td>
+			<td><code>float[] as numpy.array</code></td>
+			<td>no</td>
+			<td>Maximum weights for each macrostate</td>
+		</tr>
+	</table>
+
+	<h4><code>setSearchParameters(self, ensemble:bool, backrub:bool, boltzmann:bool, steepness:bool, weights:"bool[]") -> None</code></h4>
+	<p>Sets which parameters to search through.</p>
+	<table width="800" border="1">
+		<tr>
+			<th>Parameter</th>
+			<th>Type</th>
+			<th>Optional</th>
+			<th>Description</th>
+		</tr>
+		<tr>
+			<td><code>ensemble</code></td>
+			<td><code>bool</code></td>
+			<td>no</td>
+			<td>Search over ensemble sizes?</td>
+		</tr>
+		<tr>
+			<td><code>backrub</code></td>
+			<td><code>bool</code></td>
+			<td>no</td>
+			<td>Search over backrub temperatures</td>
+		</tr>
+		<tr>
+			<td><code>boltzmann</code></td>
+			<td><code>bool</code></td>
+			<td>no</td>
+			<td>Search over Boltzmann averaging temperatures?</td>
+		</tr>
+		<tr>
+			<td><code>steepness</code></td>
+			<td><code>bool</code></td>
+			<td>no</td>
+			<td>Search over steepness values?</td>
+		</tr>
+		<tr>
+			<td><code>weights</code></td>
+			<td><code>bool[] as numpy.array</code></td>
+			<td>no</td>
+			<td>Search over each macrostate weight?</td>
+		</tr>
+	</table>
+
+	<h4><code>setAllSearchToTrue(self) -> None</code></h4>
+	<p>All parameters are to be searched.</p>
+
+	<h4><code>setAllSearchToFalse(self) -> None</code></h4>
+	<p>No parameters are to be searched, this is verifying some found parameters</p>
+
+	<h4><code>abstract iterate(self) -> None</code></h4>
+	<p>Start searching.
+	Inherited subclasses are expected to provide an implementation of this method.</p>
+
+	<h4><code>boundCheckBoltzmann(self, newBoltzmann:float) -> float</code></h4>
+	<p>Check whether a new Boltzmann averaging temp is in the bounds.
+		If it is out of bounds, trim to the bound.
+		Should only be used when searching on a continuous range.</p>
+	<table width="800" border="1">
+		<tr>
+			<th>Parameter</th>
+			<th>Type</th>
+			<th>Optional</th>
+			<th>Description</th>
+		</tr>
+		<tr>
+			<td><code>newBoltzmann</code></td>
+			<td><code>float</code></td>
+			<td>no</td>
+			<td>Value to check</td>
+		</tr>
+	</table>
+
+	<h4><code>boundCheckSteepness(self, newSteep:float) -> float</code></h4>
+	<p>Check whether a new steepness value is in the bounds.
+		If it is out of bounds, trim to the bound.</p>
+	<table width="800" border="1">
+		<tr>
+			<th>Parameter</th>
+			<th>Type</th>
+			<th>Optional</th>
+			<th>Description</th>
+		</tr>
+		<tr>
+			<td><code>newSteep</code></td>
+			<td><code>float</code></td>
+			<td>no</td>
+			<td>Value to check</td>
+		</tr>
+	</table>
+
+	<h4><code>boundCheckWeights(self, newWeights:numpy.array) -> numpy.array</code></h4>
+	<p>Check whether a new set of weights in the specified bounds.
+		Values out of bounds will be trimmed to the bound.</p>
+	<table width="800" border="1">
+		<tr>
+			<th>Parameter</th>
+			<th>Type</th>
+			<th>Optional</th>
+			<th>Description</th>
+		</tr>
+		<tr>
+			<td><code>newWeights</code></td>
+			<td><code>float[] as numpy.array</code></td>
+			<td>no</td>
+			<td>Values to check</td>
+		</tr>
+	</table>
+
+	<h4><code>getModelByParams(self, param1, param2, param3) -> Model</code></h4>
+	<p>Gets a model by the specified pre-determined parameters.
+		Return object is a not deep copy that should not be modified.</p>
+	<table width="800" border="1">
+		<tr>
+			<th>Parameter</th>
+			<th>Type</th>
+			<th>Optional</th>
+			<th>Description</th>
+		</tr>
+		<tr>
+			<td><code>param1</code></td>
+			<td>any string-expressable type</td>
+			<td>no</td>
+			<td>Backrub temperature is used for all</td>
+		</tr>
+		<tr>
+			<td><code>param2</code></td>
+			<td>any string-expressable type</td>
+			<td>no</td>
+			<td>Ensemble size, or NULL when using microstates</td>
+		</tr>
+		<tr>
+			<td><code>param3</code></td>
+			<td>any string-expressable type</td>
+			<td>no</td>
+			<td>Boltzmann averaging temperature, or NULL when using microstates</td>
+		</tr>
+	</table>
+
+	<h4><code>getBestParameters(self) -> {}</code></h4>
+	<p>
+		Returns the currently best parameters.4.<br />
+		Keys:<br />
+		'ensembleSize'<br />
+		'backrubTemp'<br />
+		'boltzmannTemp'<br />
+		'steepness'<br />
+		'weights'<br />
+		'match'
+	</p>
+
+	<h4><code>getBestFrequencies(self) -> numpy.array</code></h4>
+	<p>Returns the set of frequencies corresponding to the best match</p>
+</body>
+</html>

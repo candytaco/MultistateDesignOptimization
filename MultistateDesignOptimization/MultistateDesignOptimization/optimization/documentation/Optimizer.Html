@@ -1,0 +1,652 @@
+<html>
+<head>
+	<title>Optimizer</title>
+</head>
+<body>
+	<h2>Class <code>Optimizer</code></h2>
+	<h3>Overview</h3>
+	<p>
+		Class <code>Optimizer</code> performs hyperparameter optimization over a multistate design model.
+	</p>
+	<h3>Fields</h3>
+	<table width="800" border="1" cellpadding="1">
+		<tbody>
+			<tr>
+				<th scope="col">Field </th>
+				<th scope="col">Type </th>
+				<th scope="col"><p>Description </p></th>
+			</tr>
+			<tr>
+				<td><code>models </code></td>
+				<td><code>Dict(string -&gt; Model) </code></td>
+				<td>A set of raw input Models from which the search is performed </td>
+			</tr>
+			<tr>
+				<td><code>optimizationAlgorithm </code></td>
+				<td><code>SearchAlgorithm </code></td>
+				<td>A search algorithm for optimizing the hyperparameters </td>
+			</tr>
+			<tr>
+				<td><code>nPositions </code></td>
+				<td><code>int</code> </td>
+				<td>Total number of positions in protein sequence </td>
+			</tr>
+			<tr>
+				<td><code>contiguousPositions </code></td>
+				<td><code>bool</code> </td>
+				<td>Are the positions aligned to a continuous set of positions? </td>
+			</tr>
+			<tr>
+				<td><code>positionMap </code></td>
+				<td><code>Dict(int -&gt; int)</code> </td>
+				<td>If the aligned positions are not contiguous, map them to a contiguous set </td>
+			</tr>
+			<tr>
+				<td><code>minPosition </code></td>
+				<td><code>int</code></td>
+				<td>Lowest position number </td>
+			</tr>
+			<tr>
+				<td><code>targetFrequencies </code></td>
+				<td><code>numpy.array</code></td>
+				<td>The desired residue frequencies at each position </td>
+			</tr>
+			<tr>
+				<td><code>MACROSTATES </code></td>
+				<td><code>Enumeration</code></td>
+				<td>An enumeration of the macrostates to examine </td>
+			</tr>
+			<tr>
+				<td><code>nMacrostates </code></td>
+				<td><code>int</code> </td>
+				<td>Number of macrostates </td>
+			</tr>
+			<tr>
+				<td><code>continuousBoltzmann </code></td>
+				<td><code>bool</code> </td>
+				<td>Can we search over a continuous range of Boltzmann averaging temperatures </td>
+			</tr>
+			<tr>
+				<td><code></code><code>targetFreqsRead </code></td>
+				<td><code>bool</code> </td>
+				<td>Have the target frequencies been read in? </td>
+			</tr>
+		</tbody>
+	</table>
+	<h3>Methods</h3>
+	<h4><code>__init__(self, macrostates = None, continuousBoltzmann = False, contiguousPositions:bool = False)</code></h4>
+	<p>Default constructor</p>
+	<table width="800" border="1" cellpadding="1">
+		<tbody>
+			<tr>
+				<th scope="col">Parameter </th>
+				<th scope="col">Type </th>
+				<th scope="col">Optional </th>
+				<th scope="col">Description </th>
+			</tr>
+			<tr>
+				<td><code>macrostates </code></td>
+				<td><code>Enumeration </code></td>
+				<td>yes </td>
+				<td>enum of the macrostates to be considered </td>
+			</tr>
+			<tr>
+				<td><code>continuousBoltzmann </code></td>
+				<td><code>bool </code></td>
+				<td>yes </td>
+				<td>Are microstate data provided </td>
+			</tr>
+			<tr>
+				<td><code>contiguousPositions </code></td>
+				<td><code>bool </code></td>
+				<td>yes </td>
+				<td>Are the positions aligned to a contiguous set of positions </td>
+			</tr>
+		</tbody>
+	</table>
+	<h4><code>copyFromExisting(existing)</code></h4>
+	<p>Deep copies an existing <code>Optimizer</code> object.</p>
+	<table width="800" border="1">
+		<tr>
+			<th>Parameter</th>
+			<th>Type</th>
+			<th>Optional</th>
+			<th>Description</th>
+		</tr>
+		<tr>
+			<td><code>existing</code></td>
+			<td><code>Optimizer</code></td>
+			<td>no</td>
+			<td>The existing Optimizer to copy</td>
+		</tr>
+	</table>
+
+	<h4><code>readTargetFrequencies(self, source:str, posPicker:str = None) -> numpy.array</code></h4>
+	<p>
+		Reads the target frequencies from a FASTA file. Call this before reading data.
+		Note: when optimizing against a set of positions that are not contiguous, this function <em>MUST</em> be called before calling a readData function.
+		Doing otherwise will void all warranties and promises that calculations will be correct.
+	</p>
+	<table width="800" border="1">
+		<tr>
+			<th>Parameter</th>
+			<th>Type</th>
+			<th>Optional</th>
+			<th>Description</th>
+		</tr>
+		<tr>
+			<td><code>source</code></td>
+			<td><code>string</code></td>
+			<td>no</td>
+			<td>String of name of the target FASTA file</td>
+		</tr>
+		<tr>
+			<td><code>posPicker</code></td>
+			<td><code>string</code></td>
+			<td>yes</td>
+			<td>String of the name of the alignment file, when the aligned positions are not contiguous</td>
+		</tr>
+	</table>
+
+	<h4><code>readData(self, source) -> None</code></h4>
+	<p>Reads in a tab-delimited file of ensembles encoding macrostate data.</p>
+	<table width="800" border="1">
+		<tr>
+			<th>Parameter</th>
+			<th>Type</th>
+			<th>Optional</th>
+			<th>Description</th>
+		</tr>
+		<tr>
+			<td><code>source</code></td>
+			<td><code>string</code></td>
+			<td>no</td>
+			<td>String of name of the data tsv file</td>
+		</tr>
+	</table>
+
+	<h4><code>readFormattedData(self, source:str) -> None</code></h4>
+	<p>Reads in a .dat file that was formatted by <code>Optimizer</code></p>
+	<table width="800" border="1">
+		<tr>
+			<th>Parameter</th>
+			<th>Type</th>
+			<th>Optional</th>
+			<th>Description</th>
+		</tr>
+		<tr>
+			<td><code>source</code></td>
+			<td><code>string</code></td>
+			<td>no</td>
+			<td>String of name of the data dat file</td>
+		</tr>
+	</table>
+
+	<h4><code>readMicrostateData(self, source:str, minPosition:int) -> None</code></h4>
+	<p>
+		Reads in raw microstate data.
+		Unlike <code>readData()</code>, this function does not assume anything about the min position and it must be supplied manually
+	</p>
+	<table width="800" border="1">
+		<tr>
+			<th>Parameter</th>
+			<th>Type</th>
+			<th>Optional</th>
+			<th>Description</th>
+		</tr>
+		<tr>
+			<td><code>source</code></td>
+			<td><code>string</code></td>
+			<td>no</td>
+			<td>String of name of the data tsv file</td>
+		</tr>
+		<tr>
+			<td><code>minPosition</code></td>
+			<td><code>int</code></td>
+			<td>no</td>
+			<td>Minimum position value</td>
+		</tr>
+	</table>
+
+	<h4><code>readFormattedMicrostateData(self, source) -> None</code></h4>
+	<p>
+		Reads in a .dat file produced by the <code>convertMicrostateData()</code> function.
+		Discards non-examined positions	if positions to be examined are non-contiguous
+	</p>
+	<table width="800" border="1">
+		<tr>
+			<th>Parameter</th>
+			<th>Type</th>
+			<th>Optional</th>
+			<th>Description</th>
+		</tr>
+		<tr>
+			<td><code>source</code></td>
+			<td><code>string</code></td>
+			<td>no</td>
+			<td>String of name of the data dat file</td>
+		</tr>
+	</table>
+
+	<h4><code>convertMicrostateData(source:str, out:str, entries:int, minPosition:int, nPositions:int, stateIndex:dict = None) -> None</code></h4>
+	<p>
+		Converts a large .tsv file to a .dat file to make reading data faster down the line.
+		Saves a bit of disc space also.
+	</p>
+	<table width="800" border="1">
+		<tr>
+			<th>Parameter</th>
+			<th>Type</th>
+			<th>Optional</th>
+			<th>Description</th>
+		</tr>
+		<tr>
+			<td><code>source</code></td>
+			<td><code>string</code></td>
+			<td>no</td>
+			<td>String of name of the data tsv file</td>
+		</tr>
+		<tr>
+			<td><code>out</code></td>
+			<td><code>string</code></td>
+			<td>no</td>
+			<td>Name for the output file</td>
+		</tr>
+		<tr>
+			<td><code>entries</code></td>
+			<td><code>int</code></td>
+			<td>no</td>
+			<td>Number of entries in the input file</td>
+		</tr>
+		<tr>
+			<td><code>minPosition</code></td>
+			<td><code>int</code></td>
+			<td>no</td>
+			<td>Minimum position number</td>
+		</tr>
+		<tr>
+			<td><code>nPositions</code></td>
+			<td><code>int</code></td>
+			<td>no</td>
+			<td>Number of positions examined</td>
+		</tr>
+		<tr>
+			<td><code>stateIndex</code></td>
+			<td><code>Dict(str -&gt; int)</code></td>
+			<td>yes</td>
+			<td>Dictionary that maps macrostate names to zero-indexed integers. The default is the five states for DHFR</td>
+		</tr>
+	</table>
+
+	<h4><code>positionReindexer(data:str) -> None</code></h4>
+	<p>
+		Used to offset arbitrary positions to start with 0. Used when converting files.
+		The file should have three columns.
+		The first is the index in the alignment, the second I have no idea,	the third is the index in the residue sequence.
+	</p>
+	<table width="800" border="1">
+		<tr>
+			<th>Parameter</th>
+			<th>Type</th>
+			<th>Optional</th>
+			<th>Description</th>
+		</tr>
+		<tr>
+			<td><code>data</code></td>
+			<td><code>string</code></td>
+			<td>no</td>
+			<td>File name of indices list</td>
+		</tr>
+	</table>
+
+	<h4><code>positionReindexerFASTA(self, data:str) -> numpy.array</code></h4>
+	<p>
+		Since we may be aligning to a FASTA sequence with more positions, we strip the superfluous positions from the read in FASTA.
+		Used when reading files.
+		The file should have three columns.
+		The first is the index in the alignment, the second I have no idea,	the third is the index in the residue sequence.
+	</p>
+	<table width="800" border="1">
+		<tr>
+			<th>Parameter</th>
+			<th>Type</th>
+			<th>Optional</th>
+			<th>Description</th>
+		</tr>
+		<tr>
+			<td><code>data</code></td>
+			<td><code>string</code></td>
+			<td>no</td>
+			<td>File name of indices list</td>
+		</tr>
+	</table>
+
+	<h4><code>convertMicrostateDataIndexCorrection(source:str, out:str, indexer:str, entries:int, minPosition:int, nPositions:int, stateIndex:dict = None) -> None</code></h4>
+	<p>
+		Converts a large tsv to a formatted dat and discard indices not examined.
+		I don't think that this function is currently useful or would ever be.
+	</p>
+	<p>Deprecated</p>
+	<table width="800" border="1">
+		<tr>
+			<th>Parameter</th>
+			<th>Type</th>
+			<th>Optional</th>
+			<th>Description</th>
+		</tr>
+		<tr>
+			<td><code>source</code></td>
+			<td><code>string</code></td>
+			<td>no</td>
+			<td>File name of tsv file</td>
+		</tr>
+		<tr>
+			<td><code>out</code></td>
+			<td><code>string</code></td>
+			<td>no</td>
+			<td>Name for output dat file</td>
+		</tr>
+		<tr>
+			<td><code>indexer</code></td>
+			<td><code>string</code></td>
+			<td>no</td>
+			<td>Name of file with list of positions</td>
+		</tr>
+		<tr>
+			<td><code>minPosition</code></td>
+			<td><code>int</code></td>
+			<td>no</td>
+			<td>Minimum position value</td>
+		</tr>
+		<tr>
+			<td><code>nPositions</code></td>
+			<td><code>int</code></td>
+			<td>no</td>
+			<td>Number of positions to be examined</td>
+		</tr>
+		<tr>
+			<td><code>stateIndex</code></td>
+			<td><code>Dict(str -&gt; int)</code></td>
+			<td>yes</td>
+			<td>Dictionary that maps macrostate names to 0-indexed integers. Default is for DHFR</td>
+		</tr>
+	</table>
+
+	<h4><code>convertModelFilesToDat(self, source:str, out:str) -> None</code></h4>
+	<p>Converts a macrostate tsv to a dat. Overwrites existing files w/o warning.</p>
+	<table width="800" border="1">
+		<tr>
+			<th>Parameter</th>
+			<th>Type</th>
+			<th>Optional</th>
+			<th>Description</th>
+		</tr>
+		<tr>
+			<td><code>source</code></td>
+			<td><code>string</code></td>
+			<td>no</td>
+			<td>Name of input tsv file</td>
+		</tr>
+		<tr>
+			<td><code>out</code></td>
+			<td><code>string</code></td>
+			<td>no</td>
+			<td>Name of output dat file</td>
+		</tr>
+	</table>
+
+	<h4><code>writeFrequenciesToDat(self, frequencies:numpy.array, outFileName:str) -> int</code></h4>
+	<p>Writes the 2D residue frequencies to a .dat file.</p>
+	<table width="800" border="1">
+		<tr>
+			<th>Parameter</th>
+			<th>Type</th>
+			<th>Optional</th>
+			<th>Description</th>
+		</tr>
+		<tr>
+			<td><code>frequencies</code></td>
+			<td><code>float[][] as numpy.array</code></td>
+			<td>no</td>
+			<td>Frequencies list. First index is position, second index is residue.</td>
+		</tr>
+		<tr>
+			<td><code>outfile</code></td>
+			<td><code>string</code></td>
+			<td>no</td>
+			<td>Name for output file</td>
+		</tr>
+	</table>
+
+	<h4><code>writeFrequenciesToFASTA(self, frequencies:numpy.array, outFileName:str, precision:int = 3) -> int</code></h4>
+	<p>Writes the 2D residue frequencies to a FASTA file.</p>
+	<table width="800" border="1">
+		<tr>
+			<th>Parameter</th>
+			<th>Type</th>
+			<th>Optional</th>
+			<th>Description</th>
+		</tr>
+		<tr>
+			<td><code>frequencies</code></td>
+			<td><code>float[][] as numpy.array</code></td>
+			<td>no</td>
+			<td>Frequencies list. First index is position, second index is residue.</td>
+		</tr>
+		<tr>
+			<td><code>outFileName</code></td>
+			<td><code>string</code></td>
+			<td>no</td>
+			<td>Name for output FASTA file</td>
+		</tr>
+		<tr>
+			<td><code>precision</code></td>
+			<td><code>int</code></td>
+			<td>yes</td>
+			<td>Number of places behind the decimal to be accurate to in the FASTA file. Default is 3</td>
+		</tr>
+	</table>
+
+	<h4><code>writeBestParamsToText(self, out:str) -> None</code></h4>
+	<p>
+		Writes the best parameters found to a human-readable text file.
+		Overwrites without warning.
+	</p>
+	<table width="800" border="1">
+		<tr>
+			<th>Parameter</th>
+			<th>Type</th>
+			<th>Optional</th>
+			<th>Description</th>
+		</tr>
+		<tr>
+			<td><code>out</code></td>
+			<td><code>string</code></td>
+			<td>no</td>
+			<td>File name for output file</td>
+		</tr>
+	</table>
+
+	<h4><code>calcParamsID(param1, param2, param3)</code></h4>
+	<p>
+		Generates a unique and reproducable ID string for each combination of parameters, either by concactenating the toString representations or hashing it all.
+		Is a static method.
+	</p>
+	<table width="800" border="1">
+		<tr>
+			<th>Parameter</th>
+			<th>Type</th>
+			<th>Optional</th>
+			<th>Description</th>
+		</tr>
+		<tr>
+			<td><code>param1</code></td>
+			<td>any string-expressable type</td>
+			<td>no</td>
+			<td>Backrub temperature is used for all</td>
+		</tr>
+		<tr>
+			<td><code>param2</code></td>
+			<td>any string-expressable type</td>
+			<td>no</td>
+			<td>Ensemble size, or NULL when using microstates</td>
+		</tr>
+		<tr>
+			<td><code>param3</code></td>
+			<td>any string-expressable type</td>
+			<td>no</td>
+			<td>Boltzmann averaging temperature, or NULL when using microstates</td>
+		</tr>
+	</table>
+
+	<h4><code>getModelByParams(self, param1, param2, param3) -> Model</code></h4>
+	<p>
+		Gets a model by the specified pre-determined parameters.
+		Return is a reference and the return object should not be directly modified.
+		Use the Model.createFromExisting() function on it to generate a copy.
+	</p>
+	<table width="800" border="1">
+		<tr>
+			<th>Parameter</th>
+			<th>Type</th>
+			<th>Optional</th>
+			<th>Description</th>
+		</tr>
+		<tr>
+			<td><code>param1</code></td>
+			<td>any string-expressable type</td>
+			<td>no</td>
+			<td>Backrub temperature is used for all</td>
+		</tr>
+		<tr>
+			<td><code>param2</code></td>
+			<td>any string-expressable type</td>
+			<td>no</td>
+			<td>Ensemble size, or NULL when using microstates</td>
+		</tr>
+		<tr>
+			<td><code>param3</code></td>
+			<td>any string-expressable type</td>
+			<td>no</td>
+			<td>Boltzmann averaging temperature, or NULL when using microstates</td>
+		</tr>
+	</table>
+
+	<h4><code>useAlgorithm(self, algorithm:SearchAlgorithm) -> None</code></h4>
+	<p>Changes the search algorithm used by the <code>Optimizer</code>.</p>
+	<table width="800" border="1">
+		<tr>
+			<th>Parameter</th>
+			<th>Type</th>
+			<th>Optional</th>
+			<th>Description</th>
+		</tr>
+		<tr>
+			<td><code>algorithm</code></td>
+			<td><code>SearchAlgorithm</code></td>
+			<td>no</td>
+			<td>new SearchAlgorithm object</td>
+		</tr>
+	</table>
+
+	<h4><code>optimize(self) -> None</code></h4>
+	<p>Starts the optimization process.</p>
+
+	<h4><code>verifyFoundParams(self, ensembleSize, backrubT, boltzmannT, steepness, weights) -> float</code></h4>
+	<p>Run some found parameters against this model to see the match.</p>
+	<table width="800" border="1">
+		<tr>
+			<th>Parameter</th>
+			<th>Type</th>
+			<th>Optional</th>
+			<th>Description</th>
+		</tr>
+		<tr>
+			<td><code>ensembleSize</code></td>
+			<td><code>int</code></td>
+			<td>no</td>
+			<td>Ensemble size</td>
+		</tr>
+		<tr>
+			<td><code>backrubT</code></td>
+			<td><code>float</code></td>
+			<td>no</td>
+			<td>Backrub temperature</td>
+		</tr>
+		<tr>
+			<td><code>boltzmannT</code></td>
+			<td><code>float</code></td>
+			<td>no</td>
+			<td>Boltzmann temperature</td>
+		</tr>
+		<tr>
+			<td><code>steepness</code></td>
+			<td><code>float</code></td>
+			<td>no</td>
+			<td>Steepness</td>
+		</tr>
+		<tr>
+			<td><code>weights</code></td>
+			<td><code>float[] as numpy.array</code></td>
+			<td>no</td>
+			<td>Weights of macrostates</td>
+		</tr>
+	</table>
+
+	<h4><code>getFrequenciesByParams(self, ensembleSize, backrubT, boltzmannT, steepness, weights) -> numpy.array</code></h4>
+	<p>Gets the frequencies corresponding to a particular set of hyperparams.</p>
+	<table width="800" border="1">
+		<tr>
+			<th>Parameter</th>
+			<th>Type</th>
+			<th>Optional</th>
+			<th>Description</th>
+		</tr>
+		<tr>
+			<td><code>ensembleSize</code></td>
+			<td><code>int</code></td>
+			<td>no</td>
+			<td>Ensemble size</td>
+		</tr>
+		<tr>
+			<td><code>backrubT</code></td>
+			<td><code>float</code></td>
+			<td>no</td>
+			<td>Backrub temperature</td>
+		</tr>
+		<tr>
+			<td><code>boltzmannT</code></td>
+			<td><code>float</code></td>
+			<td>no</td>
+			<td>Boltzmann temperature</td>
+		</tr>
+		<tr>
+			<td><code>steepness</code></td>
+			<td><code>float</code></td>
+			<td>no</td>
+			<td>Steepness</td>
+		</tr>
+		<tr>
+			<td><code>weights</code></td>
+			<td><code>float[] as numpy.array</code></td>
+			<td>no</td>
+			<td>Weights of macrostates</td>
+		</tr>
+	</table>
+
+	<h4><code>getBestParameters(self) -> {}</code></h4>
+	<p>
+		Returns a dictionary of the best parameters found.<br />
+		Keys:<br />
+		'ensembleSize'<br />
+		'backrubTemp'<br />
+		'boltzmannTemp'<br />
+		'steepness'<br />
+		'weights'<br />
+		'match'
+	</p>
+
+	<h4><code>getBestFrequencies(self) -> numpy.array</code></h4>
+	<p>Returns the best frequencies found.</p>
+</body>
+</html>

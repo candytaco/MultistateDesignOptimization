@@ -1,0 +1,402 @@
+<html>
+<head><title>Model</title></head>
+<body>
+	<h2>Class <code>Model</code></h2>
+	<h3>Overview</h3>
+	<p>
+		Class <code>Model</code> is a multistate design model with a particular set of hyparameters.
+	</p>
+
+	<h3>Fields</h3>
+	<table>
+		<tr>
+			<th>Field</th>
+			<th>Type</th>
+			<th>Description</th>
+		</tr>
+		<tr>
+			<td><code>MACROSTATES</code></td>
+			<td><code>Enumeration</code></td>
+			<td>Enumeration of the macrostates</td>
+		</tr>
+		<tr>
+			<td><code>nMacrostates</code></td>
+			<td><code>int</code></td>
+			<td>Number of macrostates</td>
+		</tr>
+		<tr>
+			<td>ensembleSize</td>
+			<td>int</td>
+			<td>Ensemble size of this model</td>
+		</tr>
+		<tr>
+			<td><code>nPositions</code></td>
+			<td><code>int</code></td>
+			<td>Number of positions on sequence examined</td>
+		</tr>
+		<tr>
+			<td><code>contiguousPositions</code></td>
+			<td><code>bool</code></td>
+			<td>Are the positions contiguous</td>
+		</tr>
+		<tr>
+			<td><code>positionMap</code></td>
+			<td><code>Dict(int -&gt; int)</code></td>
+			<td>If the positions are not contiguous, a map from their original values to [0, nPositions)</td>
+		</tr>
+		<tr>
+			<td><code>positionOffset</code></td>
+			<td><code>int</code></td>
+			<td>Minimum position value</td>
+		</tr>
+		<tr>
+			<td><code>backrubTemp</code></td>
+			<td><code>float</code></td>
+			<td>Backrub temperature of this model</td>
+		</tr>
+		<tr>
+			<td><code>boltzmannTemp</code></td>
+			<td><code>float</code></td>
+			<td>Boltzmann averaging temperature of this model</td>
+		</tr>
+		<tr>
+			<td><code>weights</code></td>
+			<td><code>float[] as numpy.array</code></td>
+			<td>Relative weights of the macrostates</td>
+		</tr>
+		<tr>
+			<td><code>steepness</code></td>
+			<td><code>float</code></td>
+			<td>Steepness of sigmoid</td>
+		</tr>
+		<tr>
+			<td><code>fitnesses</code></td>
+			<td><code>float[][] as numpy.array</code></td>
+			<td>Calculated fitness of residues at each location. First index is location, second is residue</td>
+		</tr>
+		<tr>
+			<td><code>frequencies</code></td>
+			<td><code>float[][] as numpy.array</code></td>
+			<td>Calculated frequencies of residues at each location</td>
+		</tr>
+		<tr>
+			<td><code>macrostateResidueEnergies</code></td>
+			<td><code>float[][][] as numpy.array</code></td>
+			<td>Boltzmann-averaged macrostate energies. First index is position, second is residue, third is macrostate.</td>
+		</tr>
+		<tr>
+			<td><code>resovery</code></td>
+			<td><code>float</code></td>
+			<td>Similarity to the natural sequence</td>
+		</tr>
+		<tr>
+			<td><code>macrostatesUsed</code></td>
+			<td><code>bool[] as numpy.array</code></td>
+			<td>Macrostates examined during optimization.</td>
+		</tr>
+		<tr>
+			<td><code>useAltAveragingMethod</code></td>
+			<td><code>bool</code></td>
+			<td>Use the accepted averaging method for (the alternative) Xinjie's expression?</td>
+		</tr>
+		<tr>
+			<td><code>isFrequenciesCalculated</code></td>
+			<td><code>bool</code></td>
+			<td>Have frequencies been calculated</td>
+		</tr>
+		<tr>
+			<td><code>useMicrostateData</code></td>
+			<td><code>bool</code></td>
+			<td>Are individual microstate data provided</td>
+		</tr>
+		<tr>
+			<td><code>areMicrostatesPicked</code></td>
+			<td><code>bool</code></td>
+			<td>Have microstates been picked for averaging into macrostates</td>
+		</tr>
+		<tr>
+			<td><code>microstateResidueEnergies</code></td>
+			<td><code>float[][][][] as numpy.array</code></td>
+			<td>Raw microstate energies. First index is position, second is residue, third is macrostate, fourth is microstate</td>
+		</tr>
+		<tr>
+			<td><code>selectedMicrostateEnergies</code></td>
+			<td><code>float[][][][] as numpy.array</code></td>
+			<td>Subset of selected microstates for averaging into macrostates</td>
+		</tr>
+		<tr>
+			<td><code>microstateCounts</code></td>
+			<td><code>float[][] as numpy.array</code></td>
+			<td>Number of microstates available at each position and macrostate for picking. First index is position, second is macrostate.</td>
+		</tr>
+		<tr>
+			<td><code>microstatesUsed</code></td>
+			<td><code>int[][][] as numpy.array</code></td>
+			<td>Indices of microstates picked for averaging. First index is position, second macrostate, third is microstate.</td>
+		</tr>
+	</table>
+
+	<h3>Methods</h3>
+	<h4><code>__init__(self, macrostates:enum, ensembleSize:int, backrubTemp:float, boltzmannTemp:float, weights:numpy.array, steepness:float, positions:int, positionOffset:int, useMicrostateData:bool = False, posMap:dict = None, useAltAverageMethod:bool = False)</code></h4>
+	<p>Default constructor</p>
+	<table>
+		<tr>
+			<th>Parameter</th>
+			<th>Type</th>
+			<th>Optional</th>
+			<th>Description</th>
+		</tr>
+		<tr>
+			<td><code>macrostates</code></td>
+			<td><code>Enumeration</code></td>
+			<td>no</td>
+			<td><code>Enumeration</code> of the macrostates in this model</td>
+		</tr>
+		<tr>
+			<td><code>ensembleSize</code></td>
+			<td><code>int</code></td>
+			<td>no</td>
+			<td>Ensemble size</td>
+		</tr>
+		<tr>
+			<td><code>backrubTemp</code></td>
+			<td><code>float</code></td>
+			<td>no</td>
+			<td>Backrub temperature</td>
+		</tr>
+		<tr>
+			<td><code>boltzmannTemp</code></td>
+			<td><code>float</code></td>
+			<td>no</td>
+			<td>Boltzmann averaging temperature</td>
+		</tr>
+		<tr>
+			<td><code>weights</code></td>
+			<td><code>float[] as numpy.array</code></td>
+			<td>no</td>
+			<td>Weights for macrostates</td>
+		</tr>
+		<tr>
+			<td><code>steepness</code></td>
+			<td><code>float</code></td>
+			<td>no</td>
+			<td>Steepness of fitness fucntion</td>
+		</tr>
+		<tr>
+			<td><code>positions</code></td>
+			<td><code>int</code></td>
+			<td>no</td>
+			<td>Number of positions examined</td>
+		</tr>
+		<tr>
+			<td><code>positionOffset</code></td>
+			<td><code>int</code></td>
+			<td>no</td>
+			<td>Index of lowest position to be examined</td>
+		</tr>
+		<tr>
+			<td><code>useMicrostateData</code></td>
+			<td><code>bool</code></td>
+			<td>yes</td>
+			<td>Do we have raw microstate data to work with? Default is false</td>
+		</tr>
+		<tr>
+			<td><code>posMap</code></td>
+			<td><code>Dict(int -&gt; int)</code></td>
+			<td>yes</td>
+			<td>If the positions are not aligned contiguously, remap to contiguous set.</td>
+		</tr>
+		<tr>
+			<td><code>useAltAveragingMethod</code></td>
+			<td><code>bool</code></td>
+			<td>yes</td>
+			<td>SHould the model use the alternative Boltzmann averaging method? Default is false.</td>
+		</tr>
+	</table>
+
+	<h4><code>constructFromExisting(existing, ensembleSize:int, backrubTemp:float, boltzmannTemp:float, weights:numpy.array, steepness:float)</code></h4>
+	<p>"Overloaded" "constructor" that uses a pre-existing <code>Model</code> as a template</p>
+	<table>
+		<tr>
+			<th>Parameter</th>
+			<th>Type</th>
+			<th>Optional</th>
+			<th>Description</th>
+		</tr>
+		<tr>
+			<td>existing</td>
+			<td><code>Model</code></td>
+			<td>no</td>
+			<td>Pre-existing model object</td>
+		</tr>
+		<tr>
+			<td><code>ensembleSize</code></td>
+			<td><code>int</code></td>
+			<td>no</td>
+			<td>New ensemble size</td>
+		</tr>
+		<tr>
+			<td><code>backrubTemp</code></td>
+			<td><code>float</code></td>
+			<td>no</td>
+			<td>New backrub temperature</td>
+		</tr>
+		<tr>
+			<td><code>boltzmannTemp</code></td>
+			<td><code>float</code></td>
+			<td>no</td>
+			<td>New Boltzmann averaging temperature</td>
+		</tr>
+		<tr>
+			<td><code>weights</code></td>
+			<td><code>float[] as numpy.array</code></td>
+			<td>no</td>
+			<td>New weights</td>
+		</tr>
+	</table>
+
+	<h4><code>setPositionMap(self, posMap:dict) -> None</code></h4>
+	<p>If this model is using non-contiguous position numbers, sets the <code>Map&#60;int, int&#61;</code> used to convert them to contiguous numbers on [0, nPositions]
+</p>
+	<p>Deprecated</p>
+	<table>
+		<tr>
+			<th>Parameter</th>
+			<th>Type</th>
+			<th>Optional</th>
+			<th>Description</th>
+		</tr>
+		<tr>
+			<td><code>posMap</code></td>
+			<td<code>>Dict(int -&gt; int)</code></td>
+			<td>no</td>
+			<td>Map of how to change indices</td>
+		</tr>
+	</table>
+
+	<h4><code>addMacrostateData(self, macrostate:int, position:int, energies:"float[]") -> None</code></h4>
+	<p>Inserts a macrostate_position set of fitness values to this model.</p>
+	<table>
+		<tr>
+			<th>Parameter</th>
+			<th>Type</th>
+			<th>Optional</th>
+			<th>Description</th>
+		</tr>
+		<tr>
+			<td><code>macrostate</code></td>
+			<td><code>int</code></td>
+			<td>no</td>
+			<td>Macrostate the data corresponds to</td>
+		</tr>
+		<tr>
+			<td><code>position</code></td>
+			<td><code>int</code></td>
+			<td>no</td>
+			<td>The position the energies corresponds to</td>
+		</tr>
+		<tr>
+			<td><code>energies</code></td>
+			<td><code>float[]</code></td>
+			<td>no</td>
+			<td>Array of length-20 of residue energies</td>
+		</tr>
+	</table>
+
+	<h4><code>addMicrostateData(self, macrostate:int, position:int, energies:"float") -> None</code></h4>
+	<p>Inserts a microstate_position fitness into this model.</p>
+	<table>
+		<tr>
+			<th>Parameter</th>
+			<th>Type</th>
+			<th>Optional</th>
+			<th>Description</th>
+		</tr>
+		<tr>
+			<td><code>macrostate</code></td>
+			<td><code>int</code></td>
+			<td>no</td>
+			<td>Macrostate the data corresponds to</td>
+		</tr>
+		<tr>
+			<td><code>position</code></td>
+			<td><code>int</code></td>
+			<td>no</td>
+			<td>The position the energies corresponds to</td>
+		</tr>
+		<tr>
+			<td><code>energies</code></td>
+			<td><code>float[]</code></td>
+			<td>no</td>
+			<td>Array of length-20 of residue energies</td>
+		</tr>
+	</table>
+
+	<h4><code>useAltAverageMethod(self, yes:bool) -> None</code></h4>
+	<p>Changes whether to use the other averaging method.</p>
+	<table>
+		<tr>
+			<th>Parameter</th>
+			<th>Type</th>
+			<th>Optional</th>
+			<th>Description</th>
+		</tr>
+		<tr>
+			<td><code>yes</code></td>
+			<td><code>bool</code></td>
+			<td>no</td>
+			<td>Use it or no?</td>
+		</tr>
+	</table>
+
+	<h4><code>setWeights(self, newWeights:numpy.array) -> None</code></h4>
+	<p>Changes weight sets. Not sure if this is a necessary function or not.</p>
+	<table>
+		<tr>
+			<th>Parameter</th>
+			<th>Type</th>
+			<th>Optional</th>
+			<th>Description</th>
+		</tr>
+		<tr>
+			<td><code>newWeights</code></td>
+			<td><code>float[] as numpy.array</code></td>
+			<td>no</td>
+			<td>New weights</td>
+		</tr>
+	</table>
+
+	<h4><code>getFrequencies(self) -> numpy.array</code></h4>
+	<p>Self-explanatory name.
+	Returns a deep copy of the array so it's safe to directly do math on the return value</p>
+
+	<h4><code>equalTo(self, other) -> bool</code></h4>
+	<p>Are the data stored in this <code>Model</code> correct?
+	i.e. does everything actually correspond to the input file's data? Used for debugging</p>
+	<table>
+		<tr>
+			<th>Parameter</th>
+			<th>Type</th>
+			<th>Optional</th>
+			<th>Description</th>
+		</tr>
+		<tr>
+			<td><code>other</code></td>
+			<td><code>Model</code></td>
+			<td>no</td>
+			<td>Other model to compare this one to</td>
+		</tr>
+	</table>
+
+	<h4><code>averageMicrostates(self) -> None</code></h4>
+	<p>Boltzmann averages the microstates to calculate the energy for the macrostate.
+	There is no need for this function to be externally called.</p>
+
+	<h4><code>calcFitness(self) -> None</code></h4>
+	<p>Calculates the fitnesses of the each residue at each position.
+		There is no need for this function to be externally called.</p>
+
+	<h4><code>calcFrequencies(self) -> None</code></h4>
+	<p>Calculates the fitnesses and the frequencies of residues at each location.</p>
+</body>
+</html>

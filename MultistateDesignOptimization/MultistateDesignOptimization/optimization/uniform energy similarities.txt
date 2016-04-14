@@ -1,0 +1,4 @@
+JSD: 0.0000
+Cosine similarity: 0.5000
+K-L divergence: 0.5000
+Weighted mixed similarity: 0.2430
