@@ -2,14 +2,14 @@
 
 namespace OPTIMIZER
 {
-	const int nMACROSTATES = 6;
+	const int nMACROSTATES = 6;	// TODO: needs to be changed
 
 	enum RESIDUES
 	{
 		A, C, D, E, F, G, H, I, K, L, M, N, P, Q, R, S, T, V, W, Y
 	};
 
-	enum MACROSTATES
+	enum MACROSTATES	// TODO: needs to be a param
 	{
 		// TODO: fill this in
 	};
@@ -36,6 +36,14 @@ namespace OPTIMIZER
 		double *getWeights();
 		double getSteepness() { return this->steepness; }
 		double **getFrequencies();
+
+		// comparators
+		bool operator==(const Model &other) const;
+		bool operator!=(const Model &other) const { return !(*this == other); }
+		bool operator <(const Model &other) const;
+		bool operator >(const Model &other) const { return other < *this; }
+		bool operator<=(const Model &other) const { return !(*this > other); }
+		bool operator>=(const Model &other) const { return !(*this < other); }
 
 		~Model();
 

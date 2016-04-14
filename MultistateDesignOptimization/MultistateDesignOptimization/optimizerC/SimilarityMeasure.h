@@ -7,17 +7,17 @@ namespace OPTIMIZER
 	public:
 		SimilarityMeasure();
 		SimilarityMeasure(SimilarityMeasure*);
-		SimilarityMeasure(mxArray *targetFreqs);
+		SimilarityMeasure(mat *targetFreqs);
 
-		void setTargetFrequencies(mxArray *targetFreqs);
-		virtual SimilarityMeasure *clone();
-		virtual double getSimilarity(mxArray *expFrequencies);
+		void setTargetFrequencies(mat *targetFreqs);
+		virtual SimilarityMeasure *clone();	// TODO: not needed because copy constructor
+		virtual double getSimilarity(mat *expFrequencies);
 
 		virtual string *toString();
 
 		~SimilarityMeasure();
 
 	protected:
-		mxArray *targetFrequencies;
+		mat *targetFrequencies;
 	};
 }

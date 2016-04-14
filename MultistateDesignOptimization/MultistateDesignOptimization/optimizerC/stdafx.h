@@ -9,7 +9,6 @@
 
 #include <stdio.h>
 #include <tchar.h>
-
 #include "Model.h"
 #include "SearchAlgorithm.h"
 #include "SimilarityMeasure.h"

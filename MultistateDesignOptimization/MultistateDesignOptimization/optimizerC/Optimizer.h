@@ -34,8 +34,8 @@ namespace OPTIMIZER
 		~Optimizer();
 
 	private:
-		map<int, Model> models;
-		SearchAlgorithm optimizationAlgorithm;
+		map<int, Model> *models;
+		SearchAlgorithm *optimizationAlgorithm;
 		int nPositions;
 		int minPosition;
 		mxArray *targetFrequencies;

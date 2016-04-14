@@ -22,7 +22,9 @@ namespace OPTIMIZER
 		Model *getModelByParams(double, double, double);
 
 		double *getBestParams();
-		mxArray *getBestFrequencies();
+		mat *getBestFrequencies();
+
+		bool suppressOutputs;
 
 		~SearchAlgorithm();
 
@@ -56,6 +58,7 @@ namespace OPTIMIZER
 		double bestBoltzmannTemp;
 		double bestSteepness;
 		double *bestWeights;
-		mxArray *bestFrequencies;
+		double bestMatchVal;
+		mat *bestFrequencies;
 	};
 }
