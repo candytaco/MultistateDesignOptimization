@@ -17,7 +17,7 @@ namespace OPTIMIZER
 		void readMicrostateData(string *inFile);
 		void writeFrequenciesToFASTA(string *outName) { this->writeFrequenciesToFASTA(outName, 3, this->optimizationAlgorithm->getBestFrequencies()); }
 		void writeFrequenciesToFASTA(string *outName, int precision) { this->writeFrequenciesToFASTA(outName, precision, this->optimizationAlgorithm->getBestFrequencies()); }
-		void writeFrequenciesToFASTA(string *outName, int precision, mat *frequencies);
+		void writeFrequenciesToFASTA(string *outName, int precision, float **frequencies);
 		void writeBestParamsToText(string *outName);
 
 		int calcParamsID(double param1, double param2, double param3);

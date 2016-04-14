@@ -22,7 +22,7 @@ namespace OPTIMIZER
 		Model *getModelByParams(double, double, double);
 
 		double *getBestParams();
-		mat *getBestFrequencies();
+		float **getBestFrequencies();
 
 		bool suppressOutputs;
 
