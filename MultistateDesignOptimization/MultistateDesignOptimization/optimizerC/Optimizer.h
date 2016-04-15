@@ -8,7 +8,7 @@ namespace OPTIMIZER
 		string *macrostates;	// list of macrostates
 
 		Optimizer();
-		Optimizer(Optimizer *existing);
+		Optimizer(const Optimizer &existing);
 		Optimizer(int nMacrostates, string *macrostates);
 		Optimizer(int nMacrostates, bool continuousBoltzmann);
 		Optimizer(int nMacrostates, string *macrostates, bool continuousBoltzmann);

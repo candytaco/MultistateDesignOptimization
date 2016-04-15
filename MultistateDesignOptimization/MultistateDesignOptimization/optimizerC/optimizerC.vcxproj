@@ -93,6 +93,7 @@
   <ItemGroup>
     <ClCompile Include="JensenShannonDistance.cpp" />
     <ClCompile Include="Model.cpp" />
+    <ClCompile Include="Optimizer.cpp" />
     <ClCompile Include="optimizerC.cpp" />
     <ClCompile Include="SimilarityMeasure.cpp" />
     <ClCompile Include="stdafx.cpp">
