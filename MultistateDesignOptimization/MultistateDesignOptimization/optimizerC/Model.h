@@ -19,22 +19,84 @@ namespace OPTIMIZER
 	public:
 		double recovery;				// META-FITNESS similarity to target, assigned by outside similarity measure
 
+
 		Model();
 		Model(int nMacrostates, int ensembleSize, double backrumTemp, double boltzmannTemp, int nPositions, int positionOffset);
 		Model(int nMacrostates, int ensembleSize, double backrumTemp, double boltzmannTemp, int nPositions, int positionOffset, bool useMicrostate);
 		Model(int nMacrostates, int ensembleSize, double backrumTemp, double boltzmannTemp, int nPositions, int positionOffset, bool useMicrostate, bool useAltAverageMethod);
 		Model(int nMacrostates, int ensembleSize, double backrubTemp, double boltzmannTemp, double *weights, double steepness, int nPositions, int positionOffset);
 		Model(int nMacrostates, int ensembleSize, double backrubTemp, double boltzmannTemp, double *weights, double steepness, int nPositions, int positionOffset, bool useMicrostate);
+		
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Model"/> class.
+		/// </summary>
+		/// <param name="nMacrostates">The n macrostates.</param>
+		/// <param name="ensembleSize">Size of the ensemble.</param>
+		/// <param name="backrubTemp">The backrub temporary.</param>
+		/// <param name="boltzmannTemp">The boltzmann temporary.</param>
+		/// <param name="weights">The weights.</param>
+		/// <param name="steepness">The steepness.</param>
+		/// <param name="nPositions">The n positions.</param>
+		/// <param name="positionOffset">The position offset.</param>
+		/// <param name="useMicrostate">if set to <c>true</c> [use microstate].</param>
+		/// <param name="useAltaverageMethod">if set to <c>true</c> [use altaverage method].</param>
 		Model(int nMacrostates, int ensembleSize, double backrubTemp, double boltzmannTemp, double *weights, double steepness, int nPositions, int positionOffset, bool useMicrostate, bool useAltaverageMethod);
+		
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Model"/> class.
+		/// </summary>
+		/// <param name="existing">The existing.</param>
+		/// <param name="ensembleSize">Size of the ensemble.</param>
+		/// <param name="backrubTemp">The backrub temporary.</param>
+		/// <param name="boltzmannTemp">The boltzmann temporary.</param>
+		/// <param name="weights">The weights.</param>
+		/// <param name="steepness">The steepness.</param>
 		Model(const Model &existing, int ensembleSize, double backrubTemp, double boltzmannTemp, double *weights, double steepness);
-
+		
+		/// <summary>
+		/// Adds the macrostate data.
+		/// </summary>
+		/// <param name="macrostate">The macrostate.</param>
+		/// <param name="position">The position.</param>
+		/// <param name="energies">The energies.</param>
 		void addMacrostateData(MACROSTATES macrostate, int position, float *energies);
+		
+		/// <summary>
+		/// Adds the microstate data.
+		/// </summary>
+		/// <param name="macrostate">The macrostate.</param>
+		/// <param name="position">The position.</param>
+		/// <param name="energies">The energies.</param>
 		void addMicrostateData(MACROSTATES macrostate, int position, float *energies);
-
+		
+		/// <summary>
+		/// Gets the size of the ensemble.
+		/// </summary>
+		/// <returns></returns>
 		int getEnsembleSize() { return this->ensembleSize; }
+		
+		/// <summary>
+		/// Gets the backrub temperature.
+		/// </summary>
+		/// <returns></returns>
 		int getBackrubTemp() { return this->backrubTemp; }
+		
+		/// <summary>
+		/// Gets the weights.
+		/// </summary>
+		/// <returns></returns>
 		double *getWeights();
+		
+		/// <summary>
+		/// Gets the steepness.
+		/// </summary>
+		/// <returns></returns>
 		double getSteepness() { return this->steepness; }
+		
+		/// <summary>
+		/// Gets the frequencies.
+		/// </summary>
+		/// <returns></returns>
 		double **getFrequencies();
 
 		// comparators
@@ -82,9 +144,20 @@ namespace OPTIMIZER
 		//double ***residueEnergies;		// double[position][residue][macrostate energy]
 
 		bool fitnessCalculated;
-
+		
+		/// <summary>
+		/// Calculates the fitness.
+		/// </summary>
 		void calcFitness();
+		
+		/// <summary>
+		/// Calculates the frequencies.
+		/// </summary>
 		void calcFrequencies();
+		
+		/// <summary>
+		/// Averages the microstates.
+		/// </summary>
 		void averageMicrostates();
 	};
 }
