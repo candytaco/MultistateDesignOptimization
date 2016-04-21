@@ -14,3 +14,8 @@
 * Serial optimization of calculations]
 * Draw up program structure description
 * More ways to optimize the program
+
+#### 4/20:
+
+* I started the project in Visual Studio, hence the nested folders, project files, and stdafx precomiled header
+* However, I see no reason why it wouldn't work straight outta the box on other machines since we're not using any OS-specific libraries
