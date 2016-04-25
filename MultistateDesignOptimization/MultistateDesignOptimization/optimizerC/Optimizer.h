@@ -137,7 +137,7 @@ namespace OPTIMIZER
         
             char outFileName = outname + '.txt';
             FILE *outputFile = fopen(outFileName, "w");
-			float *bestVals = getBestParameters();
+			double *bestVals = getBestParameters();
             // for the write functions, it is assumed getBestParameters are stored in an array of floats.
             /* Keys:
              0: 'ensembleSize'
@@ -198,7 +198,7 @@ namespace OPTIMIZER
 		/// Gets the best parameters.
 		/// </summary>
 		/// <returns></returns>
-		float *getBestParameters();
+		double *getBestParameters();
 		// this needs to contain the following. i'm going to assume that they are each a float for now, but weights needs to be multiple floats!?
         // for the write functions, it is assumed these are stored in an array of floats.
         
