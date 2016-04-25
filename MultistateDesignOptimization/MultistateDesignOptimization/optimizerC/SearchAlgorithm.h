@@ -94,7 +94,7 @@ namespace OPTIMIZER
 		/// Gets the best frequencies.
 		/// </summary>
 		/// <returns></returns>
-		float **getBestFrequencies();
+		double **getBestFrequencies();
 				
 		/// <summary>
 		/// The suppress outputs

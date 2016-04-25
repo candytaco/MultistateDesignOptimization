@@ -6,6 +6,7 @@
 #include <math.h>
 #include <vector>
 #include <list>
+#include <string>
 
 namespace OPTIMIZER
 {
@@ -78,7 +79,7 @@ namespace OPTIMIZER
 		/// <param name="outName">Name of the out.</param>
 		/// <param name="precision">The precision.</param>
 		/// <param name="frequencies">The frequencies.</param>
-        void writeFrequenciesToFASTA(string *outName, int precision, float **frequencies); {
+        void writeFrequenciesToFASTA(string *outName, int precision, double **frequencies) {
             /// <summary>
             /// Writes the best parameters to text.
             /// </summary>
@@ -91,22 +92,22 @@ namespace OPTIMIZER
             // nPositions : is this global?
             
             // TODO: check and make sure that the output file doesn't already end in .fasta!
-            char outFileName = outName + ".fasta"; // might not be necessary, but do it just in case.
-            FILE *outputFile = fopen(outFileName, "w");
+            string outFileName = outName->append(".fasta"); // might not be necessary, but do it just in case.
+            FILE *outputFile = fopen(outFileName.c_str(), "w");
             if(!outputFile) {
                 perror("Error opening FASTA file");
             }
             
             int nEntries = pow(10, precision);
             
-            int numbers
+			int numbers;
             
             // this is going to create problems, but i'm confused as to what frequencies is. might need to loop through and multiple each element?
-            double numbers = frequencies;
+            double **numbers = frequencies;
             //int numbers = round(frequencies * nEntries); // uhhh what is frequencies? in the original code it is a numpy array. here it is...?
             
             vector<int> residueToWrite(nPositions,0); // i think this should allocate the vector of size nPositions filled with zeros.
-            char residues = "ACDEFGHIKLMNPQRSTVWY";
+            char *residues = "ACDEFGHIKLMNPQRSTVWY";
             
             // i think the following loop could be optimized, but i don't know how many times we use it.
             // why is there no "i" used within this loop? maybe i don't get what it is doing.
@@ -116,11 +117,11 @@ namespace OPTIMIZER
                     while ((numbers[j][residueToWrite[j]] == 0) && residueToWrite[j] < 19)
                         residueToWrite[j]++;
                     numbers[j][residueToWrite[j]]--;
-                    fprintf(outputFile, residues[residueToWrite[j]]);
+                    fprintf(outputFile, &residues[residueToWrite[j]]);
                 }
                 fprintf(outputFile, "\n");
             }
-            fclose(outFileName);
+            fclose(outputFile);
             }
         
 
@@ -136,7 +137,7 @@ namespace OPTIMIZER
         
             char outFileName = outname + '.txt';
             FILE *outputFile = fopen(outFileName, "w");
-            float bestVals = getBestParameters():
+			float *bestVals = getBestParameters();
             // for the write functions, it is assumed getBestParameters are stored in an array of floats.
             /* Keys:
              0: 'ensembleSize'
