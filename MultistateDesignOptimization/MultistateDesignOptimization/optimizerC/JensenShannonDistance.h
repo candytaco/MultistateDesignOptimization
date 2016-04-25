@@ -6,11 +6,10 @@ namespace OPTIMIZER
 	{
 	public:
 		JensenShannonDistance();
-		JensenShannonDistance(mxArray *targetFreqs);
+		JensenShannonDistance(const SimilarityMeasure &other);
+		JensenShannonDistance(mat *targetFreqs);
 
-		JensenShannonDistance *clone() override;
-
-		double getSimilarity(mxArray *expFrequencies) override;
+		double getSimilarity(mat *expFrequencies) override;
 
 		~JensenShannonDistance();
 

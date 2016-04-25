@@ -7,17 +7,17 @@ namespace OPTIMIZER
 		targetFrequencies = NULL;
 	}
 
-	SimilarityMeasure::SimilarityMeasure(SimilarityMeasure *existing)
+	SimilarityMeasure::SimilarityMeasure(const SimilarityMeasure& other)
 	{
-		this->targetFrequencies = mxDuplicateArray(existing->targetFrequencies);
+		this->targetFrequencies = other.targetFrequencies; // shallow copy ok?
 	}
 
-	SimilarityMeasure::SimilarityMeasure(mxArray *targetFreqs)
+	SimilarityMeasure::SimilarityMeasure(mat *targetFreqs)
 	{
 		this->targetFrequencies = targetFreqs;
 	}
 
-	void SimilarityMeasure::setTargetFrequencies(mxArray *newTargetFreqs)
+	void SimilarityMeasure::setTargetFrequencies(mat *newTargetFreqs)
 	{
 		this->targetFrequencies = newTargetFreqs;
 	}
@@ -25,6 +25,6 @@ namespace OPTIMIZER
 	SimilarityMeasure::~SimilarityMeasure()
 	{
 		if (this->targetFrequencies != NULL)
-			mxDestroyArray(this->targetFrequencies);
+			this->targetFrequencies->~Mat();
 	}
 }
