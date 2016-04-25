@@ -1,4 +1,5 @@
 #include "Model.h"
+#include <cstdlib>
 
 namespace OPTIMIZER
 {
@@ -56,9 +57,21 @@ namespace OPTIMIZER
 		this->macrostateResidueEnergies = new cube(nPositions, 20, nMACROSTATES);
 		if (useMicrostate)
 		{
+			areMicrostatesPicked = false;
 			microstateResidueEnergies = new vector<cube>();
 			for (int i = 0; i < nPositions; i++)
-				microstateResidueEnergies->push_back(*new cube(20, nMACROSTATES, 1024));
+				microstateResidueEnergies->push_back(cube(20, nMACROSTATES, 1024));
+			microstateCounts = new int*[nPositions];
+			for (int i = 0; i < nPositions; i++)
+				microstateCounts[i] = new int[nMacrostates];
+			microstatesUsed = new int**[nPositions];
+			for (int i = 0; i < nPositions; i++)
+			{
+				microstatesUsed[i] = new int*[nMacrostates];
+				for (int j = 0; j < nMacrostates; j++)
+					microstatesUsed[i][j] = new int[ensembleSize];
+			}
+			
 		}
 	}
 
@@ -88,24 +101,25 @@ namespace OPTIMIZER
 		{
 			this->areMicrostatesPicked = false;
 			this->microstateResidueEnergies = new vector<cube>(*existing.microstateResidueEnergies);
-			this->microstateCounts = new double*[nPositions];
+			this->microstateCounts = new int*[nPositions];
 			for (int i = 0; i < nPositions; i++)
 			{
-				microstateCounts[i] = new double[nMacrostates];
+				microstateCounts[i] = new int[nMacrostates];
 				for (int j = 0; j < nMacrostates; j++)
 					microstateCounts[i][j] = existing.microstateCounts[i][j];
 			}
 		}
 
+		// TODO: shallow or deep copy?
 		if (existing.microstatesUsed != NULL)
 		{
-			this->microstatesUsed = new double**[nPositions];
+			this->microstatesUsed = new int**[nPositions];
 			for (int i = 0; i < nPositions; i++)
 			{
-				microstatesUsed[i] = new double*[nMacrostates];
+				microstatesUsed[i] = new int*[nMacrostates];
 				for (int j = 1; j < nMacrostates; j++)
 				{
-					microstatesUsed[i][j] = new double[ensembleSize];
+					microstatesUsed[i][j] = new int[ensembleSize];
 					for (int k = 1; k < ensembleSize; k++)
 						microstatesUsed[i][j][k] = existing.microstatesUsed[i][j][k];
 				}
@@ -150,9 +164,81 @@ namespace OPTIMIZER
 		{
 			f[i] = new double[20];
 			for (int j = 0; j < 20; j++)
-				f[i][j] = this->frequencies[i][j];
+				f[i][j] = this->frequencies->at(i, j);
 		}
 		return f;
+	}
+
+	void Model::calcFitness()
+	{
+		// TODO: check correctness
+		if (useMicrostateData)
+			averageMicrostates();
+
+		mat minEnergies = min(*macrostateResidueEnergies, 1);
+		mat offsets = minEnergies + log(99) / steepness;
+		fitnesses = new mat(nPositions, 20);
+		fitnesses->fill(1.0f);
+		for (int i = 0; i < nPositions; i++)
+		for (int j = 0; j < 20; j++)
+		for (int k = 0; k < nMacrostates; k++)
+		{
+			double f = 1.0f / (1 + exp(steepness * (macrostateResidueEnergies->at(i, j, k) - offsets(i, k))));
+			fitnesses->at(i, j) = fitnesses->at(i, j) * (1 - weights[k] + weights[k] * f);
+		}
+	}
+
+	void Model::calcFrequencies()
+	{
+		// TODO: check that this actually works
+		if (!isFrequenciesCalculated)
+		{
+			isFrequenciesCalculated = true;
+			this->calcFitness();
+
+			this->frequencies = &mat((*fitnesses) / (1 - *fitnesses));	// this works?
+			mat sums = sum(*frequencies, 1);
+			for (int i = 0; i < nPositions; i++)
+				frequencies->at(i) = frequencies->at(i) / sums.at(i);
+		}
+	}
+
+	void Model::averageMicrostates()
+	{
+		// TODO: implement this
+		if (!areMicrostatesPicked)
+		{
+			// pick random indices
+			for (int i = 0; i < nPositions; i++)
+			for (int j = 0; j < nMacrostates; j++)
+			for (int k = 0; k < ensembleSize; k++)
+				microstatesUsed[i][j][k] = rand() % microstateCounts[i][j]; //TODO: make unique rand ints
+
+			// pick energies
+			for (int i = 0; i < nPositions; i++)
+				selectedMicrostateEnergies->push_back(cube(20, nMacrostates, ensembleSize));	// unknown values? we shall see
+			for (int i = 0; i < nPositions; i++)
+			for (int j = 0; j < 20; j++)
+			for (int k = 0; k < nMacrostates; k++)
+			for (int l = 0; l < ensembleSize; l++)
+				selectedMicrostateEnergies->at(i).at(j, k, l) = microstateResidueEnergies->at(i)(j, k, microstatesUsed[i][k][l]);
+			areMicrostatesPicked = true;
+		}
+
+		//disregard alternative averaging method since it does not make any practical differences
+		if (boltzmannTemp == 0)
+			//TODO mathy thigns for slicing
+			macrostateResidueEnergies = ;
+	}
+
+	bool Model::operator==(const Model &other) const
+	{
+		return this->recovery == other.recovery;
+	}
+
+	bool Model::operator <(const Model &other) const
+	{
+		return this->recovery < other.recovery;
 	}
 
 	Model::~Model()

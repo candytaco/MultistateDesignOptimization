@@ -24,7 +24,14 @@ Optimizer::Optimizer(int nMacrostates, bool continuousBoltzmann)
 
 Optimizer::Optimizer(int nMacrostates, string *macrostates, bool continuousBoltzmann)
 {
-	// TODO: implement this
+	this->models = new map<int, Model>();
+	this->optimizationAlgorithm = NULL;
+	this->nPositions = 0;
+	this->minPosition = 0;
+	this->targetFrequencies = NULL;
+	this->macrostates = macrostates;
+	this->nMacrostates = nMacrostates;
+	this->continuousBoltzmann = continuousBoltzmann;
 }
 
 void Optimizer::readData(string *inFile)

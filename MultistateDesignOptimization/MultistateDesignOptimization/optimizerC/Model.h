@@ -82,9 +82,9 @@ namespace OPTIMIZER
 		int getBackrubTemp() { return this->backrubTemp; }
 		
 		/// <summary>
-		/// Gets the weights.
+		/// Gets the weights as a deep copy of the internal variables.
 		/// </summary>
-		/// <returns></returns>
+		/// <returns>double[] of weights</returns>
 		double *getWeights();
 		
 		/// <summary>
@@ -94,12 +94,12 @@ namespace OPTIMIZER
 		double getSteepness() { return this->steepness; }
 		
 		/// <summary>
-		/// Gets the frequencies.
+		/// Returns the frequencies with a deep copy of the object's internal variable
 		/// </summary>
-		/// <returns></returns>
+		/// <returns>double[position][residue] of frequency values</returns>
 		double **getFrequencies();
 
-		// comparators
+		// comparators based on similarity measure for sorting
 		bool operator==(const Model &other) const;
 		bool operator!=(const Model &other) const { return !(*this == other); }
 		bool operator <(const Model &other) const;
@@ -131,8 +131,8 @@ namespace OPTIMIZER
 		bool areMicrostatesPicked;
 		vector<cube> *microstateResidueEnergies;	// cube[]
 		vector<cube> *selectedMicrostateEnergies;	// cube[]
-		double **microstateCounts;
-		double ***microstatesUsed;
+		int **microstateCounts;
+		int ***microstatesUsed;
 		
 		// TODO: fix Matrices - they're all 2D! The numbers are m,n sizes >.<
 		//Matrix2d *fitnesses;			// Eigen matrix representations
@@ -146,7 +146,7 @@ namespace OPTIMIZER
 		bool fitnessCalculated;
 		
 		/// <summary>
-		/// Calculates the fitness.
+		/// Calculates fitnesses values.
 		/// </summary>
 		void calcFitness();
 		
