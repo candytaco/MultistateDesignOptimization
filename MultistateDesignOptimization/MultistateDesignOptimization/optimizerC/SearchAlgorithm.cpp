@@ -53,7 +53,7 @@ namespace OPTIMIZER
 	void SearchAlgorithm::setSimilarityMeasure(SimilarityMeasure *similarityMeasure)
 	{
 		if (this->similarityMeasure != NULL)
-			this->similarityMeasure->~SimilarityMeasure();
+			delete this->similarityMeasure;
 		this->similarityMeasure = similarityMeasure;
 	}
 
@@ -83,7 +83,7 @@ namespace OPTIMIZER
 			delete[] this->boltzmannTemps;
 		this->boltzmannTemps = boltzmannTemps;
 		if (this->steepnessRange)
-			delete this->steepnessRange;
+			delete[] this->steepnessRange;
 		this->steepnessRange = steepnessRange;
 		if (this->weightMaxs)
 			delete[] this->weightMaxs;
@@ -160,7 +160,7 @@ namespace OPTIMIZER
 		if (models)
 			delete models;
 		if (similarityMeasure)
-			similarityMeasure->~SimilarityMeasure();
+			delete this->similarityMeasure;
 		if (ensembleSizes)
 			delete[] ensembleSizes;
 		if (backrubTemps)
@@ -178,6 +178,6 @@ namespace OPTIMIZER
 		if (bestWeights)
 			delete[] bestWeights;
 		if (bestFrequencies)
-			bestFrequencies->~Mat();
+			delete this->bestFrequencies;
 	}
 }

@@ -34,7 +34,7 @@ namespace OPTIMIZER
 		if (JSdiv < 0 || JSdiv > 1)
 			throw exception::exception("calculated value out of bounds");
 
-		expFrequencies->~Mat();
+		delete expFrequencies;
 
 		return JSdiv;
 	}
