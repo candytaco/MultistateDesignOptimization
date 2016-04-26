@@ -47,7 +47,7 @@ namespace OPTIMIZER
 		/// <param name="steepnessRange">The steepness range.</param>
 		/// <param name="weightMins">The weight mins.</param>
 		/// <param name="weightMaxs">The weight maxs.</param>
-		void setParameterBounds(int *ensembleSizes, double *backrubTemps, double *boltzmannTemps, double *steepnessRange, double *weightMins, double *weightMaxs);
+		void setParameterBounds(int *ensembleSizes, int nEnsembleSizes, double *backrubTemps, int nBackrubTemps, double *boltzmannTemps, int nBoltzmannTemps, double *steepnessRange, double *weightMins, double *weightMaxs);
 		
 		/// <summary>
 		/// Sets the searchparameters.
@@ -137,8 +137,11 @@ namespace OPTIMIZER
 		int maxIterations;
 
 		int *ensembleSizes;
+		int nEnsembleSizes;
 		double *backrubTemps;
+		int nBackrubTemps;
 		double *boltzmannTemps;
+		int nBoltzmannTemps;
 		double *steepnessRange;
 		double *weightMins;
 		double *weightMaxs;
@@ -156,5 +159,9 @@ namespace OPTIMIZER
 		double *bestWeights;
 		double bestMatchVal;
 		mat *bestFrequencies;
+
+		mt19937 randGen;
+		// for a random int, use %
+		uniform_real_distribution<double> randDouble;
 	};
 }

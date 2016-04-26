@@ -72,16 +72,19 @@ namespace OPTIMIZER
 		searchWeights = weights;
 	}
 
-	void SearchAlgorithm::setParameterBounds(int *ensembleSizes, double *backrubTemps, double *boltzmannTemps, double *steepnessRange, double *weightMins, double *weightMaxs)
+	void SearchAlgorithm::setParameterBounds(int *ensembleSizes, int nEnsembleSizes, double *backrubTemps, int nBackrubTemps, double *boltzmannTemps, int nBoltzmannTemps, double *steepnessRange, double *weightMins, double *weightMaxs)
 	{
 		if (this->ensembleSizes)
 			delete[] this->ensembleSizes;
 		this->ensembleSizes = ensembleSizes;
+		this->nEnsembleSizes = nEnsembleSizes;
 		if (this->backrubTemps)
 			delete[] this->backrubTemps;
+		this->nBackrubTemps = nBackrubTemps;
 		if (this->boltzmannTemps)
 			delete[] this->boltzmannTemps;
 		this->boltzmannTemps = boltzmannTemps;
+		this->nBoltzmannTemps = nBoltzmannTemps;
 		if (this->steepnessRange)
 			delete[] this->steepnessRange;
 		this->steepnessRange = steepnessRange;

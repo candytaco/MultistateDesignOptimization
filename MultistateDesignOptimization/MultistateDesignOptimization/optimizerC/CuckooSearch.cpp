@@ -26,9 +26,25 @@ namespace OPTIMIZER
 		population->clear();
 		for (int i = 0; i < populationSize; i++)
 		{
-			// TODO: use <random> for random number generation
-			double steepness = rand();
+			double steepness = randDouble(randGen) * (steepnessRange[1] - steepnessRange[0]) + steepnessRange[0];
+			double *weights = new double[nMacrostates];
+			// assumes weight ranges are all [0, 1]
+			for (int i = 0; i < nMacrostates; i++)
+				weights[i] = searchWeights[i] ? randDouble(randGen) : weightMins[i];
+			int ensembleSize = ensembleSizes[randGen() % nEnsembleSizes];
+			int backrubTemp = backrubTemps[randGen() & nBackrubTemps];
+			float boltzmann = continuousBoltzmann ? randDouble(randGen) * (boltzmannTemps[1] - boltzmannTemps[0]) + boltzmannTemps[0] : boltzmannTemps[randGen() % nBoltzmannTemps];
+
+			Model *m;
+			if (!continuousBoltzmann)
+				m = new Model(*this->getModelByParams(backrubTemp, ensembleSize, boltzmann), ensembleSize, backrubTemp, boltzmann, weights, steepness);
+			else
+				m = new Model(*this->getModelByParams(backrubTemp, 0, 0), ensembleSize, backrubTemp, boltzmann, weights, steepness);
+			m->recovery = similarityMeasure->getSimilarity(m->getFrequencies());
+			population->push_back(*m);
 		}
+		population->sort();
+		recordBestParams();
 	}
 
 	void CuckooSearch::iterate()
@@ -41,6 +57,18 @@ namespace OPTIMIZER
 		{
 			// TODO: the meaty things here.
 		}
+	}
+
+	void CuckooSearch::recordBestParams()
+	{
+		Model *best = &population->front();
+		bestEnsembleSize = best->getEnsembleSize();
+		bestBackrubTemp = best->getBackrubTemp();
+		bestBoltzmannTemp = best->getBoltzmannTemp();
+		bestSteepness = best->getSteepness();
+		bestWeights = best->getWeights();
+		bestMatchVal = best->recovery;
+		bestFrequencies = best->getFrequencies();
 	}
 
 	string *CuckooSearch::toString()

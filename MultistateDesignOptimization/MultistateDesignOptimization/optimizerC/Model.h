@@ -73,13 +73,19 @@ namespace OPTIMIZER
 		/// Gets the size of the ensemble.
 		/// </summary>
 		/// <returns></returns>
-		int getEnsembleSize() { return this->ensembleSize; }
+		const int getEnsembleSize() { return this->ensembleSize; }
 		
 		/// <summary>
 		/// Gets the backrub temperature.
 		/// </summary>
 		/// <returns></returns>
-		int getBackrubTemp() { return this->backrubTemp; }
+		const int getBackrubTemp() { return this->backrubTemp; }
+		
+		/// <summary>
+		/// Gets the boltzmann temperature.
+		/// </summary>
+		/// <returns></returns>
+		const double getBoltzmannTemp() { return this->boltzmannTemp; }
 		
 		/// <summary>
 		/// Gets the weights as a deep copy of the internal variables.
@@ -97,7 +103,7 @@ namespace OPTIMIZER
 		/// Returns the frequencies with a deep copy of the object's internal variable
 		/// </summary>
 		/// <returns>double[position][residue] of frequency values</returns>
-		double **getFrequencies();
+		mat *getFrequencies();
 
 		// comparators based on similarity measure for sorting
 		bool operator==(const Model &other) const;

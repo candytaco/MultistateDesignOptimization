@@ -18,6 +18,7 @@
 #include <list>
 #include <vector>
 #include <cmath>
+#include <random>
 #include <armadillo>
 
 using namespace std;

@@ -153,20 +153,14 @@ namespace OPTIMIZER
 		return w;
 	}
 
-	double **Model::getFrequencies()
+	mat *Model::getFrequencies()
 	{
 		if (this->ensembleSize == 0) return NULL;
 
 		if (!isFrequenciesCalculated)
 			calcFrequencies();
-		double **f = new double*[nPositions];
-		for (int i = 0; i < nPositions; i++)
-		{
-			f[i] = new double[20];
-			for (int j = 0; j < 20; j++)
-				f[i][j] = this->frequencies->at(i, j);
-		}
-		return f;
+		
+		return new mat(*frequencies);
 	}
 
 	void Model::calcFitness()
