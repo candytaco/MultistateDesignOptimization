@@ -2,12 +2,12 @@
 
 namespace OPTIMIZER
 {
-	class CuokooSearch : SearchAlgorithm
+	class CuckooSearch : public SearchAlgorithm
 	{
 	public:
-		CuokooSearch();
-		CuokooSearch(map<int, Model> models, SimilarityMeasure similarityMeasure, int populationSize, double scaleParam, double elimination);
-		CuokooSearch(map<int, Model> models, SimilarityMeasure similarityMeasure, int populationSize, double scaleParam, double elimination, bool continuousBoltzmann);
+		CuckooSearch();
+		CuckooSearch(int nMacrostates, map<int, Model> *models, SimilarityMeasure *similarityMeasure, int populationSize, double scaleParam, double elimination);
+		CuckooSearch(int nMacrostates, map<int, Model> *models, SimilarityMeasure *similarityMeasure, int populationSize, double scaleParam, double elimination, bool continuousBoltzmann);
 
 		void iterate() override;
 
@@ -22,6 +22,6 @@ namespace OPTIMIZER
 		double scaleParam;
 		double elimination;
 		int populationSize;
-		list<Model> population;
+		list<Model> *population;
 	};
 }

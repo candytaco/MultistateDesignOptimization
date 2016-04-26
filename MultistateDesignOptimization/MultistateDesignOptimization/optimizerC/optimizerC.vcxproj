@@ -91,10 +91,12 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="CuckooSearch.cpp" />
     <ClCompile Include="JensenShannonDistance.cpp" />
     <ClCompile Include="Model.cpp" />
     <ClCompile Include="Optimizer.cpp" />
     <ClCompile Include="optimizerC.cpp" />
+    <ClCompile Include="SearchAlgorithm.cpp" />
     <ClCompile Include="SimilarityMeasure.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

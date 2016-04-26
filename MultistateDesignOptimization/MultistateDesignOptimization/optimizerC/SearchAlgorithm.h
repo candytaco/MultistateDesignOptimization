@@ -10,7 +10,7 @@ namespace OPTIMIZER
 		/// </summary>
 		SearchAlgorithm();
 
-		SearchAlgorithm(map<int, Model> models, SimilarityMeasure similarityMeasure);
+		SearchAlgorithm(int nMacrostates, map<int, Model> *models, SimilarityMeasure *similarityMeasure);
 		
 		/// <summary>
 		/// Initializes a new instance of the <see cref="SearchAlgorithm"/> class.
@@ -18,13 +18,13 @@ namespace OPTIMIZER
 		/// <param name="models">The models.</param>
 		/// <param name="similarityMeasure">The similarity measure.</param>
 		/// <param name="continuousBoltzmann">if set to <c>true</c> [continuous boltzmann].</param>
-		SearchAlgorithm(map<int, Model> models, SimilarityMeasure similarityMeasure, bool continuousBoltzmann);
+		SearchAlgorithm(int nMacrostates, map<int, Model> *models, SimilarityMeasure *similarityMeasure, bool continuousBoltzmann);
 		
 		/// <summary>
 		/// Sets the similarity measure.
 		/// </summary>
 		/// <param name="similarityMeasure">The similarity measure.</param>
-		void setSimilarityMeasure(SimilarityMeasure similarityMeasure);
+		void setSimilarityMeasure(SimilarityMeasure *similarityMeasure);
 		
 		/// <summary>
 		/// Sets the maximum iterations.
@@ -33,16 +33,10 @@ namespace OPTIMIZER
 		void setMaxIterations(int iter);
 		
 		/// <summary>
-		/// Sets the continuous boltzmann.
-		/// </summary>
-		/// <param name="yes">if set to <c>true</c> [yes].</param>
-		void setContinuousBoltzmann(bool yes);
-		
-		/// <summary>
-		/// Gets the continuous boltzmann.
+		/// Gets the number of macrostates.
 		/// </summary>
 		/// <returns></returns>
-		bool getContinuousBoltzmann();
+		const int getNumMacrostates();
 		
 		/// <summary>
 		/// Sets the parameter bounds.
@@ -105,23 +99,28 @@ namespace OPTIMIZER
 		/// Finalizes an instance of the <see cref="SearchAlgorithm"/> class.
 		/// </summary>
 		~SearchAlgorithm();
+		
+		/// <summary>
+		/// Are the boltzmann temperatures continuous
+		/// </summary>
+		bool continuousBoltzmann;
 
 	protected:
 		
 		/// <summary>
-		/// Bounds the check boltzmann.
+		/// Bounds check a new boltzmann temeprature
 		/// </summary>
 		/// <param name="newBoltzmann">The new boltzmann.</param>
 		void boundCheckBoltzmann(double *newBoltzmann);
 		
 		/// <summary>
-		/// Bounds the check steepness.
+		/// Bounds check a new steepness value
 		/// </summary>
 		/// <param name="newSteep">The new steep.</param>
 		void boundCheckSteepness(double *newSteep);
 		
 		/// <summary>
-		/// Bounds the check weights.
+		/// Bounds check a new set of weights
 		/// </summary>
 		/// <param name="weights">The weights.</param>
 		void boundCheckWeights(double *weights);
@@ -131,14 +130,15 @@ namespace OPTIMIZER
 		/// </summary>
 		virtual void recordBestParams();
 
-		map<int, Model> models;
+		int nMacrostates;
+
+		map<int, Model> *models;
 		SimilarityMeasure *similarityMeasure;
 		int maxIterations;
 
 		int *ensembleSizes;
 		double *backrubTemps;
 		double *boltzmannTemps;
-		bool continuousBoltzmann;
 		double *steepnessRange;
 		double *weightMins;
 		double *weightMaxs;

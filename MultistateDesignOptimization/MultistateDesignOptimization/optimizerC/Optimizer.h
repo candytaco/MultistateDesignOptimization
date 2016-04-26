@@ -49,13 +49,13 @@ namespace OPTIMIZER
 		Optimizer(int nMacrostates, string *macrostates, bool continuousBoltzmann);
 		
 		/// <summary>
-		/// Reads the data.
+		/// Reads macrostate data from a .dat file that I created
 		/// </summary>
 		/// <param name="inFile">The in file.</param>
 		void readData(string *inFile);
 		
 		/// <summary>
-		/// Reads the microstate data.
+		/// Reads the microstate data from a .dat file that I created
 		/// </summary>
 		/// <param name="inFile">The in file.</param>
 		void readMicrostateData(string *inFile);
