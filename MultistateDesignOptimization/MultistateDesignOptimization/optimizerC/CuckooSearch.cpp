@@ -53,9 +53,19 @@ namespace OPTIMIZER
 		initPopulation();
 		// TODO: MPI things
 		for (int iteration = 0; iteration < maxIterations; iteration++)
-		for (int individual = 0; individual < populationSize; individual++)
 		{
-			// TODO: the meaty things here.
+			list<Model>::iterator it = population->begin();
+			for (int individual = 0; individual < populationSize; individual++)
+			{
+				// TODO: the meaty things here.
+				double newSteep = nextLevyStep() + it->getSteepness();
+				boundCheckSteepness(&newSteep);
+				
+			}
+
+			//elimination of the worst individuals
+			for (int i = 0; i < int(populationSize * elimination); i++)
+				population->pop_back();
 		}
 	}
 
