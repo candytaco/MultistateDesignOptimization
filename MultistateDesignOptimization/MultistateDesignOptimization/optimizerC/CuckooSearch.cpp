@@ -91,14 +91,14 @@ namespace OPTIMIZER
         boost::math::uniform_real_distribution uniform_dist05(0.5,1); // make the uniform distribution
 
         // draw from 0.5-1 because we are taking 1-r1_old/2, so we might as well save that computationtime.
-        double r1 = uniform_dist05(e)
-        double ppf = quantile(normal_dist,r1)
+        double r1 = uniform_dist05(e);
+        double ppf = quantile(normal_dist,r1);
         // this is slightly different than the python code, but i think the python code should have been multiplying instead of dividing? double check!
-        double randLevy = scaleParam * pow(ppf,-2)
-        double signof = d(e)-0.75
-        double randLevySigned = copysign(randLevy,signof) * 0.01 // Cuckoo search authors says to use 1/100 of the scale length
+        double randLevy = scaleParam * pow(ppf,-2);
+        double signof = d(e)-0.75;
+        double randLevySigned = copysign(randLevy,signof) * 0.01; // Cuckoo search authors says to use 1/100 of the scale length
 
-        return randLevySigned
+        return randLevySigned;
         
     }
 
