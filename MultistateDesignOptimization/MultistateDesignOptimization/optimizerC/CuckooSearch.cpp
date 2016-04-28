@@ -1,4 +1,8 @@
 #include "CuckooSearch.h"
+// these should maybe go somewhere else.
+#include <random>
+#include <boost/math/distributions/normal.hpp>
+#include <math>
 
 namespace OPTIMIZER
 {
@@ -68,6 +72,35 @@ namespace OPTIMIZER
 				population->pop_back();
 		}
 	}
+    
+    void CukooSearch::nextLevyStep()
+    {
+        /* Generates a random number from this model's Levy distribution.
+        The magnitude is drawn from a Levy distribution f(x; 0, scaleParam)
+        While the direction is uniform random
+        
+        @param void
+        @return float 
+         
+         Use the BOOST library quantile function.
+         */
+        
+        // something like the following lines needs to be called at the beginning of the code, but I'm not sure where that is. we do not need to redefine the random number generation and the distributions EVERY TIME we run this function (that would be silly).
+        default_random_engine e(time(NULL));
+        boost::math::normal normal_dist(0.0, 1.0); // make the normal distribution
+        boost::math::uniform_real_distribution uniform_dist05(0.5,1); // make the uniform distribution
+
+        // draw from 0.5-1 because we are taking 1-r1_old/2, so we might as well save that computationtime.
+        double r1 = uniform_dist05(e)
+        double ppf = quantile(normal_dist,r1)
+        // this is slightly different than the python code, but i think the python code should have been multiplying instead of dividing? double check!
+        double randLevy = scaleParam * pow(ppf,-2)
+        double signof = d(e)-0.75
+        double randLevySigned = copysign(randLevy,signof) * 0.01 // Cuckoo search authors says to use 1/100 of the scale length
+
+        return randLevySigned
+        
+    }
 
 	void CuckooSearch::recordBestParams()
 	{
