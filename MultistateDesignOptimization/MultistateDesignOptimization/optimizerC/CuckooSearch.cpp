@@ -4,6 +4,8 @@
 #include <boost/math/distributions/normal.hpp>
 #include <math>
 
+using namespace boost::math;
+
 namespace OPTIMIZER
 {
 	CuckooSearch::CuckooSearch()
