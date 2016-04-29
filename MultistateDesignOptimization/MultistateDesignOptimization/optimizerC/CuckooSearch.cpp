@@ -2,9 +2,12 @@
 // these should maybe go somewhere else.
 #include <random>
 #include <boost/math/distributions/normal.hpp>
-#include <math>
-
-using namespace boost::math;
+#include <boost/random/uniform_real_distribution.hpp>
+#ifdef _WIN32
+	#include <math.h>
+#else
+	#include <math>	// is <math> a *nix thing? I've only seen <math.h> and <cmath>
+#endif
 
 namespace OPTIMIZER
 {
@@ -75,7 +78,7 @@ namespace OPTIMIZER
 		}
 	}
     
-    void CukooSearch::nextLevyStep()
+    double CuckooSearch::nextLevyStep()
     {
         /* Generates a random number from this model's Levy distribution.
         The magnitude is drawn from a Levy distribution f(x; 0, scaleParam)
@@ -90,7 +93,7 @@ namespace OPTIMIZER
         // something like the following lines needs to be called at the beginning of the code, but I'm not sure where that is. we do not need to redefine the random number generation and the distributions EVERY TIME we run this function (that would be silly).
         default_random_engine e(time(NULL));
         boost::math::normal normal_dist(0.0, 1.0); // make the normal distribution
-        boost::math::uniform_real_distribution uniform_dist05(0.5,1); // make the uniform distribution
+        boost::random::uniform_real_distribution uniform_dist05(0.5, 1); // make the uniform distribution
 
         // draw from 0.5-1 because we are taking 1-r1_old/2, so we might as well save that computationtime.
         double r1 = uniform_dist05(e);
