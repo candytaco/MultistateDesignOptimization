@@ -20,6 +20,8 @@
 #include <cmath>
 #include <random>
 #include <armadillo>
+#include <boost/math/distributions/normal.hpp>
+#include <boost/random/uniform_real_distribution.hpp>
 
 using namespace std;
 using namespace arma;
