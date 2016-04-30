@@ -19,6 +19,9 @@ namespace OPTIMIZER
 		this->populationSize = populationSize;
 		this->elimination = elimination;
 		population = new list<Model>();
+		e = new default_random_engine(time(NULL));
+		normal_dist = new boost::math::normal(0.0, 1.0); // make the normal distribution
+		uniform_dist05 = new boost::random::uniform_real_distribution<double>(0.5, 1); // make the uniform distribution
 	}
 
 	void CuckooSearch::initPopulation()
@@ -84,17 +87,13 @@ namespace OPTIMIZER
          */
         
         // something like the following lines needs to be called at the beginning of the code, but I'm not sure where that is. we do not need to redefine the random number generation and the distributions EVERY TIME we run this function (that would be silly).
-        
-        std::default_random_engine e(time(NULL));
-        boost::math::normal normal_dist(0.0, 1.0); // make the normal distribution
-        boost::random::uniform_real_distribution<double> uniform_dist05(0.5,1); // make the uniform distribution
-            
+           
             // draw from 0.5-1 because we are taking 1-r1_old/2, so we might as well save that computationtime.
-        double r1 = uniform_dist05(e);
-        double ppf = quantile(normal_dist,r1);
+        double r1 = uniform_dist05->operator()(*e);
+        double ppf = quantile(*normal_dist, r1);
         // this is slightly different than the python code, but i think the python code should have been multiplying instead of dividing?double check! (CHECKED 4/30. This is correct).
         double randLevy = scaleParam * pow(ppf,-2);
-        double signof = uniform_dist05(e)-0.75;
+        double signof = uniform_dist05->operator()(*e) - 0.75;
         float randLevySigned = copysign(randLevy,signof) * 0.01; // Cuckoo search authors says to use 1/100 of the scale length
             
             //     return randLevySigned;
@@ -102,14 +101,14 @@ namespace OPTIMIZER
         return randLevySigned;
     }
     
-    void CukooSearch::nextLevySteps(int steps) {
+    double *CuckooSearch::nextLevySteps(int steps) {
         /*
          Generates an array of Levy steps
          
          @param steps		size of array
          @return float[]		an array of independent Levy steps
          */
-        float out[steps];
+		double *out = new double[steps];
         for (int i = 0; i< steps; i++)
             out[i] = nextLevyStep();
         return out;

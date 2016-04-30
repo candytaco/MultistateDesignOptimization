@@ -23,5 +23,8 @@ namespace OPTIMIZER
 		double elimination;
 		int populationSize;
 		list<Model> *population;
+		std::default_random_engine *e;
+		boost::math::normal *normal_dist;
+		boost::random::uniform_real_distribution<double> *uniform_dist05;
 	};
 }
