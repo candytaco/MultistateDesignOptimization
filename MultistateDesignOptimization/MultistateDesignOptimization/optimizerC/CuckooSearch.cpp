@@ -18,7 +18,7 @@ namespace OPTIMIZER
 		this->scaleParam = scaleParam;
 		this->populationSize = populationSize;
 		this->elimination = elimination;
-		population = new list<Model>();
+		population = new vector<Model>();
 		e = new mt19937(time(NULL));
 		normal_dist = new boost::math::normal(0.0, 1.0); // make the normal distribution
 		uniform_dist05 = new boost::random::uniform_real_distribution<double>(0.5, 1); // make the uniform distribution
