@@ -31,20 +31,25 @@ namespace OPTIMIZER
 		population->clear();
 		for (int i = 0; i < populationSize; i++)
 		{
-			double steepness = randDouble(randGen) * (steepnessRange[1] - steepnessRange[0]) + steepnessRange[0];
+            double steepness = searchSteepness ? randDouble(randGen) * (steepnessRange[1] - steepnessRange[0]) + steepnessRange[0] : steepnessRange[0];
 			double *weights = new double[nMacrostates];
+            //TODO: add the range from the pyton code is going ton with the range?
 			// assumes weight ranges are all [0, 1]
 			for (int i = 0; i < nMacrostates; i++)
-				weights[i] = searchWeights[i] ? randDouble(randGen) : weightMins[i];
-			int ensembleSize = ensembleSizes[randGen() % nEnsembleSizes];
-			int backrubTemp = backrubTemps[randGen() & nBackrubTemps];
-			float boltzmann = continuousBoltzmann ? randDouble(randGen) * (boltzmannTemps[1] - boltzmannTemps[0]) + boltzmannTemps[0] : boltzmannTemps[randGen() % nBoltzmannTemps];
-
+				weights[i] = searchWeights[i] ? randDouble(randGen) : weightMins[i]; // boolean ? <then this> : <else>
+            int ensembleSize = searchEnsemble ? ensembleSizes[randGen() % nEnsembleSizes] : ensembleSizes[0];
+            int backrubTemp = searchBackrub ? backrubTemps[randGen() % nBackrubTemps] : backrubTemps[0];
+            double boltzmannTemp = searchBoltzman ? boltzmannTemps[randgen() % nBoltzmannTemps] : boltzmannTemps[0];
+            
+            // should this next line be here?
+            // double boltzmann = continuousBoltzmann ? randDouble(randGen) * (boltzmannTemps[1] - boltzmannTemps[0]) + boltzmannTemps[0] : boltzmannTemps[randGen() % nBoltzmannTemps];
+            
 			Model *m;
 			if (!continuousBoltzmann)
-				m = new Model(*this->getModelByParams(backrubTemp, ensembleSize, boltzmann), ensembleSize, backrubTemp, boltzmann, weights, steepness);
+				m = new Model(*this->getModelByParams(backrubTemp, ensembleSize, boltzmannTemp), ensembleSize, backrubTemp, boltzmannTemp, weights, steepness);
 			else
-				m = new Model(*this->getModelByParams(backrubTemp, 0, 0), ensembleSize, backrubTemp, boltzmann, weights, steepness);
+				m = new Model(*this->getModelByParams(backrubTemp, 0, 0), ensembleSize, backrubTemp, boltzmannTemp, weights, steepness);
+            m->macrostatesUsed = searchWeights; // not sure if this line is necessary.
 			m->recovery = similarityMeasure->getSimilarity(m->getFrequencies());
 			population->push_back(*m);
 		}
@@ -55,6 +60,7 @@ namespace OPTIMIZER
 	void CuckooSearch::iterate()
 	{
 		// TODO: finish implementing this
+        // TODO: a bunch of these things can be set at the beginning of the code.
 		initPopulation();
 		// TODO: MPI things
 		for (int iteration = 0; iteration < maxIterations; iteration++)
@@ -63,9 +69,21 @@ namespace OPTIMIZER
 			for (int individual = 0; individual < populationSize; individual++)
 			{
 				// TODO: the meaty things here.
+                // TODO: can we do the search on a coarse grid first and then the smoother grid?
 				double newSteep = nextLevyStep() + it->getSteepness();
 				boundCheckSteepness(&newSteep);
-				
+                
+                double newWeight = nextLevySteps(bestWeights->size) + it->getWeights();
+                boundCheckWeights(&newWeight);
+                
+                double newEnsembleSize = searchEnsemble ? ensembleSizes[randGen() % nEnsembleSizes] : ensembleSizes[0];
+				double newBackrubTemp = searchBackrub ? backrubTemps[randGen() % nBackrubTemps] : backrubTemps[0];
+                
+                Model *m
+                if (!continuousBoltzmann) {
+                    double newBoltzmanTemp = searchBoltzmann ? boltzmannTemps[randgen() % nBoltzmannTemps] : boltzmannTemps[0];
+                    
+                }
 			}
 
 			//elimination of the worst individuals
