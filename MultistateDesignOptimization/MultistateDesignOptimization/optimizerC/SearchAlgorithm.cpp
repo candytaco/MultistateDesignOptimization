@@ -119,8 +119,12 @@ namespace OPTIMIZER
 	{
 		double **out = new double*[bestFrequencies->n_rows];
 		for (int i = 0; i < bestFrequencies->n_rows; i++)
+		{
 			out[i] = new double[bestFrequencies->n_cols];
-		return NULL;
+			for (int j = 0; j < bestFrequencies->n_cols)
+				out[i, j] = bestFrequencies->at(i, j);
+		}
+		return out;
 	}
 
 	void SearchAlgorithm::boundCheckBoltzmann(double *newBoltzmann)

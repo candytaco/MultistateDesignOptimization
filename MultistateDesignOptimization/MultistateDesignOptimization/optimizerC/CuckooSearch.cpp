@@ -69,8 +69,7 @@ namespace OPTIMIZER
 			//list<Model>::iterator it = population->begin();
 			for (int individual = 0; individual < populationSize; individual++)
 			{
-				Model it;
-				it = population->at(individual); // because now population is a vector.
+				Model it = population->at(individual); // because now population is a vector.
 				// TODO: the meaty things here.
                 // TODO: can we do the search on a coarse grid first and then the smoother grid?
 				double newSteep = nextLevyStep() + it.getSteepness();
@@ -101,48 +100,49 @@ namespace OPTIMIZER
                 newModel->recovery = similarityMeasure->getSimilarity(newModel->getFrequencies);
                 
                 if (*newModel > it)
-                    population[individual] = newModel;
+                    population->at(individual) = *newModel;
                 
                 if (randDouble(randGen) < elimination) {
                     int randParent1 = randGen() % populationSize;
                     int randParent2 = randGen() % populationSize;
                     double multiplier = randDouble(randGen);
-                    double steepnessStep = multiplier * (population[randParent1].getSteepness() - population[randParent2].getSteepness());
-                    double *parent1Weights = population[randParent1]->getWeights();
-                    double *parent2Weights = population[randParent2]->getWeights();
-                    newWeights = population[individual]->getWeights();
+                    double steepnessStep = multiplier * (population->at(randParent1).getSteepness() - population->at(randParent2).getSteepness());
+					double *parent1Weights = population->at(randParent1).getWeights();
+					double *parent2Weights = population->at(randParent2).getWeights();
+					newWeights = population->at(individual).getWeights();
                     for (int i = 0; i < nMacrostates; i++)
                         newWeights[i] += multiplier * (parent1Weights[i]-parent2Weights[i]);
-                    newSteep = population[individual]->getSteepness + steepnessStep;
+                    newSteep = population->at(individual).getSteepness() + steepnessStep;
                     boundCheckSteepness(&newSteep);
-                    boundCheckWeights(&newWeights);
+                    boundCheckWeights(newWeights);
                     
                     newEnsembleSize = searchEnsemble ? ensembleSizes[randGen() % nEnsembleSizes] : ensembleSizes[0];
                     newBackrubTemp = searchBackrub ? backrubTemps[randGen() % nBackrubTemps] : backrubTemps[0];
                     
+					double newBoltzmannTemp;
                     if (!continuousBoltzmann) {
-                        newBoltzmanTemp = searchBoltzmann ? boltzmannTemps[randGen() % nBoltzmannTemps] : boltzmannTemps[0];
-                        newModel = new Model(*this->getModelByParams(newBackrubTemp, newEnsembleSize, newBoltzmanTemp), newEnsembleSize, newBackrubTemp, newBackrubTemp, newWeights, newSteep);
+                        newBoltzmannTemp = searchBoltzmann ? boltzmannTemps[randGen() % nBoltzmannTemps] : boltzmannTemps[0];
+                        newModel = new Model(*this->getModelByParams(newBackrubTemp, newEnsembleSize, newBoltzmannTemp), newEnsembleSize, newBackrubTemp, newBackrubTemp, newWeights, newSteep);
                     }
                     else {
-                        newBoltzmannStep = multiplier * (population[randParent1]->getBoltzmannTemp() - population[randParent2]->getBoltzmannTemp()); //TODO: check and figure out how we want to generate this.
+                        newBoltzmannTemp = multiplier * (population->at(randParent1).getBoltzmannTemp() - population->at(randParent2).getBoltzmannTemp()); //TODO: check and figure out how we want to generate this.
                         // python code:
                         //	boltzmannStep = multiplier * (self.population[randParent1].getBoltzmannTemp() - self.population[randParent2].getBoltzmannTemp());
-                        newBoltzmannTemp = newBoltzmannStep + population[individual]->getBoltzmannTemp();
+                        newBoltzmannTemp += population->at(individual).getBoltzmannTemp();
                         boundCheckBoltzmann(&newBoltzmannTemp);
                         newModel = new Model(*this->getModelByParams(newBackrubTemp, newEnsembleSize, newBoltzmannTemp), newEnsembleSize, newBackrubTemp, newBackrubTemp, newWeights, newSteep);
                     }
                     
-                    newModel->recovery = similarityMeasure.getSimilarity(newModel->getFrequencies());
+                    newModel->recovery = similarityMeasure->getSimilarity(newModel->getFrequencies());
                     
-                    population[individual] = newModel // this is where we will need to sync across the processes!
+					population->at(individual) = *newModel; // this is where we will need to sync across the processes!
                 }
                 
 			}
             
             //TODO: end of this... now quite sure what is supposed to happen
             // should only happen on one process? so we need to bring everything back together!
-            sort(population.begin(),population.end(),>);
+            sort(population->begin(), population->end(), Model::operator>);
 			//elimination of the worst individuals
 			for (int i = 0; i < int(populationSize * elimination); i++)
 				population->pop_back();
