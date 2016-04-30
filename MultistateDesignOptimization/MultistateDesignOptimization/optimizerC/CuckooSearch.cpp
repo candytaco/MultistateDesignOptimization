@@ -39,7 +39,7 @@ namespace OPTIMIZER
 				weights[i] = searchWeights[i] ? randDouble(randGen) : weightMins[i]; // boolean ? <then this> : <else>
             int ensembleSize = searchEnsemble ? ensembleSizes[randGen() % nEnsembleSizes] : ensembleSizes[0];
             int backrubTemp = searchBackrub ? backrubTemps[randGen() % nBackrubTemps] : backrubTemps[0];
-            double boltzmannTemp = searchBoltzman ? boltzmannTemps[randgen() % nBoltzmannTemps] : boltzmannTemps[0];
+            double boltzmannTemp = searchBoltzmann ? boltzmannTemps[randGen() % nBoltzmannTemps] : boltzmannTemps[0];
             
             // should this next line be here?
             // double boltzmann = continuousBoltzmann ? randDouble(randGen) * (boltzmannTemps[1] - boltzmannTemps[0]) + boltzmannTemps[0] : boltzmannTemps[randGen() % nBoltzmannTemps];
@@ -49,7 +49,7 @@ namespace OPTIMIZER
 				m = new Model(*this->getModelByParams(backrubTemp, ensembleSize, boltzmannTemp), ensembleSize, backrubTemp, boltzmannTemp, weights, steepness);
 			else
 				m = new Model(*this->getModelByParams(backrubTemp, 0, 0), ensembleSize, backrubTemp, boltzmannTemp, weights, steepness);
-            m->macrostatesUsed = searchWeights; // not sure if this line is necessary.
+            //m->macrostatesUsed = searchWeights; // not sure if this line is necessary.
 			m->recovery = similarityMeasure->getSimilarity(m->getFrequencies());
 			population->push_back(*m);
 		}
@@ -73,23 +73,27 @@ namespace OPTIMIZER
 				double newSteep = nextLevyStep() + it->getSteepness();
 				boundCheckSteepness(&newSteep);
                 
-                double newWeights = nextLevySteps(bestWeights->size) + it->getWeights(); // is this correct? should this be 5 entries?
-                boundCheckWeights(&newWeights);
+				double *newWeights = nextLevySteps(nMacrostates);
+				double *oldWeights = it->getWeights();
+				for (int i = 0; i < nMacrostates; i++)
+					newWeights[i] += oldWeights[i]; // is this correct? should this be 5 entries?
+
+                boundCheckWeights(newWeights);
                 
                 double newEnsembleSize = searchEnsemble ? ensembleSizes[randGen() % nEnsembleSizes] : ensembleSizes[0];
 				double newBackrubTemp = searchBackrub ? backrubTemps[randGen() % nBackrubTemps] : backrubTemps[0];
                 
-                Model *newModel
+				Model *newModel;
                 if (!continuousBoltzmann) {
-                    double newBoltzmanTemp = searchBoltzmann ? boltzmannTemps[randgen() % nBoltzmannTemps] : boltzmannTemps[0];
+                    double newBoltzmanTemp = searchBoltzmann ? boltzmannTemps[randGen() % nBoltzmannTemps] : boltzmannTemps[0];
                     newModel = new Model(*this->getModelByParams(newBackrubTemp, newEnsembleSize, newBoltzmanTemp), newEnsembleSize, newBackrubTemp, newBackrubTemp, newWeights, newSteep);
                 }
                 else {
-                    double newBoltzmannStep = nextLevyStep() + it->getBoltzmannTemp(); //TODO: check and figure out how we want to generate this.
+                    double newBoltzmannTemp = nextLevyStep() + it->getBoltzmannTemp(); //TODO: check and figure out how we want to generate this.
                     // python code:
                     //	boltzmannStep = multiplier * (self.population[randParent1].getBoltzmannTemp() - self.population[randParent2].getBoltzmannTemp());
-                    double newBoltzmanTemp = boundCheckBoltzmann(newBoltzmannStep);
-                    newModel = new Model(*this->getModelByParams(newBackrubTemp, newEnsembleSize, newBoltzmanTemp), newEnsembleSize, newBackrubTemp, newBackrubTemp, newWeights, newSteep);
+                    boundCheckBoltzmann(&newBoltzmannTemp);
+                    newModel = new Model(*this->getModelByParams(newBackrubTemp, newEnsembleSize, newBoltzmannTemp), newEnsembleSize, newBackrubTemp, newBackrubTemp, newWeights, newSteep);
                 }
                 newModel->recovery = similarityMeasure->getSimilarity(newModel->getFrequencies);
                 

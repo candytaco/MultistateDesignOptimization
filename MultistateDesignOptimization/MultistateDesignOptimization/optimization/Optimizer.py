@@ -106,7 +106,7 @@ class Optimizer(object):
 			thisLine = infile.readline();
 		self.nPositions = len(entry) - 1;
 		# case where the entries end with a dash
-		if entry[-2] == '-':
+		if entry[-2] == 0:
 			nPositions -= 1;
 		# allocate space for a double[][]
 		self.targetFrequencies = numpy.zeros([self.nPositions, 20], dtype = float);
