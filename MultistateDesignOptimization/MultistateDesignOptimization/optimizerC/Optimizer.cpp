@@ -36,12 +36,44 @@ Optimizer::Optimizer(int nMacrostates, string *macrostates, bool continuousBoltz
 
 void Optimizer::readData(string *inFile)
 {
+	ifstream datFile(inFile->c_str());
+	int minPosition, nPositions, nEntries;
+	datFile >> minPosition >> nPositions >> nEntries;
 
+	Model *temp;
+	for (int i = 0; i < nEntries; i++)
+	{
+		int macrostate, ensembleSize, position;
+		double backrub, boltzmann;
+		double *energies = new double[20];
+		datFile >> macrostate >> ensembleSize >> position >> backrub >> boltzmann;
+		for (int j = 0; j < 20; j++)
+			datFile >> energies[j];
+		int ID = calcParamsID(backrub, ensembleSize, boltzmann);
+		if (models->count(ID))
+			models->at(ID).addMacrostateData(macrostate, position, energies);
+		else
+		{
+			double *weights = new double[nMacrostates];
+			for (int i = 0; i < nMacrostates; i++)
+				weights[i] = 0;
+			temp = new Model(nMacrostates, ensembleSize, backrub, boltzmann, weights, 0, nPositions, 0);
+			temp->addMacrostateData(macrostate, position, energies);
+			models->insert(pair<int, Model>(ID, *temp));
+		}
+	}
+	datFile.close();
 }
 
 void Optimizer::readMicrostateData(string *inFile)
 {
+	cout << "THIS ISN'T IMPLEMENTED" << endl;
+}
 
+void Optimizer::readTargetFrequencies(string *inFile)
+{
+	ifstream datFile(inFile->c_str());
+	char line[256];
 }
 
 void Optimizer::writeFrequenciesToFASTA(string *outName, int precision, double **frequencies)
@@ -66,7 +98,7 @@ void Optimizer::writeFrequenciesToFASTA(string *outName, int precision, double *
 
 	int nEntries = pow(10, precision);
 
-	int numbers;
+	//int numbers;
 
 	// this is going to create problems, but i'm confused as to what frequencies is. might need to loop through and multiple each element?
 	double **numbers = frequencies;
@@ -101,8 +133,8 @@ void Optimizer::writeBestParamsToText(string *outName)
 	/// <param name="param3">The param3.</param>
 	/// <returns></returns>
 
-	char outFileName = outname + '.txt';
-	FILE *outputFile = fopen(outFileName, "w");
+	string outFileName = outName->append(".txt");
+	FILE *outputFile = fopen(outFileName.c_str(), "w");
 	double *bestVals = getBestParameters();
 	// for the write functions, it is assumed getBestParameters are stored in an array of floats.
 	/* Keys:
@@ -125,8 +157,8 @@ void Optimizer::writeBestParamsToText(string *outName)
 	fprintf(outputFile, "Steepness:  %.9f\n", bestVals[3]);
 	fprintf(outputFile, "Weights:  ");
 	for (int i = 0; i < nMacrostates; i++) // nMacrostates must be defined earlier...
-		fprintf(outputFile, "%.4f", bestVals[4][i]); // this is not the best structure, but change it later when necesary.
-	fprintf(outputFile, "\nMatch: %.4f\n", bestVals[5]);
+		fprintf(outputFile, "%.4f", bestVals[4 + i]); // this is not the best structure, but change it later when necesary.
+	fprintf(outputFile, "\nMatch: %.4f\n", bestVals[5 + nMacrostates]);
 
 	//TODO: the following needs to be added, but not sure where these are stored. 
 	/*

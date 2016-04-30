@@ -61,6 +61,12 @@ namespace OPTIMIZER
 		void readMicrostateData(string *inFile);
 		
 		/// <summary>
+		/// Reads the target frequencies.
+		/// </summary>
+		/// <param name="inFile">The in file.</param>
+		void readTargetFrequencies(string *inFile);
+		
+		/// <summary>
 		/// Writes the frequencies to fasta.
 		/// </summary>
 		/// <param name="outName">Name of the out.</param>

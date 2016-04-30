@@ -22,6 +22,8 @@
 #include <armadillo>
 #include <boost/math/distributions/normal.hpp>
 #include <boost/random/uniform_real_distribution.hpp>
+#include <fstream>
+#include <iostream>
 
 using namespace std;
 using namespace arma;

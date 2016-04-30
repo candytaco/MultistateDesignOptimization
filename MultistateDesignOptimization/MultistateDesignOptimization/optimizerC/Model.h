@@ -59,7 +59,7 @@ namespace OPTIMIZER
 		/// <param name="macrostate">The macrostate.</param>
 		/// <param name="position">The position.</param>
 		/// <param name="energies">The energies.</param>
-		void addMacrostateData(MACROSTATES macrostate, int position, float *energies);
+		void addMacrostateData(int macrostate, int position, double *energies);
 		
 		/// <summary>
 		/// Adds the microstate data.
@@ -67,7 +67,7 @@ namespace OPTIMIZER
 		/// <param name="macrostate">The macrostate.</param>
 		/// <param name="position">The position.</param>
 		/// <param name="energies">The energies.</param>
-		void addMicrostateData(MACROSTATES macrostate, int position, float *energies);
+		void addMicrostateData(int macrostate, int position, double *energies);
 		
 		/// <summary>
 		/// Gets the size of the ensemble.

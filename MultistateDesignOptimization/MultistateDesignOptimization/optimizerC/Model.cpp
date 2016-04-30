@@ -129,14 +129,14 @@ namespace OPTIMIZER
 		else this->microstatesUsed = NULL;
 	}
 
-	void Model::addMacrostateData(MACROSTATES macrostate, int position, float *energies)
+	void Model::addMacrostateData(int macrostate, int position, double *energies)
 	{
 		position -= this->positionOffset;
 		for (int i = 0; i < 20; i++)
 			(*macrostateResidueEnergies)(position, macrostate, i) = energies[i];
 	}
 
-	void Model::addMicrostateData(MACROSTATES macrostate, int position, float *energies)
+	void Model::addMicrostateData(int macrostate, int position, double *energies)
 	{
 		position -= this->positionOffset;
 		int microstateIndex = this->microstateCounts[position][macrostate];
