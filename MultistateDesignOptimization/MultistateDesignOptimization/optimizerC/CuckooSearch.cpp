@@ -1,8 +1,6 @@
 #include "CuckooSearch.h"
 // these should maybe go somewhere else.
 #include <random>
-#include <boost/math/distributions/normal.hpp>
-#include <math>
 
 namespace OPTIMIZER
 {
@@ -73,7 +71,7 @@ namespace OPTIMIZER
 		}
 	}
     
-    void CukooSearch::nextLevyStep()
+    double CuckooSearch::nextLevyStep()
     {
         /* Generates a random number from this model's Levy distribution.
          The magnitude is drawn from a Levy distribution f(x; 0, scaleParam)
