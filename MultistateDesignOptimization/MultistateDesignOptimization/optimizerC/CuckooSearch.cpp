@@ -73,17 +73,28 @@ namespace OPTIMIZER
 				double newSteep = nextLevyStep() + it->getSteepness();
 				boundCheckSteepness(&newSteep);
                 
-                double newWeight = nextLevySteps(bestWeights->size) + it->getWeights();
-                boundCheckWeights(&newWeight);
+                double newWeights = nextLevySteps(bestWeights->size) + it->getWeights(); // is this correct? should this be 5 entries?
+                boundCheckWeights(&newWeights);
                 
                 double newEnsembleSize = searchEnsemble ? ensembleSizes[randGen() % nEnsembleSizes] : ensembleSizes[0];
 				double newBackrubTemp = searchBackrub ? backrubTemps[randGen() % nBackrubTemps] : backrubTemps[0];
                 
-                Model *m
+                Model *newModel
                 if (!continuousBoltzmann) {
                     double newBoltzmanTemp = searchBoltzmann ? boltzmannTemps[randgen() % nBoltzmannTemps] : boltzmannTemps[0];
-                    
+                    newModel = new Model(*this->getModelByParams(newBackrubTemp, newEnsembleSize, newBoltzmanTemp), newEnsembleSize, newBackrubTemp, newBackrubTemp, newWeights, newSteep);
                 }
+                else {
+                    double newBoltzmannStep = nextLevyStep() + it->getBoltzmannTemp(); //TODO: check and figure out how we want to generate this.
+                    // python code:
+                    //	boltzmannStep = multiplier * (self.population[randParent1].getBoltzmannTemp() - self.population[randParent2].getBoltzmannTemp());
+                    double newBoltzmanTemp = boundCheckBoltzmann(newBoltzmannStep);
+                    newModel = new Model(*this->getModelByParams(newBackrubTemp, newEnsembleSize, newBoltzmanTemp), newEnsembleSize, newBackrubTemp, newBackrubTemp, newWeights, newSteep);
+                }
+                newModel->recovery = similarityMeasure->getSimilarity(newModel->getFrequencies);
+                
+                if (newModel->recovery > it->recovery)
+                    
 			}
 
 			//elimination of the worst individuals
