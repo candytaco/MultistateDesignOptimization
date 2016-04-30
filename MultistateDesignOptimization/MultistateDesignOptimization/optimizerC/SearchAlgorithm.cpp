@@ -121,8 +121,8 @@ namespace OPTIMIZER
 		for (int i = 0; i < bestFrequencies->n_rows; i++)
 		{
 			out[i] = new double[bestFrequencies->n_cols];
-			for (int j = 0; j < bestFrequencies->n_cols)
-				out[i, j] = bestFrequencies->at(i, j);
+			for (int j = 0; j < bestFrequencies->n_cols; j++)
+				out[i][j] = bestFrequencies->at(i, j);
 		}
 		return out;
 	}

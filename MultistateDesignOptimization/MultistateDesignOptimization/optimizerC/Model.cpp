@@ -54,7 +54,7 @@ namespace OPTIMIZER
 		this->fitnessCalculated = false;
 		this->fitnesses = new mat(nPositions, 20);
 		this->frequencies = new mat(nPositions, 20);
-		this->macrostateResidueEnergies = new cube(nPositions, 20, nMACROSTATES);
+		this->macrostateResidueEnergies = new cube(nPositions, 20, nMacrostates);
 		if (useMicrostate)
 		{
 			areMicrostatesPicked = false;
@@ -199,6 +199,7 @@ namespace OPTIMIZER
 
 	void Model::averageMicrostates()
 	{
+		cout << "Average microstates is not working" << endl;
 		// TODO: implement this
 		if (!areMicrostatesPicked)
 		{
@@ -222,7 +223,11 @@ namespace OPTIMIZER
 		//disregard alternative averaging method since it does not make any practical differences
 		if (boltzmannTemp == 0)
 			//TODO mathy thigns for slicing
-			macrostateResidueEnergies = ;
+		{
+			for (int i = 0; i < nMacrostates; i++)
+				// TODO: not correct
+				macrostateResidueEnergies->slice(i) = min(selectedMicrostateEnergies->at(i), 2);
+		}
 	}
 
 	bool Model::operator==(const Model &other) const
