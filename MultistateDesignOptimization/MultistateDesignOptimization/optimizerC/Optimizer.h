@@ -1,3 +1,4 @@
+#pragma once
 #include "stdafx.h"
 #include <iostream>
 #include <stdlib.h>
@@ -10,6 +11,8 @@
 
 namespace OPTIMIZER
 {
+	int calcParamsID(double param1, double param2, double param3);
+
 	class Optimizer
 	{
 	public:
@@ -92,8 +95,6 @@ namespace OPTIMIZER
 		/// </summary>
 		/// <param name="outName">Name of the out.</param>
 		void writeBestParamsToText(string *outName);
-
-		int calcParamsID(double param1, double param2, double param3);
 		
 		/// <summary>
 		/// Gets the model by parameters.

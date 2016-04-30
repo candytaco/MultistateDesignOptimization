@@ -2,6 +2,14 @@
 
 using namespace OPTIMIZER;
 
+int OPTIMIZER::calcParamsID(double param1, double param2, double param3)
+{
+	float f1 = param1, f2 = param2, f3 = param3;
+	int i1 = (unsigned int)&f1, i2 = (unsigned int)&f2, i3 = (unsigned int)&f3;
+	int out = (i1 << 1) ^ (i2 >> 2 ^ (i3 % 1023));
+	return out;
+}
+
 Optimizer::Optimizer()
 {
 	Optimizer::Optimizer(0, NULL, false);
@@ -149,16 +157,16 @@ void Optimizer::writeBestParamsToText(string *outName)
 	fprintf(outputFile, "Ensemble Size: %.0f\n", bestVals[0]);
 	fprintf(outputFile, "Backrub temperature: %.1f\n", bestVals[1]);
 	if (bestVals[2] > 0)
-		fprintf(outputFile, "Backrub temperature: %.9f\n", bestVals[2]);
+		fprintf(outputFile, "Boltzmann temperature: %.9f\n", bestVals[2]);
 	else if (bestVals[2] == 0)
-		fprintf(outputFile, "Backrub temperature: mean\n ");
+		fprintf(outputFile, "Boltzmann temperature: mean\n ");
 	else
-		fprintf(outputFile, "Backrub temperature: inf\n ");
+		fprintf(outputFile, "Boltzmann temperature: inf\n ");
 	fprintf(outputFile, "Steepness:  %.9f\n", bestVals[3]);
 	fprintf(outputFile, "Weights:  ");
 	for (int i = 0; i < nMacrostates; i++) // nMacrostates must be defined earlier...
 		fprintf(outputFile, "%.4f", bestVals[4 + i]); // this is not the best structure, but change it later when necesary.
-	fprintf(outputFile, "\nMatch: %.4f\n", bestVals[5 + nMacrostates]);
+	fprintf(outputFile, "\nMatch: %.4f\n", bestVals[4 + nMacrostates]);
 
 	//TODO: the following needs to be added, but not sure where these are stored. 
 	/*
@@ -168,14 +176,9 @@ void Optimizer::writeBestParamsToText(string *outName)
 	outfile.close();
 	*/
 
-
 }
 
-int Optimizer::calcParamsID(double param1, double param2, double param3)
+Model *Optimizer::getModelByParams(double param1, double param2, double param3)
 {
-	return NULL;
-}
-Model *Optimizer::getModelByParams(double, double, double)
-{
-	return NULL;
+	return &models->at(calcParamsID(param1, param2, param3));
 }

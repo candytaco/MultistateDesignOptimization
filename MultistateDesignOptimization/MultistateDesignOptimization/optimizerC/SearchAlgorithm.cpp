@@ -1,4 +1,5 @@
 #include "SearchAlgorithm.h"
+#include "Optimizer.h"
 
 namespace OPTIMIZER
 {
@@ -98,19 +99,27 @@ namespace OPTIMIZER
 
 	Model *SearchAlgorithm::getModelByParams(double param1, double param2, double param3)
 	{
-		//TODO: implement this
-		return NULL;
+		return &models->at(calcParamsID(param1, param2, param3));
 	}
 
 	double *SearchAlgorithm::getBestParams()
 	{
-		//TODO: implement this
-		return NULL;
+		double *out = new double[5 + nMacrostates];
+		out[0] = bestEnsembleSize;
+		out[1] = bestBackrubTemp;
+		out[2] = bestBoltzmannTemp;
+		out[3] = bestSteepness;
+		for (int i = 4; i < 4 + nMacrostates; i++)
+			out[i] = bestWeights[i - 4];
+		out[4 + nMacrostates] = bestMatchVal;
+		return out;
 	}
 
-	double **getBestFrequencies()
+	double **SearchAlgorithm::getBestFrequencies()
 	{
-		//TODO: implement this
+		double **out = new double*[bestFrequencies->n_rows];
+		for (int i = 0; i < bestFrequencies->n_rows; i++)
+			out[i] = new double[bestFrequencies->n_cols];
 		return NULL;
 	}
 

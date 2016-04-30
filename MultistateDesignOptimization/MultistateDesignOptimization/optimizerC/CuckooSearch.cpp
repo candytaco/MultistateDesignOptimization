@@ -53,7 +53,7 @@ namespace OPTIMIZER
 			m->recovery = similarityMeasure->getSimilarity(m->getFrequencies());
 			population->push_back(*m);
 		}
-        sort(population.begin(),population.end(),>);
+        sort(population->begin(), population->end(), Model::operator>);
 		//population->sort();
 		recordBestParams();
 	}
@@ -69,14 +69,15 @@ namespace OPTIMIZER
 			//list<Model>::iterator it = population->begin();
 			for (int individual = 0; individual < populationSize; individual++)
 			{
-                it = population[individual]; // because now population is a vector.
+				Model it;
+				it = population->at(individual); // because now population is a vector.
 				// TODO: the meaty things here.
                 // TODO: can we do the search on a coarse grid first and then the smoother grid?
-				double newSteep = nextLevyStep() + it->getSteepness();
+				double newSteep = nextLevyStep() + it.getSteepness();
 				boundCheckSteepness(&newSteep);
                 
 				double *newWeights = nextLevySteps(nMacrostates);
-				double *oldWeights = it->getWeights();
+				double *oldWeights = it.getWeights();
 				for (int i = 0; i < nMacrostates; i++)
 					newWeights[i] += oldWeights[i]; // is this correct? should this be 5 entries?
 
@@ -91,7 +92,7 @@ namespace OPTIMIZER
                     newModel = new Model(*this->getModelByParams(newBackrubTemp, newEnsembleSize, newBoltzmanTemp), newEnsembleSize, newBackrubTemp, newBackrubTemp, newWeights, newSteep);
                 }
                 else {
-                    double newBoltzmannTemp = nextLevyStep() + it->getBoltzmannTemp(); //TODO: check and figure out how we want to generate this.
+                    double newBoltzmannTemp = nextLevyStep() + it.getBoltzmannTemp(); //TODO: check and figure out how we want to generate this.
                     // python code:
                     //	boltzmannStep = multiplier * (self.population[randParent1].getBoltzmannTemp() - self.population[randParent2].getBoltzmannTemp());
                     boundCheckBoltzmann(&newBoltzmannTemp);
@@ -99,14 +100,14 @@ namespace OPTIMIZER
                 }
                 newModel->recovery = similarityMeasure->getSimilarity(newModel->getFrequencies);
                 
-                if (newModel->recovery > it->recovery)
+                if (*newModel > it)
                     population[individual] = newModel;
                 
                 if (randDouble(randGen) < elimination) {
                     int randParent1 = randGen() % populationSize;
                     int randParent2 = randGen() % populationSize;
                     double multiplier = randDouble(randGen);
-                    double steepnessStep = multiplier * (population[randParent1]->getSteepness - population[randParent2]->getSteepness);
+                    double steepnessStep = multiplier * (population[randParent1].getSteepness() - population[randParent2].getSteepness());
                     double *parent1Weights = population[randParent1]->getWeights();
                     double *parent2Weights = population[randParent2]->getWeights();
                     newWeights = population[individual]->getWeights();
