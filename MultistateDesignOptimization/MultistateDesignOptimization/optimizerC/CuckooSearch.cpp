@@ -102,6 +102,7 @@ namespace OPTIMIZER
                 if (*newModel > it)
                     population->at(individual) = *newModel;
                 
+                if (individual!=0) { // we don't want to randomly replace the best nest. this gives us some bias towards the best nest... (because it will always be there to get randomly selected).
                 if (randDouble(randGen) < elimination) {
                     int randParent1 = randGen() % populationSize;
                     int randParent2 = randGen() % populationSize;
@@ -136,6 +137,7 @@ namespace OPTIMIZER
                     newModel->recovery = similarityMeasure->getSimilarity(newModel->getFrequencies());
                     
 					population->at(individual) = *newModel; // this is where we will need to sync across the processes!
+                }
                 }
                 
 			}
