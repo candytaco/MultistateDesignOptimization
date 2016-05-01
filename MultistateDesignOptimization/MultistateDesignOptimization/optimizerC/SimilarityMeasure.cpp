@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "SimilarityMeasure.h"
 
 namespace OPTIMIZER

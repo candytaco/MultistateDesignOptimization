@@ -160,7 +160,6 @@ namespace OPTIMIZER
 		int nPositions;
 		int minPosition;
 		mat *targetFrequencies;
-		string *macrostates;
 		int nMacrostates;
 		bool continuousBoltzmann;
 	};

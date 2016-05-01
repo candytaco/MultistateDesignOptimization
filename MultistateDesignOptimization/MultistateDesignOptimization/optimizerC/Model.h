@@ -79,7 +79,7 @@ namespace OPTIMIZER
 		/// Gets the backrub temperature.
 		/// </summary>
 		/// <returns></returns>
-		const int getBackrubTemp() { return this->backrubTemp; }
+		const double getBackrubTemp() { return this->backrubTemp; }
 		
 		/// <summary>
 		/// Gets the boltzmann temperature.

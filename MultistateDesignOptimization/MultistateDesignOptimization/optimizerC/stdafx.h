@@ -9,9 +9,6 @@
 
 #include <stdio.h>
 #include <tchar.h>
-#include "Model.h"
-#include "SearchAlgorithm.h"
-#include "SimilarityMeasure.h"
 #include <string>
 //#include "matrix.h"
 #include <map>
@@ -27,3 +24,10 @@
 
 using namespace std;
 using namespace arma;
+
+#include "Model.h"
+#include "SimilarityMeasure.h"
+#include "SearchAlgorithm.h"
+#include "CuckooSearch.h"
+#include "Optimizer.h"
+#include "JensenShannonDistance.h"

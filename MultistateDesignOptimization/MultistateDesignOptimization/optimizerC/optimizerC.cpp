@@ -2,9 +2,6 @@
 //
 
 #include "stdafx.h"
-#include "Optimizer.h"
-#include "CuckooSearch.h"
-#include "JensenShannonDistance.h"
 
 using namespace OPTIMIZER;
 
