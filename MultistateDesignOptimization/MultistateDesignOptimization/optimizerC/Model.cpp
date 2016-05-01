@@ -51,6 +51,10 @@ namespace OPTIMIZER
 		this->fitnesses = new mat(nPositions, 20);
 		this->frequencies = new mat(nPositions, 20);
 		this->macrostateResidueEnergies = new cube(nPositions, 20, nMacrostates);
+		this->microstateCounts = NULL;
+		this->microstateResidueEnergies = NULL;
+		this->microstatesUsed = NULL;
+		this->selectedMicrostateEnergies = NULL;
 		if (useMicrostate)
 		{
 			areMicrostatesPicked = false;
@@ -245,6 +249,7 @@ namespace OPTIMIZER
 		if (microstateCounts)
 		{
 			for (int i = 0; i < nPositions; i++)
+			if (microstateCounts[i])
 				delete[] microstateCounts[i];
 			delete[] microstateCounts;
 		}
@@ -260,7 +265,9 @@ namespace OPTIMIZER
 			delete[] microstatesUsed;
 		}
 
-		microstateResidueEnergies->~vector();
-		selectedMicrostateEnergies->~vector();
+		if (microstateResidueEnergies)
+			microstateResidueEnergies->~vector();
+		if (selectedMicrostateEnergies)
+			selectedMicrostateEnergies->~vector();
 	}
 }

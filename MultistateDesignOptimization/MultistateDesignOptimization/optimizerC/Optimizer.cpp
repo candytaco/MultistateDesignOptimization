@@ -21,7 +21,7 @@ Optimizer::Optimizer()
 
 Optimizer::Optimizer(const Optimizer &existing)
 {
-	// TODO: implement this
+	cout << "YOU DONE GOOFED, KID" << endl;
 }
 
 Optimizer::Optimizer(int nMacrostates, string *macrostates)
@@ -48,6 +48,9 @@ Optimizer::Optimizer(int nMacrostates, string *macrostates, bool continuousBoltz
 
 void Optimizer::readData(string *inFile)
 {
+	if (!models)
+		models = new map<int, Model>();
+
 	ifstream datFile(inFile->c_str());
 	int minPosition, nPositions, nEntries;
 	datFile >> minPosition >> nPositions >> nEntries;
@@ -59,10 +62,11 @@ void Optimizer::readData(string *inFile)
 		double backrub, boltzmann;
 		double *energies = new double[20];
 		datFile >> macrostate >> ensembleSize >> position >> backrub >> boltzmann;
+		position -= minPosition;
 		for (int j = 0; j < 20; j++)
 			datFile >> energies[j];
 		int ID = calcParamsID(backrub, ensembleSize, boltzmann);
-		if (models->count(ID))
+		if (models->count(ID) > 0)
 			models->at(ID).addMacrostateData(macrostate, position, energies);
 		else
 		{
