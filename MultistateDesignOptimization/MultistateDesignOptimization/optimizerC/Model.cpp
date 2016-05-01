@@ -118,14 +118,14 @@ namespace OPTIMIZER
 		this->boltzmannTemp = boltzmannTemp;
 		this->weights = weights;
 		this->steepness = steepness;
-		this->fitnesses = new mat(nPositions, 20);
-		this->frequencies = new mat(nPositions, 20);
+		this->fitnesses = mat(nPositions, 20);
+		this->frequencies = mat(nPositions, 20);
 		this->useMicrostateData = existing.useMicrostateData;
 		this->areMicrostatesPicked = false;
 		this->useAltAverageingMethod = existing.useAltAverageingMethod;
 
 		if (!useMicrostateData && ensembleSize == existing.ensembleSize)
-			this->macrostateResidueEnergies = new cube(*(existing.macrostateResidueEnergies));
+			this->macrostateResidueEnergies = cube((existing.macrostateResidueEnergies));
 		else if (useMicrostateData && ensembleSize == existing.ensembleSize)
 		{
 			this->areMicrostatesPicked = true;
@@ -166,9 +166,9 @@ namespace OPTIMIZER
 	void Model::initializeMembers()
 	{
 		this->fitnessCalculated = false;
-		this->fitnesses = new mat(nPositions, 20);
-		this->frequencies = new mat(nPositions, 20);
-		this->macrostateResidueEnergies = new cube(nPositions, nMacrostates, 20);
+		this->fitnesses = mat(nPositions, 20, fill::zeros);
+		this->frequencies = mat(nPositions, 20, fill::zeros);
+		this->macrostateResidueEnergies = cube(nPositions, nMacrostates, 20, fill::zeros);
 		this->microstateCounts = NULL;
 		this->microstateResidueEnergies = NULL;
 		this->microstatesUsed = NULL;
@@ -178,7 +178,7 @@ namespace OPTIMIZER
 			areMicrostatesPicked = false;
 			microstateResidueEnergies = new vector<cube>();
 			for (int i = 0; i < nPositions; i++)
-				microstateResidueEnergies->push_back(cube(20, nMACROSTATES, 1024));
+				microstateResidueEnergies->push_back(cube(20, nMACROSTATES, 1024, fill::zeros));
 			microstateCounts = new int*[nPositions];
 			for (int i = 0; i < nPositions; i++)
 				microstateCounts[i] = new int[nMacrostates];
@@ -197,12 +197,16 @@ namespace OPTIMIZER
 	{
 		//position -= this->positionOffset; // should already be done by Optimizer
 		for (int i = 0; i < 20; i++)
-			(*macrostateResidueEnergies)(position, macrostate, i) = energies[i];
+		{
+			cout << i << endl;
+			cout << macrostateResidueEnergies(position, macrostate, i); // = energies[i];	// this line gives a write access error...
+		}
+			
 	}
 
 	void Model::addMicrostateData(int macrostate, int position, double *energies)
 	{
-		position -= this->positionOffset;
+		// position -= this->positionOffset; // should already be done by optimizer
 		int microstateIndex = this->microstateCounts[position][macrostate];
 		for (int i = 0; i < 20; i++)
 			microstateResidueEnergies->at(position).at(i, macrostate, microstateIndex) = energies[i];
@@ -224,7 +228,7 @@ namespace OPTIMIZER
 		if (!isFrequenciesCalculated)
 			calcFrequencies();
 		
-		return new mat(*frequencies);
+		return new mat(frequencies);
 	}
 
 	void Model::calcFitness()
@@ -233,16 +237,16 @@ namespace OPTIMIZER
 		if (useMicrostateData)
 			averageMicrostates();
 
-		mat minEnergies = min(*macrostateResidueEnergies, 1);
+		mat minEnergies = min(macrostateResidueEnergies, 1);
 		mat offsets = minEnergies + log(99) / steepness;
-		fitnesses = new mat(nPositions, 20);
-		fitnesses->fill(1.0f);
+		fitnesses = mat(nPositions, 20);
+		fitnesses.fill(1.0f);
 		for (int i = 0; i < nPositions; i++)
 		for (int j = 0; j < 20; j++)
 		for (int k = 0; k < nMacrostates; k++)
 		{
-			double f = 1.0f / (1 + exp(steepness * (macrostateResidueEnergies->at(i, j, k) - offsets(i, k))));
-			fitnesses->at(i, j) = fitnesses->at(i, j) * (1 - weights[k] + weights[k] * f);
+			double f = 1.0f / (1 + exp(steepness * (macrostateResidueEnergies(i, j, k) - offsets(i, k))));
+			fitnesses(i, j) = fitnesses(i, j) * (1 - weights[k] + weights[k] * f);
 		}
 	}
 
@@ -254,10 +258,10 @@ namespace OPTIMIZER
 			isFrequenciesCalculated = true;
 			this->calcFitness();
 
-			this->frequencies = &mat((*fitnesses) / (1 - *fitnesses));	// this works?
-			mat sums = sum(*frequencies, 1);
+			this->frequencies = mat((fitnesses) / (1 - fitnesses));	// this works?
+			mat sums = sum(frequencies, 1);
 			for (int i = 0; i < nPositions; i++)
-				frequencies->at(i) = frequencies->at(i) / sums.at(i);
+				frequencies(i) = frequencies(i) / sums.at(i);
 		}
 	}
 
@@ -290,7 +294,7 @@ namespace OPTIMIZER
 		{
 			for (int i = 0; i < nMacrostates; i++)
 				// TODO: not correct
-				macrostateResidueEnergies->slice(i) = min(selectedMicrostateEnergies->at(i), 2);
+				macrostateResidueEnergies.slice(i) = min(selectedMicrostateEnergies->at(i), 2);
 		}
 	}
 
@@ -306,9 +310,9 @@ namespace OPTIMIZER
 
 	Model::~Model()
 	{
-		fitnesses->~Mat();
-		frequencies->~Mat();
-		macrostateResidueEnergies->~Cube();
+		fitnesses.~Mat();
+		frequencies.~Mat();
+		macrostateResidueEnergies.~Cube();
 
 		if (microstateCounts)
 		{

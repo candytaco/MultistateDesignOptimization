@@ -88,28 +88,30 @@ void Optimizer::readData(string *inFile)
 	datFile >> nMacrostates >> minPosition >> nPositions >> nEntries;
 
 	Model *temp;
+	double energies[20];
+	int macrostate, ensembleSize, position;
+	double backrub, boltzmann;
+	double *weights = new double[nMacrostates];
+	for (int i = 0; i < nMacrostates; i++)
+		weights[i] = 0;
 	while (!datFile.eof())
 	{
-		int macrostate, ensembleSize, position;
-		double backrub, boltzmann;
-		double *energies = new double[20];
 		datFile >> macrostate >> ensembleSize >> position >> backrub >> boltzmann;
 		position -= minPosition;
 		for (int j = 0; j < 20; j++)
 			datFile >> energies[j];
 		int ID = calcParamsID(backrub, ensembleSize, boltzmann);
 		if (models->count(ID) > 0)
-			models->at(ID).addMacrostateData(macrostate, position, energies);
+			models->at(ID).addMacrostateData(position, macrostate, energies);
 		else
 		{
-			double *weights = new double[nMacrostates];
-			for (int i = 0; i < nMacrostates; i++)
-				weights[i] = 0;
 			temp = new Model(nMacrostates, ensembleSize, backrub, boltzmann, weights, 0, nPositions, 0);
 			temp->addMacrostateData(macrostate, position, energies);
 			models->insert(pair<int, Model>(ID, *temp));
 		}
 	}
+	delete[] energies;
+	delete[] weights;
 	datFile.close();
 }
 

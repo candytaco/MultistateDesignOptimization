@@ -127,9 +127,9 @@ namespace OPTIMIZER
 		double steepness;				// sigmoid steepness
 
 		// armadillo matrices/cubes
-		mat *fitnesses;						// single item
-		mat *frequencies;					// single item
-		cube *macrostateResidueEnergies;	// single item
+		mat fitnesses;						// single item
+		mat frequencies;					// single item
+		cube macrostateResidueEnergies;	// single item
 
 		// when microstates are used
 		bool useMicrostateData;
