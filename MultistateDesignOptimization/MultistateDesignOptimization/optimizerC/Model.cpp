@@ -197,10 +197,7 @@ namespace OPTIMIZER
 	{
 		//position -= this->positionOffset; // should already be done by Optimizer
 		for (int i = 0; i < 20; i++)
-		{
-			cout << i << endl;
-			cout << macrostateResidueEnergies(position, macrostate, i); // = energies[i];	// this line gives a write access error...
-		}
+			macrostateResidueEnergies(position, macrostate, i) = energies[i];	// this line gives a write access error...
 			
 	}
 

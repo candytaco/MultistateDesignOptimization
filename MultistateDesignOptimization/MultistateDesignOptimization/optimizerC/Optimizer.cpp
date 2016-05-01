@@ -94,15 +94,18 @@ void Optimizer::readData(string *inFile)
 	double *weights = new double[nMacrostates];
 	for (int i = 0; i < nMacrostates; i++)
 		weights[i] = 0;
-	while (!datFile.eof())
+
+	for (int i = 0; i < nEntries; i++)
 	{
 		datFile >> macrostate >> ensembleSize >> position >> backrub >> boltzmann;
+
+		cout << macrostate << " " << ensembleSize << " " << position << endl;
 		position -= minPosition;
 		for (int j = 0; j < 20; j++)
 			datFile >> energies[j];
 		int ID = calcParamsID(backrub, ensembleSize, boltzmann);
 		if (models->count(ID) > 0)
-			models->at(ID).addMacrostateData(position, macrostate, energies);
+			models->at(ID).addMacrostateData(macrostate, position, energies);
 		else
 		{
 			temp = new Model(nMacrostates, ensembleSize, backrub, boltzmann, weights, 0, nPositions, 0);
@@ -110,7 +113,6 @@ void Optimizer::readData(string *inFile)
 			models->insert(pair<int, Model>(ID, *temp));
 		}
 	}
-	delete[] energies;
 	delete[] weights;
 	datFile.close();
 }
