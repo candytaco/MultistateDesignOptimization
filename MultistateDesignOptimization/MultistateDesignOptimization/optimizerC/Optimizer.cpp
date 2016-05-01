@@ -15,6 +15,14 @@ int OPTIMIZER::calcParamsID(double param1, double param2, double param3)
 }
 
 Optimizer::Optimizer()
+ :	models(new map<int, Model>()),
+	optimizationAlgorithm(NULL),
+	nPositions(0),
+	minPosition(0),
+	targetFrequencies(NULL),
+	macrostates(NULL),
+	nMacrostates(0),
+	continuousBoltzmann(false)
 {
 	Optimizer::Optimizer(0, NULL, false);
 }
@@ -25,31 +33,55 @@ Optimizer::Optimizer(const Optimizer &existing)
 }
 
 Optimizer::Optimizer(int nMacrostates, string *macrostates)
-{
+ :	models(new map<int, Model>()),
+	optimizationAlgorithm(NULL),
+	nPositions(0),
+	minPosition(0),
+	targetFrequencies(NULL),
+	macrostates(macrostates),
+	nMacrostates(nMacrostates),
+	continuousBoltzmann(false)
+	{
 	Optimizer::Optimizer(nMacrostates, macrostates, false);
 }
 
 Optimizer::Optimizer(int nMacrostates, bool continuousBoltzmann)
+ :	models(new map<int, Model>()),
+	optimizationAlgorithm(NULL),
+	nPositions(0),
+	minPosition(0),
+	targetFrequencies(NULL),
+	macrostates(NULL),
+	nMacrostates(nMacrostates),
+	continuousBoltzmann(continuousBoltzmann)
 {
 	Optimizer::Optimizer(nMacrostates, NULL, continuousBoltzmann);
 }
 
 Optimizer::Optimizer(int nMacrostates, string *macrostates, bool continuousBoltzmann)
+ :	models(new map<int, Model>()),
+	 optimizationAlgorithm(NULL),
+	 nPositions(0),
+	 minPosition(0),
+	 targetFrequencies(NULL),
+	 macrostates(macrostates),
+	 nMacrostates(nMacrostates),
+	 continuousBoltzmann(continuousBoltzmann)
 {
-	this->models = new map<int, Model>();
+	/*this->models = new map<int, Model>();
 	this->optimizationAlgorithm = NULL;
 	this->nPositions = 0;
 	this->minPosition = 0;
 	this->targetFrequencies = NULL;
 	this->macrostates = macrostates;
 	this->nMacrostates = nMacrostates;
-	this->continuousBoltzmann = continuousBoltzmann;
+	this->continuousBoltzmann = continuousBoltzmann;*/
 }
 
 void Optimizer::readData(string *inFile)
 {
-	if (!models)
-		models = new map<int, Model>();
+	/*if (!models)
+		models = new map<int, Model>();*/
 
 	ifstream datFile(inFile->c_str());
 	int minPosition, nPositions, nEntries;

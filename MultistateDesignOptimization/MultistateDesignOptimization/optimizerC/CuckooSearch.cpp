@@ -5,12 +5,12 @@
 
 namespace OPTIMIZER
 {
-	CuckooSearch::CuckooSearch()
+	CuckooSearch::CuckooSearch() : SearchAlgorithm(0, NULL, NULL, false)
 	{
 		CuckooSearch(0, NULL, NULL, 0, 1, 0.25, false);
 	}
 
-	CuckooSearch::CuckooSearch(int nMacrostates, map<int, Model> *models, SimilarityMeasure *similarityMeasure, int populationSize, double scaleParam, double elimination)
+	CuckooSearch::CuckooSearch(int nMacrostates, map<int, Model> *models, SimilarityMeasure *similarityMeasure, int populationSize, double scaleParam, double elimination) : SearchAlgorithm(nMacrostates, models, similarityMeasure, false)
 	{
 		CuckooSearch(nMacrostates, models, similarityMeasure, 32, 1, 0.25, false);
 	}

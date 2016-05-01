@@ -50,7 +50,7 @@ namespace OPTIMIZER
 		this->fitnessCalculated = false;
 		this->fitnesses = new mat(nPositions, 20);
 		this->frequencies = new mat(nPositions, 20);
-		this->macrostateResidueEnergies = new cube(nPositions, 20, nMacrostates);
+		this->macrostateResidueEnergies = new cube(20, nPositions, nMacrostates);
 		this->microstateCounts = NULL;
 		this->microstateResidueEnergies = NULL;
 		this->microstatesUsed = NULL;
