@@ -81,7 +81,15 @@ void Optimizer::readMicrostateData(string *inFile)
 void Optimizer::readTargetFrequencies(string *inFile)
 {
 	ifstream datFile(inFile->c_str());
-	char line[256];
+	int minPosition;
+	datFile >> minPosition >> nPositions;
+
+	this->targetFrequencies = new mat(nPositions, 20);
+	for (int i = 0; i < nPositions; i++)
+	for (int j = 0; j < 20; j++)
+		datFile >> targetFrequencies->operator()(i, j);
+
+	datFile.close();
 }
 
 void Optimizer::writeFrequenciesToFASTA(string *outName, int precision, double **frequencies)
@@ -175,7 +183,13 @@ void Optimizer::writeBestParamsToText(string *outName)
 	outfile.write("Elapsed time: {:s}\n".format(str(self.optimizationAlgorithm.elapsedTime)));
 	outfile.close();
 	*/
+	fclose(outputFile);
 
+}
+
+map<int, Model> *Optimizer::getModels() const
+{
+	return this->models;
 }
 
 Model *Optimizer::getModelByParams(double param1, double param2, double param3)

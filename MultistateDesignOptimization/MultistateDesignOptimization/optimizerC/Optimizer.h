@@ -144,6 +144,8 @@ namespace OPTIMIZER
 		/// </summary>
 		/// <returns></returns>
 		string *toString();
+
+		map<int, Model> *getModels() const;
 		
 		/// <summary>
 		/// Finalizes an instance of the <see cref="Optimizer"/> class.
