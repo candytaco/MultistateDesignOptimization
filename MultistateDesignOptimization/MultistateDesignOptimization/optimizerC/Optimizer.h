@@ -109,7 +109,7 @@ namespace OPTIMIZER
 		/// Uses the algorithm.
 		/// </summary>
 		/// <param name="">The .</param>
-		void useAlgorithm(SearchAlgorithm);
+		void useAlgorithm(SearchAlgorithm *);
 		
 		/// <summary>
 		/// Starts optimization process.
@@ -146,6 +146,8 @@ namespace OPTIMIZER
 		string *toString();
 
 		map<int, Model> *getModels() const;
+
+		mat *getTargetFreqs() const;
 		
 		/// <summary>
 		/// Finalizes an instance of the <see cref="Optimizer"/> class.

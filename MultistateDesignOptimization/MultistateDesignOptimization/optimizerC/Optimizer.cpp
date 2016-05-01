@@ -187,9 +187,24 @@ void Optimizer::writeBestParamsToText(string *outName)
 
 }
 
+void Optimizer::useAlgorithm(SearchAlgorithm *algorithm)
+{
+	this->optimizationAlgorithm = algorithm;
+}
+
 map<int, Model> *Optimizer::getModels() const
 {
 	return this->models;
+}
+
+mat *Optimizer::getTargetFreqs() const
+{
+	return this->targetFrequencies;
+}
+
+void Optimizer::optimize()
+{
+	this->optimizationAlgorithm->iterate();
 }
 
 Model *Optimizer::getModelByParams(double param1, double param2, double param3)
