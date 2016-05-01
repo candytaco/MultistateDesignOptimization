@@ -24,7 +24,7 @@ namespace OPTIMIZER
 			searchBoltzmann =
 			searchSteepness = true;
 
-		searchWeights = false;
+		searchWeights = NULL;
 
 		bestEnsembleSize = -1;
 		bestBackrubTemp = -1;
@@ -57,7 +57,7 @@ namespace OPTIMIZER
 			searchBoltzmann =
 			searchSteepness = true;
 
-		searchWeights = false;
+		searchWeights = NULL;
 
 		bestEnsembleSize = -1;
 		bestBackrubTemp = -1;
@@ -90,7 +90,7 @@ namespace OPTIMIZER
 			searchBoltzmann =
 			searchSteepness = true;
 
-		searchWeights = false;
+		searchWeights = NULL;
 
 		bestEnsembleSize = -1;
 		bestBackrubTemp = -1;
@@ -138,6 +138,7 @@ namespace OPTIMIZER
 		this->nEnsembleSizes = nEnsembleSizes;
 		if (this->backrubTemps)
 			delete[] this->backrubTemps;
+		this->backrubTemps = backrubTemps;
 		this->nBackrubTemps = nBackrubTemps;
 		if (this->boltzmannTemps)
 			delete[] this->boltzmannTemps;

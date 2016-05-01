@@ -22,6 +22,7 @@ namespace OPTIMIZER
 	Model::Model(int nMacrostates, int ensembleSize, double backrubTemp, double boltzmannTemp, int nPositions, int positionOffset)
 	 :	recovery(0),
 		nMacrostates(nMacrostates),
+		ensembleSize(ensembleSize),
 		nPositions(nPositions),
 		positionOffset(positionOffset),
 		backrubTemp(backrubTemp),
@@ -36,7 +37,8 @@ namespace OPTIMIZER
 
 	Model::Model(int nMacrostates, int ensembleSize, double backrubTemp, double boltzmannTemp, int nPositions, int positionOffset, bool useMicrostates)
 	 :	recovery(0),
-		nMacrostates(nMacrostates),
+	 nMacrostates(nMacrostates),
+	 ensembleSize(ensembleSize),
 		nPositions(nPositions),
 		positionOffset(positionOffset),
 		backrubTemp(backrubTemp),
@@ -52,6 +54,7 @@ namespace OPTIMIZER
 	Model::Model(int nMacrostates, int ensembleSize, double backrubTemp, double boltzmannTemp, int nPositions, int positionOffset, bool useMicrostates, bool useAltAvgMethod)
 	 :	recovery(0),
 		nMacrostates(nMacrostates),
+		ensembleSize(ensembleSize),
 		nPositions(nPositions),
 		positionOffset(positionOffset),
 		backrubTemp(backrubTemp),
@@ -67,6 +70,7 @@ namespace OPTIMIZER
 	Model::Model(int nMacrostates, int ensembleSize, double backrubTemp, double boltzmannTemp, double *weights, double steepness, int nPositions, int positionOffset)
 	 :	recovery(0),
 		nMacrostates(nMacrostates),
+		ensembleSize(ensembleSize),
 		nPositions(nPositions),
 		positionOffset(positionOffset),
 		backrubTemp(backrubTemp),
@@ -82,6 +86,7 @@ namespace OPTIMIZER
 	Model::Model(int nMacrostates, int ensembleSize, double backrubTemp, double boltzmannTemp, double *weights, double steepness, int nPositions, int positionOffset, bool useMicrostate)
 		: recovery(0),
 		nMacrostates(nMacrostates),
+		ensembleSize(ensembleSize),
 		nPositions(nPositions),
 		positionOffset(positionOffset),
 		backrubTemp(backrubTemp),
@@ -97,6 +102,7 @@ namespace OPTIMIZER
 	Model::Model(int nMacrostates, int ensembleSize, double backrubTemp, double boltzmannTemp, double *weights, double steepness, int nPositions, int positionOffset, bool useMicrostate, bool useAltaverageMethod)
 		: recovery(0),
 		nMacrostates(nMacrostates),
+		ensembleSize(ensembleSize),
 		nPositions(nPositions),
 		positionOffset(positionOffset),
 		backrubTemp(backrubTemp),
@@ -198,7 +204,6 @@ namespace OPTIMIZER
 		//position -= this->positionOffset; // should already be done by Optimizer
 		for (int i = 0; i < 20; i++)
 			macrostateResidueEnergies(position, macrostate, i) = energies[i];	// this line gives a write access error...
-			
 	}
 
 	void Model::addMicrostateData(int macrostate, int position, double *energies)

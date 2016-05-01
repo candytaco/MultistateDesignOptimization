@@ -38,6 +38,14 @@ int _tmain(int argc, _TCHAR* argv[])
 	optimizer->readTargetFrequencies(&targetFreqs);
 	optimizer->readData(&fileName);
 	CuckooSearch *cs = new CuckooSearch(6, optimizer->getModels(), new JensenShannonDistance(optimizer->getTargetFreqs()), 32, 1, 0.2);
+	// search parameters
+	int ensembleSizes[] = { 20, 50 };
+	double backrubTemps[] = { 0.3, 0.6, 0.9, 1.2, 1.5, 1.8 };
+	double boltzmannTemps[] = { 1, 5, -1, 0 };
+	double steepness[] = { 1.0, 7.0 };
+	double weightMins[] = { 0, 0, 0, 0, 0, 0 };
+	double weightMaxs[] = { 1, 1, 1, 1, 1, 1 };
+	cs->setParameterBounds(ensembleSizes, 2, backrubTemps, 6, boltzmannTemps, 4, steepness, weightMins, weightMaxs);
 	optimizer->useAlgorithm(cs);
 	optimizer->optimize();
 	optimizer->writeFrequenciesToFASTA(&string("test1.fasta"));

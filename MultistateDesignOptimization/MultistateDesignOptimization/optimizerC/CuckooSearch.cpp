@@ -34,6 +34,9 @@ namespace OPTIMIZER
 		e = new mt19937(time(NULL));
 		normal_dist = new boost::math::normal(0.0, 1.0); // make the normal distribution
 		uniform_dist05 = new boost::random::uniform_real_distribution<double>(0.5, 1); // make the uniform distribution
+		searchWeights = new bool[nMacrostates];
+		for (int i = 0; i < nMacrostates; i++)
+			searchWeights[i] = true;
 	}
 
 	bool CuckooSearch::sortCompModels(const Model&lhs, const Model &rhs)
@@ -55,7 +58,7 @@ namespace OPTIMIZER
 			for (int i = 0; i < nMacrostates; i++)
 				weights[i] = searchWeights[i] ? randDouble(randGen) : weightMins[i]; // boolean ? <then this> : <else>
             int ensembleSize = searchEnsemble ? ensembleSizes[randGen() % nEnsembleSizes] : ensembleSizes[0];
-            int backrubTemp = searchBackrub ? backrubTemps[randGen() % nBackrubTemps] : backrubTemps[0];
+            double backrubTemp = searchBackrub ? backrubTemps[randGen() % nBackrubTemps] : backrubTemps[0];
             double boltzmannTemp = searchBoltzmann ? boltzmannTemps[randGen() % nBoltzmannTemps] : boltzmannTemps[0];
             
             // should this next line be here?

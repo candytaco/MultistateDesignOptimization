@@ -8,9 +8,7 @@ using namespace OPTIMIZER;
 
 int OPTIMIZER::calcParamsID(double param1, double param2, double param3)
 {
-	float f1 = param1, f2 = param2, f3 = param3;
-	int i1 = (unsigned int)&f1, i2 = (unsigned int)&f2, i3 = (unsigned int)&f3;
-	int out = (i1 << 1) ^ (i2 >> 2 ^ (i3 % 1023));
+	int out = param1 * 100000 + param2 * 10000 + param3 * 10;
 	return out;
 }
 
@@ -101,14 +99,19 @@ void Optimizer::readData(string *inFile)
 		position -= minPosition;
 		for (int j = 0; j < 20; j++)
 			datFile >> energies[j];
+
+		
 		int ID = calcParamsID(backrub, ensembleSize, boltzmann);
 		if (models->count(ID) > 0)
 			models->at(ID).addMacrostateData(macrostate, position, energies);
 		else
 		{
+			cout << "new model created" << endl;
+			cout << backrub << endl << ensembleSize << endl << boltzmann << endl;
+			cout << ID << endl;
 			temp = new Model(nMacrostates, ensembleSize, backrub, boltzmann, weights, 0, nPositions, 0);
 			temp->addMacrostateData(macrostate, position, energies);
-			models->insert(pair<int, Model>(ID, *temp));
+			models->emplace(ID, *temp);
 		}
 	}
 	delete[] weights;
