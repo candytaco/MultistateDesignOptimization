@@ -13,8 +13,27 @@ using namespace OPTIMIZER;
 
 int _tmain(int argc, _TCHAR* argv[])
 {
-	string fileName((char*)argv[1]);
-	string targetFreqs((char*)argv[2]);
+#ifdef _WIN32
+	string defaultFileName("C:\\Users\\candy_000\\Source\\Repos\\MultistateDesignOptimization\\MultistateDesignOptimization\\MultistateDesignOptimization\\optimizerC\\macrostates.dat");
+	string defaultTarget("C:\\Users\\candy_000\\Source\\Repos\\MultistateDesignOptimization\\MultistateDesignOptimization\\MultistateDesignOptimization\\optimizerC\\targetFreqs.fasta");
+#else
+	// define your default names here
+	string defaultFileName("./macrostates.dat");
+	string defaultTarget("./targetFreqs.fasta");
+#endif
+
+	string fileName, targetFreqs;
+	if (argc > 1)
+	{
+		fileName = string((char*)argv[1]);
+		targetFreqs = string((char*)argv[2]);
+	}
+	else
+	{
+		fileName = defaultFileName;
+		targetFreqs = defaultTarget;
+	}
+	
 	Optimizer *optimizer = new Optimizer(6, false);
 	optimizer->readTargetFrequencies(&targetFreqs);
 	optimizer->readData(&fileName);
