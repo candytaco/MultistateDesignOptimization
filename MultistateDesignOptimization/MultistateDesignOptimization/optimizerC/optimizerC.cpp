@@ -2,6 +2,12 @@
 //
 
 #include "stdafx.h"
+#include "Model.h"
+#include "SimilarityMeasure.h"
+#include "JensenShannonDistance.h"
+#include "SearchAlgorithm.h"
+#include "CuckooSearch.h"
+#include "Optimizer.h"
 
 using namespace OPTIMIZER;
 
@@ -12,7 +18,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	Optimizer *optimizer = new Optimizer(6, false);
 	optimizer->readTargetFrequencies(&targetFreqs);
 	optimizer->readData(&fileName);
-	CuckooSearch *cs = new CuckooSearch(6, optimizer->getModels(), new JensenShannonDistance(optimizer->getTargetFreqs), 32, 1, 0.2);
+	CuckooSearch *cs = new CuckooSearch(6, optimizer->getModels(), new JensenShannonDistance(optimizer->getTargetFreqs()), 32, 1, 0.2);
 	optimizer->useAlgorithm(cs);
 	optimizer->writeFrequenciesToFASTA(&string("test1.fasta"));
 	optimizer->writeBestParamsToText(&string("test1.txt"));

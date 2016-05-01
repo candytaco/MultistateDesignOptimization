@@ -21,13 +21,9 @@
 #include <boost/random/uniform_real_distribution.hpp>
 #include <fstream>
 #include <iostream>
+#include <stdlib.h>
+#include <assert.h>
+#include <math.h>
 
 using namespace std;
 using namespace arma;
-
-#include "Model.h"
-#include "SimilarityMeasure.h"
-#include "SearchAlgorithm.h"
-#include "CuckooSearch.h"
-#include "Optimizer.h"
-#include "JensenShannonDistance.h"

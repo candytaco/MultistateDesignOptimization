@@ -1,4 +1,7 @@
+#pragma once
 #include "stdafx.h"
+#include "Model.h"
+#include "SimilarityMeasure.h"
 
 namespace OPTIMIZER
 {
@@ -62,12 +65,12 @@ namespace OPTIMIZER
 		/// <summary>
 		/// Starts the search.
 		/// </summary>
-		virtual void startSearch();		
+		virtual void startSearch() = 0;
 
 		/// <summary>
 		/// Iterates this instance.
 		/// </summary>
-		virtual void iterate();
+		virtual void iterate() = 0;
 		
 		/// <summary>
 		/// Gets the model by parameters.
@@ -128,7 +131,7 @@ namespace OPTIMIZER
 		/// <summary>
 		/// Records the best parameters.
 		/// </summary>
-		virtual void recordBestParams();
+		virtual void recordBestParams() = 0;
 
 		int nMacrostates;
 

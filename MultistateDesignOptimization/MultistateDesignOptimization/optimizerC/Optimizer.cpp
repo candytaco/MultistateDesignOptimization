@@ -1,3 +1,7 @@
+#include "stdafx.h"
+#include "Model.h"
+#include "SimilarityMeasure.h"
+#include "SearchAlgorithm.h"
 #include "Optimizer.h"
 
 using namespace OPTIMIZER;
@@ -107,7 +111,12 @@ void Optimizer::writeFrequenciesToFASTA(string *outName, int precision, double *
 
 	// TODO: check and make sure that the output file doesn't already end in .fasta!
 	string outFileName = outName->append(".fasta"); // might not be necessary, but do it just in case.
+#ifndef _WIN32
 	FILE *outputFile = fopen(outFileName.c_str(), "w");
+#else
+	FILE *outputFile;
+	fopen_s(&outputFile, outFileName.c_str(), "w");	// windows requires using the safer fopen_s function instead of fopen
+#endif
 	if (!outputFile) {
 		perror("Error opening FASTA file");
 	}
@@ -150,7 +159,12 @@ void Optimizer::writeBestParamsToText(string *outName)
 	/// <returns></returns>
 
 	string outFileName = outName->append(".txt");
+#ifndef _WIN32
 	FILE *outputFile = fopen(outFileName.c_str(), "w");
+#else
+	FILE *outputFile;
+	fopen_s(&outputFile, outFileName.c_str(), "w");	// windows requires using the safer fopen_s function instead of fopen
+#endif
 	double *bestVals = getBestParameters();
 	// for the write functions, it is assumed getBestParameters are stored in an array of floats.
 	/* Keys:
@@ -210,4 +224,14 @@ void Optimizer::optimize()
 Model *Optimizer::getModelByParams(double param1, double param2, double param3)
 {
 	return &models->at(calcParamsID(param1, param2, param3));
+}
+
+Optimizer::~Optimizer()
+{
+	if (models)
+		delete models;
+	if (optimizationAlgorithm)
+		delete optimizationAlgorithm;
+	if (targetFrequencies)
+		delete targetFrequencies;
 }

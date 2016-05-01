@@ -1,3 +1,4 @@
+#pragma once
 #include "stdafx.h"
 
 namespace OPTIMIZER
@@ -35,13 +36,13 @@ namespace OPTIMIZER
 		/// </summary>
 		/// <param name="expFrequencies">The exp frequencies.</param>
 		/// <returns></returns>
-		virtual double getSimilarity(mat *expFrequencies);
+		virtual double getSimilarity(mat *expFrequencies) = 0;
 		
 		/// <summary>
 		/// Gets string descriptor
 		/// </summary>
 		/// <returns></returns>
-		virtual string *toString();
+		virtual string *toString() = 0;
 		
 		/// <summary>
 		/// Finalizes an instance of the <see cref="SimilarityMeasure"/> class.

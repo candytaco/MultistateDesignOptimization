@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "SearchAlgorithm.h"
 #include "Optimizer.h"
 
@@ -5,12 +6,68 @@ namespace OPTIMIZER
 {
 	SearchAlgorithm::SearchAlgorithm()
 	{
-		SearchAlgorithm(0, NULL, NULL, false);
+		this->models = NULL;
+		this->similarityMeasure = NULL;
+		this->continuousBoltzmann = false;
+		this->nMacrostates = 0;
+
+		maxIterations = 0;
+		ensembleSizes = NULL;
+		backrubTemps = NULL;
+		boltzmannTemps = NULL;
+		steepnessRange = NULL;
+		weightMins = NULL;
+		weightMaxs = NULL;
+
+		searchEnsemble =
+			searchBackrub =
+			searchBoltzmann =
+			searchSteepness = true;
+
+		searchWeights = false;
+
+		bestEnsembleSize = -1;
+		bestBackrubTemp = -1;
+		bestBoltzmannTemp = -1;
+		bestSteepness = -1;
+		bestWeights = NULL;
+		bestMatchVal = -1;
+		bestFrequencies = NULL;
+
+		suppressOutputs = true;
 	}
 
 	SearchAlgorithm::SearchAlgorithm(int nMacrostates, map<int, Model> *models, SimilarityMeasure *similarityMeasure)
 	{
-		SearchAlgorithm(nMacrostates, models, similarityMeasure, false);
+		this->models = models;
+		this->similarityMeasure = similarityMeasure;
+		this->continuousBoltzmann = false;
+		this->nMacrostates = nMacrostates;
+
+		maxIterations = 0;
+		ensembleSizes = NULL;
+		backrubTemps = NULL;
+		boltzmannTemps = NULL;
+		steepnessRange = NULL;
+		weightMins = NULL;
+		weightMaxs = NULL;
+
+		searchEnsemble =
+			searchBackrub =
+			searchBoltzmann =
+			searchSteepness = true;
+
+		searchWeights = false;
+
+		bestEnsembleSize = -1;
+		bestBackrubTemp = -1;
+		bestBoltzmannTemp = -1;
+		bestSteepness = -1;
+		bestWeights = NULL;
+		bestMatchVal = -1;
+		bestFrequencies = NULL;
+
+		suppressOutputs = true;
 	}
 
 	SearchAlgorithm::SearchAlgorithm(int nMacrostates, map<int, Model> *models, SimilarityMeasure *similarityMeasure, bool continuousBoltzmann)

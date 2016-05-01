@@ -1,4 +1,9 @@
+#pragma once
 #include "stdafx.h"
+#include "Model.h"
+#include "SimilarityMeasure.h"
+#include "SearchAlgorithm.h"
+
 
 namespace OPTIMIZER
 {
@@ -9,6 +14,7 @@ namespace OPTIMIZER
 		CuckooSearch(int nMacrostates, map<int, Model> *models, SimilarityMeasure *similarityMeasure, int populationSize, double scaleParam, double elimination);
 		CuckooSearch(int nMacrostates, map<int, Model> *models, SimilarityMeasure *similarityMeasure, int populationSize, double scaleParam, double elimination, bool continuousBoltzmann);
 
+		inline void startSearch() override { this->iterate(); };
 		void iterate() override;
 
 		string *toString();
@@ -18,6 +24,7 @@ namespace OPTIMIZER
 		double nextLevyStep();
 		double *nextLevySteps(int n);
 		void recordBestParams() override;
+		static bool sortCompModels(const Model &lhs, const Model &rhs);
 
 		double scaleParam;
 		double elimination;

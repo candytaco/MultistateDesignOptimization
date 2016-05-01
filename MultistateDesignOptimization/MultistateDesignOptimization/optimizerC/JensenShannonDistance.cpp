@@ -1,3 +1,5 @@
+#include "stdafx.h"
+#include "SimilarityMeasure.h"
 #include "JensenShannonDistance.h"
 
 namespace OPTIMIZER

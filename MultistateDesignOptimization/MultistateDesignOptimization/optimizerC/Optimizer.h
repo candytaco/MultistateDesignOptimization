@@ -1,13 +1,5 @@
 #pragma once
 #include "stdafx.h"
-#include <iostream>
-#include <stdlib.h>
-#include <stdio.h>
-#include <assert.h>
-#include <math.h>
-#include <vector>
-#include <list>
-#include <string>
 
 namespace OPTIMIZER
 {
@@ -120,7 +112,7 @@ namespace OPTIMIZER
 		/// Gets the best parameters.
 		/// </summary>
 		/// <returns></returns>
-		double *getBestParameters();
+		double *getBestParameters() { return this->optimizationAlgorithm->getBestParams(); }
 		// this needs to contain the following. i'm going to assume that they are each a float for now, but weights needs to be multiple floats!?
         // for the write functions, it is assumed these are stored in an array of floats.
         

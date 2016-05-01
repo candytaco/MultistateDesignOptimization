@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "Model.h"
 #include <cstdlib>
 
@@ -31,11 +32,6 @@ namespace OPTIMIZER
 	Model::Model(int nMacrostates, int ensembleSize, double backrubTemp, double boltzmannTemp, double *weights, double steepness, int nPositions, int positionOffset, bool useMicrostates)
 	{
 		Model(nMacrostates, ensembleSize, backrubTemp, boltzmannTemp, weights, steepness, nPositions, positionOffset, useMicrostates, false);
-	}
-
-	Model::Model(int nMacrostates, int ensembleSize, double backrubTemp, double boltzmannTemp, double *weights, double steepness, int nPositions, int positionOffset, bool useMicrostates, bool useAltAvgMethod)
-	{
-		Model(nMacrostates, ensembleSize, backrubTemp, boltzmannTemp, weights, steepness, nPositions, positionOffset, useMicrostates, useAltAvgMethod);
 	}
 
 	Model::Model(int nMacrostates, int ensembleSize, double backrubTemp, double boltzmannTemp, double *weights, double steepness, int nPositions, int positionOffset, bool useMicrostate, bool useAltaverageMethod)

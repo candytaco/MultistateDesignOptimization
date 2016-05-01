@@ -1,6 +1,7 @@
+#include "stdafx.h"
+#include "Model.h"
+#include "SimilarityMeasure.h"
 #include "CuckooSearch.h"
-// these should maybe go somewhere else.
-#include <random>
 
 namespace OPTIMIZER
 {
@@ -22,6 +23,11 @@ namespace OPTIMIZER
 		e = new mt19937(time(NULL));
 		normal_dist = new boost::math::normal(0.0, 1.0); // make the normal distribution
 		uniform_dist05 = new boost::random::uniform_real_distribution<double>(0.5, 1); // make the uniform distribution
+	}
+
+	bool CuckooSearch::sortCompModels(const Model&lhs, const Model &rhs)
+	{
+		return lhs > rhs;
 	}
 
 	void CuckooSearch::initPopulation()
@@ -53,7 +59,7 @@ namespace OPTIMIZER
 			m->recovery = similarityMeasure->getSimilarity(m->getFrequencies());
 			population->push_back(*m);
 		}
-        sort(population->begin(), population->end(), Model::operator>);
+		sort(population->begin(), population->end(), &CuckooSearch::sortCompModels); // needed a 2-arg comparator
 		//population->sort();
 		recordBestParams();
 	}
@@ -97,7 +103,7 @@ namespace OPTIMIZER
                     boundCheckBoltzmann(&newBoltzmannTemp);
                     newModel = new Model(*this->getModelByParams(newBackrubTemp, newEnsembleSize, newBoltzmannTemp), newEnsembleSize, newBackrubTemp, newBackrubTemp, newWeights, newSteep);
                 }
-                newModel->recovery = similarityMeasure->getSimilarity(newModel->getFrequencies);
+                newModel->recovery = similarityMeasure->getSimilarity(newModel->getFrequencies());
                 
                 if (*newModel > it)
                     population->at(individual) = *newModel;
@@ -142,7 +148,7 @@ namespace OPTIMIZER
             
             //TODO: end of this... now quite sure what is supposed to happen
             // should only happen on one process? so we need to bring everything back together!
-            sort(population->begin(), population->end(), Model::operator>);
+			sort(population->begin(), population->end(), &CuckooSearch::sortCompModels);
 			//elimination of the worst individuals
 			for (int i = 0; i < int(populationSize * elimination); i++)
 				population->pop_back();
