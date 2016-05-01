@@ -17,7 +17,8 @@ namespace OPTIMIZER
 		
 		/// <summary>
 		/// Gets the similarity of expFrequencies to the target frequencies.
-		/// Will destroy expFrequencies in the process of doing so.
+		/// Will not destroy expFrequencies in the process of doing so. Model's
+		/// getFrequenceies was modified to return a pointer to its own copy.
 		/// </summary>
 		/// <param name="expFrequencies">The expected frequencies.</param>
 		/// <returns></returns>

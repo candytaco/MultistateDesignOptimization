@@ -25,18 +25,17 @@ namespace OPTIMIZER
 	double JensenShannonDistance::getSimilarity(mat *expFrequencies)
 	{
 		// TODO: check for correctness and memory leaks
-		mat calcs = *h(expFrequencies);
-		mat calcs2 = *targetFrequencies + *expFrequencies;
+		mat efreqs = (*expFrequencies) / accu(*expFrequencies);
+		mat calcs = *h(&efreqs);
+		mat calcs2 = *targetFrequencies + efreqs;
 		calcs2 = *h(&calcs2);
 		//		h(expFreq) - h(exp + tgt) + h(tgt)
 		calcs = calcs - calcs2 + *hTargetFreqs;
 		calcs.elem(find_nonfinite(calcs)).zeros();	// zero the NaNs
-		double JSdiv = accu(calcs);
+		double JSdiv = sqrt(accu(calcs) * 0.5);
 
 		if (JSdiv < 0 || JSdiv > 1)
 			throw exception::exception("calculated value out of bounds");
-
-		delete expFrequencies;
 
 		return JSdiv;
 	}

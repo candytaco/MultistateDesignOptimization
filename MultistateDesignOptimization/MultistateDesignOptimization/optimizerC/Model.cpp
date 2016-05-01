@@ -118,14 +118,15 @@ namespace OPTIMIZER
 	Model::Model(const Model &existing, int ensembleSize, double backrubTemp, double boltzmannTemp, double *weights, double steepness)
 	{
 		this->recovery = 0;
+		this->nPositions = existing.nPositions;
 		this->nMacrostates = existing.nMacrostates;
 		this->ensembleSize = ensembleSize;
 		this->backrubTemp = backrubTemp;
 		this->boltzmannTemp = boltzmannTemp;
 		this->weights = weights;
 		this->steepness = steepness;
-		this->fitnesses = mat(nPositions, 20);
-		this->frequencies = mat(nPositions, 20);
+		this->fitnesses = mat(nPositions, 20, fill::zeros);
+		this->frequencies = mat(nPositions, 20, fill::zeros);
 		this->useMicrostateData = existing.useMicrostateData;
 		this->areMicrostatesPicked = false;
 		this->useAltAverageingMethod = existing.useAltAverageingMethod;
@@ -230,7 +231,7 @@ namespace OPTIMIZER
 		if (!isFrequenciesCalculated)
 			calcFrequencies();
 		
-		return new mat(frequencies);
+		return &frequencies;
 	}
 
 	void Model::calcFitness()
@@ -239,7 +240,7 @@ namespace OPTIMIZER
 		if (useMicrostateData)
 			averageMicrostates();
 
-		mat minEnergies = min(macrostateResidueEnergies, 1);
+		mat minEnergies = min(macrostateResidueEnergies, 2);
 		mat offsets = minEnergies + log(99) / steepness;
 		fitnesses = mat(nPositions, 20);
 		fitnesses.fill(1.0f);
@@ -247,7 +248,7 @@ namespace OPTIMIZER
 		for (int j = 0; j < 20; j++)
 		for (int k = 0; k < nMacrostates; k++)
 		{
-			double f = 1.0f / (1 + exp(steepness * (macrostateResidueEnergies(i, j, k) - offsets(i, k))));
+			double f = 1.0f / (1 + exp(steepness * (macrostateResidueEnergies(i, k, j) - offsets(i, k))));
 			fitnesses(i, j) = fitnesses(i, j) * (1 - weights[k] + weights[k] * f);
 		}
 	}
