@@ -5,74 +5,108 @@
 namespace OPTIMIZER
 {
 	Model::Model()
+	 :	recovery(0),
+		nMacrostates(0),
+		nPositions(0),
+		positionOffset(0),
+		backrubTemp(0),
+		boltzmannTemp(0),
+		weights(NULL),
+		steepness(0),
+		useAltAverageingMethod(false),
+		useMicrostateData(false)
 	{
-		Model(0, 0, 0, 0, NULL, 0, 0, 0, false, false);
+		this->initializeMembers();
 	}
 
 	Model::Model(int nMacrostates, int ensembleSize, double backrubTemp, double boltzmannTemp, int nPositions, int positionOffset)
+	 :	recovery(0),
+		nMacrostates(nMacrostates),
+		nPositions(nPositions),
+		positionOffset(positionOffset),
+		backrubTemp(backrubTemp),
+		boltzmannTemp(boltzmannTemp),
+		weights(NULL),
+		steepness(0),
+		useAltAverageingMethod(false),
+		useMicrostateData(false)
 	{
-		Model(nMacrostates, ensembleSize, backrubTemp, boltzmannTemp, NULL, 0, nPositions, positionOffset, false, false);
+		this->initializeMembers();
 	}
 
 	Model::Model(int nMacrostates, int ensembleSize, double backrubTemp, double boltzmannTemp, int nPositions, int positionOffset, bool useMicrostates)
+	 :	recovery(0),
+		nMacrostates(nMacrostates),
+		nPositions(nPositions),
+		positionOffset(positionOffset),
+		backrubTemp(backrubTemp),
+		boltzmannTemp(boltzmannTemp),
+		weights(NULL),
+		steepness(0),
+		useAltAverageingMethod(false),
+		useMicrostateData(false)
 	{
-		Model(nMacrostates, ensembleSize, backrubTemp, boltzmannTemp, NULL, 0, nPositions, positionOffset, useMicrostates, false);
+		this->initializeMembers();
 	}
 
 	Model::Model(int nMacrostates, int ensembleSize, double backrubTemp, double boltzmannTemp, int nPositions, int positionOffset, bool useMicrostates, bool useAltAvgMethod)
+	 :	recovery(0),
+		nMacrostates(nMacrostates),
+		nPositions(nPositions),
+		positionOffset(positionOffset),
+		backrubTemp(backrubTemp),
+		boltzmannTemp(boltzmannTemp),
+		weights(NULL),
+		steepness(0),
+		useAltAverageingMethod(useAltAvgMethod),
+		useMicrostateData(useMicrostates)
 	{
-		Model(nMacrostates, ensembleSize, backrubTemp, boltzmannTemp, NULL, 0, nPositions, positionOffset, useMicrostates, useAltAvgMethod);
+		this->initializeMembers();
 	}
 
 	Model::Model(int nMacrostates, int ensembleSize, double backrubTemp, double boltzmannTemp, double *weights, double steepness, int nPositions, int positionOffset)
+	 :	recovery(0),
+		nMacrostates(nMacrostates),
+		nPositions(nPositions),
+		positionOffset(positionOffset),
+		backrubTemp(backrubTemp),
+		boltzmannTemp(boltzmannTemp),
+		weights(weights),
+		steepness(steepness),
+		useAltAverageingMethod(false),
+		useMicrostateData(false)
 	{
-		Model(nMacrostates, ensembleSize, backrubTemp, boltzmannTemp, weights, steepness, nPositions, positionOffset, false, false);
+		this->initializeMembers();
 	}
 
-	Model::Model(int nMacrostates, int ensembleSize, double backrubTemp, double boltzmannTemp, double *weights, double steepness, int nPositions, int positionOffset, bool useMicrostates)
+	Model::Model(int nMacrostates, int ensembleSize, double backrubTemp, double boltzmannTemp, double *weights, double steepness, int nPositions, int positionOffset, bool useMicrostate)
+		: recovery(0),
+		nMacrostates(nMacrostates),
+		nPositions(nPositions),
+		positionOffset(positionOffset),
+		backrubTemp(backrubTemp),
+		boltzmannTemp(boltzmannTemp),
+		weights(weights),
+		steepness(steepness),
+		useAltAverageingMethod(false),
+		useMicrostateData(useMicrostate)
 	{
-		Model(nMacrostates, ensembleSize, backrubTemp, boltzmannTemp, weights, steepness, nPositions, positionOffset, useMicrostates, false);
+			this->initializeMembers();
 	}
 
 	Model::Model(int nMacrostates, int ensembleSize, double backrubTemp, double boltzmannTemp, double *weights, double steepness, int nPositions, int positionOffset, bool useMicrostate, bool useAltaverageMethod)
+		: recovery(0),
+		nMacrostates(nMacrostates),
+		nPositions(nPositions),
+		positionOffset(positionOffset),
+		backrubTemp(backrubTemp),
+		boltzmannTemp(boltzmannTemp),
+		weights(weights),
+		steepness(steepness),
+		useAltAverageingMethod(useAltaverageMethod),
+		useMicrostateData(useMicrostate)
 	{
-		this->recovery = 0;
-		this->nMacrostates = nMacrostates;
-		this->ensembleSize = ensembleSize;
-		this->nPositions = nPositions;
-		this->positionOffset = positionOffset;
-		this->backrubTemp = backrubTemp;
-		this->boltzmannTemp = boltzmannTemp;
-		this->weights = weights;
-		this->steepness = steepness;
-		this->useAltAverageingMethod = useAltaverageMethod;
-		this->useMicrostateData = useMicrostate;
-		this->fitnessCalculated = false;
-		this->fitnesses = new mat(nPositions, 20);
-		this->frequencies = new mat(nPositions, 20);
-		this->macrostateResidueEnergies = new cube(20, nPositions, nMacrostates);
-		this->microstateCounts = NULL;
-		this->microstateResidueEnergies = NULL;
-		this->microstatesUsed = NULL;
-		this->selectedMicrostateEnergies = NULL;
-		if (useMicrostate)
-		{
-			areMicrostatesPicked = false;
-			microstateResidueEnergies = new vector<cube>();
-			for (int i = 0; i < nPositions; i++)
-				microstateResidueEnergies->push_back(cube(20, nMACROSTATES, 1024));
-			microstateCounts = new int*[nPositions];
-			for (int i = 0; i < nPositions; i++)
-				microstateCounts[i] = new int[nMacrostates];
-			microstatesUsed = new int**[nPositions];
-			for (int i = 0; i < nPositions; i++)
-			{
-				microstatesUsed[i] = new int*[nMacrostates];
-				for (int j = 0; j < nMacrostates; j++)
-					microstatesUsed[i][j] = new int[ensembleSize];
-			}
-			
-		}
+		this->initializeMembers();
 	}
 
 	Model::Model(const Model &existing, int ensembleSize, double backrubTemp, double boltzmannTemp, double *weights, double steepness)
@@ -129,9 +163,39 @@ namespace OPTIMIZER
 		else this->microstatesUsed = NULL;
 	}
 
+	void Model::initializeMembers()
+	{
+		this->fitnessCalculated = false;
+		this->fitnesses = new mat(nPositions, 20);
+		this->frequencies = new mat(nPositions, 20);
+		this->macrostateResidueEnergies = new cube(nPositions, nMacrostates, 20);
+		this->microstateCounts = NULL;
+		this->microstateResidueEnergies = NULL;
+		this->microstatesUsed = NULL;
+		this->selectedMicrostateEnergies = NULL;
+		if (useMicrostateData)
+		{
+			areMicrostatesPicked = false;
+			microstateResidueEnergies = new vector<cube>();
+			for (int i = 0; i < nPositions; i++)
+				microstateResidueEnergies->push_back(cube(20, nMACROSTATES, 1024));
+			microstateCounts = new int*[nPositions];
+			for (int i = 0; i < nPositions; i++)
+				microstateCounts[i] = new int[nMacrostates];
+			microstatesUsed = new int**[nPositions];
+			for (int i = 0; i < nPositions; i++)
+			{
+				microstatesUsed[i] = new int*[nMacrostates];
+				for (int j = 0; j < nMacrostates; j++)
+					microstatesUsed[i][j] = new int[ensembleSize];
+			}
+
+		}
+	}
+
 	void Model::addMacrostateData(int macrostate, int position, double *energies)
 	{
-		position -= this->positionOffset;
+		//position -= this->positionOffset; // should already be done by Optimizer
 		for (int i = 0; i < 20; i++)
 			(*macrostateResidueEnergies)(position, macrostate, i) = energies[i];
 	}

@@ -24,7 +24,7 @@ Optimizer::Optimizer()
 	nMacrostates(0),
 	continuousBoltzmann(false)
 {
-	Optimizer::Optimizer(0, NULL, false);
+	//Optimizer::Optimizer(0, NULL, false);
 }
 
 Optimizer::Optimizer(const Optimizer &existing)
@@ -41,8 +41,8 @@ Optimizer::Optimizer(int nMacrostates, string *macrostates)
 	macrostates(macrostates),
 	nMacrostates(nMacrostates),
 	continuousBoltzmann(false)
-	{
-	Optimizer::Optimizer(nMacrostates, macrostates, false);
+{
+	//Optimizer::Optimizer(nMacrostates, macrostates, false);
 }
 
 Optimizer::Optimizer(int nMacrostates, bool continuousBoltzmann)
@@ -55,7 +55,7 @@ Optimizer::Optimizer(int nMacrostates, bool continuousBoltzmann)
 	nMacrostates(nMacrostates),
 	continuousBoltzmann(continuousBoltzmann)
 {
-	Optimizer::Optimizer(nMacrostates, NULL, continuousBoltzmann);
+	//Optimizer::Optimizer(nMacrostates, NULL, continuousBoltzmann);
 }
 
 Optimizer::Optimizer(int nMacrostates, string *macrostates, bool continuousBoltzmann)
@@ -85,10 +85,10 @@ void Optimizer::readData(string *inFile)
 
 	ifstream datFile(inFile->c_str());
 	int minPosition, nPositions, nEntries;
-	datFile >> minPosition >> nPositions >> nEntries;
+	datFile >> nMacrostates >> minPosition >> nPositions >> nEntries;
 
 	Model *temp;
-	for (int i = 0; i < nEntries; i++)
+	while (!datFile.eof())
 	{
 		int macrostate, ensembleSize, position;
 		double backrub, boltzmann;

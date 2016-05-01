@@ -153,6 +153,11 @@ namespace OPTIMIZER
 		bool fitnessCalculated;
 		
 		/// <summary>
+		/// Initializes member fields.
+		/// </summary>
+		void initializeMembers();
+		
+		/// <summary>
 		/// Calculates fitnesses values.
 		/// </summary>
 		void calcFitness();
