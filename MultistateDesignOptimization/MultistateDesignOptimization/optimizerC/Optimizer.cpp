@@ -98,8 +98,6 @@ void Optimizer::readData(string *inFile)
 	for (int i = 0; i < nEntries; i++)
 	{
 		datFile >> macrostate >> ensembleSize >> position >> backrub >> boltzmann;
-
-		cout << macrostate << " " << ensembleSize << " " << position << endl;
 		position -= minPosition;
 		for (int j = 0; j < 20; j++)
 			datFile >> energies[j];

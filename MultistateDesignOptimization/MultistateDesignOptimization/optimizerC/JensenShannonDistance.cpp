@@ -6,19 +6,19 @@ namespace OPTIMIZER
 {
 	JensenShannonDistance::JensenShannonDistance() : SimilarityMeasure() 
 	{
-		targetFrequencies->operator/=(sum(*targetFrequencies));
+		targetFrequencies->operator/=(accu(*targetFrequencies));
 		hTargetFreqs = h(targetFrequencies);
 	}
 
 	JensenShannonDistance::JensenShannonDistance(const SimilarityMeasure &other) : SimilarityMeasure(other) 
 	{
-		targetFrequencies->operator/=(sum(*targetFrequencies));
+		targetFrequencies->operator/=(accu(*targetFrequencies));
 		hTargetFreqs = h(targetFrequencies);
 	}
 
 	JensenShannonDistance::JensenShannonDistance(mat *targetFreqs) : SimilarityMeasure(targetFreqs) 
 	{
-		targetFrequencies->operator/=(sum(*targetFrequencies));
+		targetFrequencies->operator/=(accu(*targetFrequencies));
 		hTargetFreqs = h(targetFrequencies);
 	}
 

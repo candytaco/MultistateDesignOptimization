@@ -15,7 +15,7 @@ int _tmain(int argc, _TCHAR* argv[])
 {
 #ifdef _WIN32
 	string defaultFileName("C:\\Users\\candy_000\\Source\\Repos\\MultistateDesignOptimization\\MultistateDesignOptimization\\MultistateDesignOptimization\\optimizerC\\macrostates.dat");
-	string defaultTarget("C:\\Users\\candy_000\\Source\\Repos\\MultistateDesignOptimization\\MultistateDesignOptimization\\MultistateDesignOptimization\\optimizerC\\targetFreqs.fasta");
+	string defaultTarget("C:\\Users\\candy_000\\Source\\Repos\\MultistateDesignOptimization\\MultistateDesignOptimization\\MultistateDesignOptimization\\optimizerC\\targetFreqs.dat");
 #else
 	// define your default names here
 	string defaultFileName("./macrostates.dat");
@@ -39,6 +39,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	optimizer->readData(&fileName);
 	CuckooSearch *cs = new CuckooSearch(6, optimizer->getModels(), new JensenShannonDistance(optimizer->getTargetFreqs()), 32, 1, 0.2);
 	optimizer->useAlgorithm(cs);
+	optimizer->optimize();
 	optimizer->writeFrequenciesToFASTA(&string("test1.fasta"));
 	optimizer->writeBestParamsToText(&string("test1.txt"));
 	return 0;

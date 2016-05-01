@@ -5,20 +5,31 @@
 
 namespace OPTIMIZER
 {
-	CuckooSearch::CuckooSearch() : SearchAlgorithm(0, NULL, NULL, false)
+	CuckooSearch::CuckooSearch() : SearchAlgorithm(0, NULL, NULL, false),
+		scaleParam(1),
+		populationSize(0),
+		elimination(0.25)
 	{
-		CuckooSearch(0, NULL, NULL, 0, 1, 0.25, false);
+		this->initilizeMembers();
 	}
 
-	CuckooSearch::CuckooSearch(int nMacrostates, map<int, Model> *models, SimilarityMeasure *similarityMeasure, int populationSize, double scaleParam, double elimination) : SearchAlgorithm(nMacrostates, models, similarityMeasure, false)
+	CuckooSearch::CuckooSearch(int nMacrostates, map<int, Model> *models, SimilarityMeasure *similarityMeasure, int populationSize, double scaleParam, double elimination) : SearchAlgorithm(nMacrostates, models, similarityMeasure, false),
+		scaleParam(scaleParam),
+		populationSize(populationSize),
+		elimination(elimination)
 	{
-		CuckooSearch(nMacrostates, models, similarityMeasure, 32, 1, 0.25, false);
+		this->initilizeMembers();
 	}
-	CuckooSearch::CuckooSearch(int nMacrostates, map<int, Model> *models, SimilarityMeasure *similarityMeasure, int populationSize, double scaleParam, double elimination, bool continuousBoltzmann) : SearchAlgorithm(nMacrostates, models, similarityMeasure, continuousBoltzmann)
+	CuckooSearch::CuckooSearch(int nMacrostates, map<int, Model> *models, SimilarityMeasure *similarityMeasure, int populationSize, double scaleParam, double elimination, bool continuousBoltzmann) : SearchAlgorithm(nMacrostates, models, similarityMeasure, continuousBoltzmann),
+		scaleParam(scaleParam),
+		populationSize(populationSize),
+		elimination(elimination)
 	{
-		this->scaleParam = scaleParam;
-		this->populationSize = populationSize;
-		this->elimination = elimination;
+		this->initilizeMembers();
+	}
+
+	void CuckooSearch::initilizeMembers()
+	{
 		population = new vector<Model>();
 		e = new mt19937(time(NULL));
 		normal_dist = new boost::math::normal(0.0, 1.0); // make the normal distribution

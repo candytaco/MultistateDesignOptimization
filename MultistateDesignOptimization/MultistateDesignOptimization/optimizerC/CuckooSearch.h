@@ -20,6 +20,7 @@ namespace OPTIMIZER
 		string *toString();
 
 	private:
+		void initilizeMembers();
 		void initPopulation();
 		double nextLevyStep();
 		double *nextLevySteps(int n);
