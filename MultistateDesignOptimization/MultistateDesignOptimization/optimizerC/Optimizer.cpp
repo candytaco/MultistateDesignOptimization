@@ -178,9 +178,14 @@ void Optimizer::writeFrequenciesToFASTA(string *outName, int precision, mat *fre
 		for (int j = 0; j < frequencies->n_cols; j++)
 		{
 			numbers[i][j] = int((*frequencies)(i, j) * nEntries);
-			cout << numbers[i][j] << " ";
+#ifdef _DEBUG
+			cout << (*frequencies)(i, j) << " ";
+#endif
 		}
+#ifdef _DEBUG
 		cout << endl;
+#endif
+
 	}
 
 	vector<int> residueToWrite(nPositions, 0); // i think this should allocate the vector of size nPositions filled with zeros.
@@ -200,6 +205,7 @@ void Optimizer::writeFrequenciesToFASTA(string *outName, int precision, mat *fre
 			output << residues[residueToWrite[j]];
 		}
 		output << endl;
+
 	}
 	output.close();
 

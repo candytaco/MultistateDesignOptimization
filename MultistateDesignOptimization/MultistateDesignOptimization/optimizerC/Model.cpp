@@ -264,7 +264,7 @@ namespace OPTIMIZER
 			this->frequencies = mat((fitnesses) / (1 - fitnesses));	// this works?
 			mat sums = sum(frequencies, 1);
 			for (int i = 0; i < nPositions; i++)
-				frequencies(i) = frequencies(i) / sums.at(i);
+				frequencies.row(i) = frequencies.row(i) / sums.at(i);
 		}
 	}
 
