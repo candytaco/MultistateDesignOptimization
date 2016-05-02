@@ -89,6 +89,7 @@ namespace OPTIMIZER
 		for (int iteration = 0; iteration < maxIterations; iteration++)
 		{
 			//list<Model>::iterator it = population->begin();
+#pragma omp parallel for
 			for (int individual = 0; individual < populationSize; individual++)
 			{
 				Model it = population->at(individual); // because now population is a vector.

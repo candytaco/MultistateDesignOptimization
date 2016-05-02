@@ -25,6 +25,7 @@
 #include <assert.h>
 #include <math.h>
 #include <ctime>
+#include <omp.h>
 
 using namespace std;
 using namespace arma;
