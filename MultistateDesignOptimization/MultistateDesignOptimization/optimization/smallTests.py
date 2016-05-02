@@ -16,7 +16,7 @@ import threading
 from io import *
 # tests with small subsets of data
 
-def smallTest(iterations = 64):
+def smallTest(iterations = 1024):
 	print("Hello!\n");
 	MACROSTATES = enum("E-DHF-NADPH", "E-NADPH", "E-OPEN", "E-THF", "E-THF-NADPX", "TS");
 	RESIDUES = enum('A', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'K', 'L', 'M', 'N', 'P', 'Q', 'R', 'S', 'T', 'V', 'W', 'Y');
@@ -51,7 +51,7 @@ def smallTest(iterations = 64):
 
 	print("Files read in");
 
-	search = CuckooSearch(optimizer.models, JensenShannonDistance(optimizer.targetFrequencies), False, 16, 1, 0.25);
+	search = CuckooSearch(optimizer.models, JensenShannonDistance(optimizer.targetFrequencies), False, 32, 1, 0.25);
 	search.setMaxIterations(iterations);
 	search.setParamBounds(ensembleSizes, backrubTemps, boltzmannTemps, steepnessRange, minWeights, maxWeights);
 	search.setSearchParameters(False, True, True, True, numpy.array([True, True, False, True, True, True]));

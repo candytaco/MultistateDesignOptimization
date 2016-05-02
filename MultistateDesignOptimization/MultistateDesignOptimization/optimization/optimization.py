@@ -6,9 +6,9 @@ from tests2 import *
 from PDZthings import *
 from convergenceTestMicrostates import *
 
-convMicro()
+#convMicro()
 
-#smallTest();
+smallTest();
 
 #PDZsmallTest();
 
