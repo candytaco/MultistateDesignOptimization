@@ -83,6 +83,8 @@ namespace OPTIMIZER
 		// TODO: finish implementing this
         // TODO: a bunch of these things can be set at the beginning of the code.
 		initPopulation();
+		Model *newModel, oldModel;
+		clock_t start = clock();
 		// TODO: MPI things
 		for (int iteration = 0; iteration < maxIterations; iteration++)
 		{
@@ -105,7 +107,6 @@ namespace OPTIMIZER
                 double newEnsembleSize = searchEnsemble ? ensembleSizes[randGen() % nEnsembleSizes] : ensembleSizes[0];
 				double newBackrubTemp = searchBackrub ? backrubTemps[randGen() % nBackrubTemps] : backrubTemps[0];
                 
-				Model *newModel;
                 if (!continuousBoltzmann) {
                     double newBoltzmanTemp = searchBoltzmann ? boltzmannTemps[randGen() % nBoltzmannTemps] : boltzmannTemps[0];
                     newModel = new Model(*this->getModelByParams(newBackrubTemp, newEnsembleSize, newBoltzmanTemp), newEnsembleSize, newBackrubTemp, newBackrubTemp, newWeights, newSteep);
@@ -130,7 +131,7 @@ namespace OPTIMIZER
 					double *parent1Weights = population->at(randParent1).getWeights();
 					double *parent2Weights = population->at(randParent2).getWeights();
 					newWeights = population->at(individual).getWeights();
-                    for (int i = 0; i < nMacrostates; i++)
+					for (int i = 0; i < nMacrostates; i++)
                         newWeights[i] += multiplier * (parent1Weights[i]-parent2Weights[i]);
                     newSteep = population->at(individual).getSteepness() + steepnessStep;
                     boundCheckSteepness(&newSteep);
@@ -155,6 +156,7 @@ namespace OPTIMIZER
                     
                     newModel->recovery = similarityMeasure->getSimilarity(newModel->getFrequencies());
                     
+					// this is currently a memory leak here - the old model is not deleted
 					population->at(individual) = *newModel; // this is where we will need to sync across the processes!
                 }
                 
@@ -163,10 +165,13 @@ namespace OPTIMIZER
             //TODO: end of this... now quite sure what is supposed to happen
             // should only happen on one process? so we need to bring everything back together!
 			sort(population->begin(), population->end(), &CuckooSearch::sortCompModels);
+			recordBestParams();
 			//elimination of the worst individuals
-			for (int i = 0; i < int(populationSize * elimination); i++)
-				population->pop_back();
+			/*for (int i = 0; i < int(populationSize * elimination); i++)
+				population->pop_back();*/
 		}
+		clock_t end = clock();
+		elapsedTime = double(end - start) / CLOCKS_PER_SEC;
 	}
     
     double CuckooSearch::nextLevyStep()

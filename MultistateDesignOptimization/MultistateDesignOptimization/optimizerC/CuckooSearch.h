@@ -17,7 +17,7 @@ namespace OPTIMIZER
 		inline void startSearch() override { this->iterate(); };
 		void iterate() override;
 
-		string *toString();
+		string *toString() override;
 
 	private:
 		void initilizeMembers();

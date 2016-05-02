@@ -91,12 +91,18 @@ namespace OPTIMIZER
 		/// Gets the best frequencies.
 		/// </summary>
 		/// <returns></returns>
-		double **getBestFrequencies();
+		mat *getBestFrequencies();
 				
 		/// <summary>
 		/// The suppress outputs
 		/// </summary>
 		bool suppressOutputs;
+
+		virtual string *toString() = 0;
+
+		string *similarityMeasureString() { return similarityMeasure->toString(); }
+
+		const double getElapsedTime() { return elapsedTime; }
 		
 		/// <summary>
 		/// Finalizes an instance of the <see cref="SearchAlgorithm"/> class.
@@ -148,6 +154,8 @@ namespace OPTIMIZER
 		double *steepnessRange;
 		double *weightMins;
 		double *weightMaxs;
+
+		double elapsedTime;
 
 		bool searchEnsemble;
 		bool searchBackrub;

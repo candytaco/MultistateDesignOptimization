@@ -24,6 +24,7 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <math.h>
+#include <ctime>
 
 using namespace std;
 using namespace arma;

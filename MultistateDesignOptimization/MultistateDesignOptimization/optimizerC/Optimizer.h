@@ -80,7 +80,7 @@ namespace OPTIMIZER
 		/// <param name="outName">Name of the out.</param>
 		/// <param name="precision">The precision.</param>
 		/// <param name="frequencies">The frequencies.</param>
-		void writeFrequenciesToFASTA(string *outName, int precision, double **frequencies); 
+		void writeFrequenciesToFASTA(string *outName, int precision, mat *frequencies); 
         		
 		/// <summary>
 		/// Writes the best parameters to text.

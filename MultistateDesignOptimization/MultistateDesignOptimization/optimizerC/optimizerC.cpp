@@ -38,6 +38,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	optimizer->readTargetFrequencies(&targetFreqs);
 	optimizer->readData(&fileName);
 	CuckooSearch *cs = new CuckooSearch(6, optimizer->getModels(), new JensenShannonDistance(optimizer->getTargetFreqs()), 32, 1, 0.2);
+	cs->setMaxIterations(1024);
 	// search parameters
 	int ensembleSizes[] = { 20, 50 };
 	double backrubTemps[] = { 0.3, 0.6, 0.9, 1.2, 1.5, 1.8 };

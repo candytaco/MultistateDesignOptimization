@@ -106,9 +106,9 @@ void Optimizer::readData(string *inFile)
 			models->at(ID).addMacrostateData(macrostate, position, energies);
 		else
 		{
-			cout << "new model created" << endl;
+			/*cout << "new model created" << endl;
 			cout << backrub << endl << ensembleSize << endl << boltzmann << endl;
-			cout << ID << endl;
+			cout << ID << endl;*/
 			temp = new Model(nMacrostates, ensembleSize, backrub, boltzmann, weights, 0, nPositions, 0);
 			temp->addMacrostateData(macrostate, position, energies);
 			models->emplace(ID, *temp);
@@ -137,7 +137,7 @@ void Optimizer::readTargetFrequencies(string *inFile)
 	datFile.close();
 }
 
-void Optimizer::writeFrequenciesToFASTA(string *outName, int precision, double **frequencies)
+void Optimizer::writeFrequenciesToFASTA(string *outName, int precision, mat *frequencies)
 {
 	/// <summary>
 	/// Writes the best parameters to text.
@@ -152,40 +152,72 @@ void Optimizer::writeFrequenciesToFASTA(string *outName, int precision, double *
 
 	// TODO: check and make sure that the output file doesn't already end in .fasta!
 	string outFileName = outName->append(".fasta"); // might not be necessary, but do it just in case.
-#ifndef _WIN32
-	FILE *outputFile = fopen(outFileName.c_str(), "w");
-#else
-	FILE *outputFile;
-	fopen_s(&outputFile, outFileName.c_str(), "w");	// windows requires using the safer fopen_s function instead of fopen
-#endif
-	if (!outputFile) {
-		perror("Error opening FASTA file");
-	}
+//#ifndef _WIN32
+//	FILE *outputFile = fopen(outFileName.c_str(), "w");
+//#else
+//	FILE *outputFile;
+//	fopen_s(&outputFile, outFileName.c_str(), "w");	// windows requires using the safer fopen_s function instead of fopen
+//#endif
+//	if (!outputFile) {
+//		perror("Error opening FASTA file for writing");
+//	}
+	ofstream output;
+	output.open(outFileName);
 
 	int nEntries = pow(10, precision);
 
 	//int numbers;
 
 	// this is going to create problems, but i'm confused as to what frequencies is. might need to loop through and multiple each element?
-	double **numbers = frequencies;
+
 	//int numbers = round(frequencies * nEntries); // uhhh what is frequencies? in the original code it is a numpy array. here it is...?
+	int **numbers = new int*[frequencies->n_rows];
+	for (int i = 0; i < frequencies->n_rows; i++)
+	{
+		numbers[i] = new int[frequencies->n_cols];
+		for (int j = 0; j < frequencies->n_cols; j++)
+		{
+			numbers[i][j] = int((*frequencies)(i, j) * nEntries);
+			cout << numbers[i][j] << " ";
+		}
+		cout << endl;
+	}
 
 	vector<int> residueToWrite(nPositions, 0); // i think this should allocate the vector of size nPositions filled with zeros.
-	char *residues = "ACDEFGHIKLMNPQRSTVWY";
+	char residues[] = "ACDEFGHIKLMNPQRSTVWY";
+	char w;
 
 	// i think the following loop could be optimized, but i don't know how many times we use it.
 	// why is there no "i" used within this loop? maybe i don't get what it is doing.
-	for (int i = 0; i < nEntries; i++) {
+	for (int i = 0; i < nEntries; i++)
+	{
+		output << "> Null" << endl;
+		for (int j = 0; j < nPositions; j++)
+		{
+			while (numbers[j][residueToWrite[j]] == 0 && (residueToWrite[j] < 19))
+				residueToWrite[j]++;
+			numbers[j][residueToWrite[j]]--;
+			output << residues[residueToWrite[j]];
+		}
+		output << endl;
+	}
+	output.close();
+
+	/*for (int i = 0; i < nEntries; i++) 
+	{
 		fprintf(outputFile, "> Null\n");
-		for (int j = 0; j < nPositions; j++) {
+		for (int j = 0; j < nPositions; j++) 
+		{
 			while ((numbers[j][residueToWrite[j]] == 0) && residueToWrite[j] < 19)
 				residueToWrite[j]++;
 			numbers[j][residueToWrite[j]]--;
-			fprintf(outputFile, &residues[residueToWrite[j]]);
+			w = residues[residueToWrite[j]];
+			cout << w << endl;
+			fprintf(outputFile, &w);
 		}
 		fprintf(outputFile, "\n");
 	}
-	fclose(outputFile);
+	fclose(outputFile);*/
 }
 
 void Optimizer::writeBestParamsToText(string *outName)
@@ -228,9 +260,11 @@ void Optimizer::writeBestParamsToText(string *outName)
 	fprintf(outputFile, "Steepness:  %.9f\n", bestVals[3]);
 	fprintf(outputFile, "Weights:  ");
 	for (int i = 0; i < nMacrostates; i++) // nMacrostates must be defined earlier...
-		fprintf(outputFile, "%.4f", bestVals[4 + i]); // this is not the best structure, but change it later when necesary.
+		fprintf(outputFile, "%.4f ", bestVals[4 + i]); // this is not the best structure, but change it later when necesary.
 	fprintf(outputFile, "\nMatch: %.4f\n", bestVals[4 + nMacrostates]);
-
+	fprintf(outputFile, "Algorithm: %s\n", optimizationAlgorithm->toString()->c_str());
+	fprintf(outputFile, "Similarity measure: %s\n", optimizationAlgorithm->similarityMeasureString()->c_str());
+	fprintf(outputFile, "Elapsed time %.6f secs\n", optimizationAlgorithm->getElapsedTime());
 	//TODO: the following needs to be added, but not sure where these are stored. 
 	/*
 	outfile.write("Algorithm: {:s}\n".format(self.optimizationAlgorithm.__str__()));
