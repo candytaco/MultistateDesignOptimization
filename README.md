@@ -1,5 +1,10 @@
 # MultistateDesignOptimization
 
+#### 5/1:
+
+* Working serial code exists now.
+* A memory leak exists in Cuockoo search. I'm seeing my RAM usage going up at ~50 mb/s during the iteration phase.
+
 #### 4/13:
 
 * Use Armadillo unless someone says otherwise (could try Eigen but my personal experience with it was convoluted)
