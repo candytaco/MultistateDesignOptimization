@@ -9,9 +9,6 @@
 
 #include <stdio.h>
 #include <tchar.h>
-#include "Model.h"
-#include "SearchAlgorithm.h"
-#include "SimilarityMeasure.h"
 #include <string>
 //#include "matrix.h"
 #include <map>
@@ -24,6 +21,11 @@
 #include <boost/random/uniform_real_distribution.hpp>
 #include <fstream>
 #include <iostream>
+#include <stdlib.h>
+#include <assert.h>
+#include <math.h>
+#include <ctime>
+#include <omp.h>
 
 using namespace std;
 using namespace arma;

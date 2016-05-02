@@ -1,4 +1,7 @@
+#pragma once
 #include "stdafx.h"
+#include "Model.h"
+#include "SimilarityMeasure.h"
 
 namespace OPTIMIZER
 {
@@ -62,12 +65,12 @@ namespace OPTIMIZER
 		/// <summary>
 		/// Starts the search.
 		/// </summary>
-		virtual void startSearch();		
+		virtual void startSearch() = 0;
 
 		/// <summary>
 		/// Iterates this instance.
 		/// </summary>
-		virtual void iterate();
+		virtual void iterate() = 0;
 		
 		/// <summary>
 		/// Gets the model by parameters.
@@ -88,12 +91,18 @@ namespace OPTIMIZER
 		/// Gets the best frequencies.
 		/// </summary>
 		/// <returns></returns>
-		double **getBestFrequencies();
+		mat *getBestFrequencies();
 				
 		/// <summary>
 		/// The suppress outputs
 		/// </summary>
 		bool suppressOutputs;
+
+		virtual string *toString() = 0;
+
+		string *similarityMeasureString() { return similarityMeasure->toString(); }
+
+		const double getElapsedTime() { return elapsedTime; }
 		
 		/// <summary>
 		/// Finalizes an instance of the <see cref="SearchAlgorithm"/> class.
@@ -128,7 +137,7 @@ namespace OPTIMIZER
 		/// <summary>
 		/// Records the best parameters.
 		/// </summary>
-		virtual void recordBestParams();
+		virtual void recordBestParams() = 0;
 
 		int nMacrostates;
 
@@ -145,6 +154,8 @@ namespace OPTIMIZER
 		double *steepnessRange;
 		double *weightMins;
 		double *weightMaxs;
+
+		double elapsedTime;
 
 		bool searchEnsemble;
 		bool searchBackrub;

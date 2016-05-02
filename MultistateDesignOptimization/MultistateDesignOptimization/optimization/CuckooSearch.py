@@ -169,7 +169,7 @@ class CuckooSearch(SearchAlgorithm):
 		# generate a random Levy by transforming from a rand uniform
 		# see https://en.wikipedia.org/wiki/L%C3%A9vy_distribution#Random_sample_generation
 		r1 = numpy.random.rand();
-		randLevy = self.scaleParam / numpy.power(scipy.stats.norm.ppf(1.0 - r1 / 2.0), -2); # ppf is the inverse normal cdf
+		randLevy = self.scaleParam * numpy.power(scipy.stats.norm.ppf(1.0 - r1 / 2.0), -2); # ppf is the inverse normal cdf
 		# random direction
 		r2 = numpy.sign((numpy.random.rand() - 0.5));
 		return randLevy * r2 * 0.01; # Cuckoo search authors says to use 1/100 of the scale length

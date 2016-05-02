@@ -1,10 +1,11 @@
+#include "stdafx.h"
 #include "SimilarityMeasure.h"
 
 namespace OPTIMIZER
 {
 	SimilarityMeasure::SimilarityMeasure()
+		: targetFrequencies(NULL)
 	{
-		targetFrequencies = NULL;
 	}
 
 	SimilarityMeasure::SimilarityMeasure(const SimilarityMeasure& other)
@@ -13,8 +14,8 @@ namespace OPTIMIZER
 	}
 
 	SimilarityMeasure::SimilarityMeasure(mat *targetFreqs)
+		: targetFrequencies(targetFreqs)
 	{
-		this->targetFrequencies = targetFreqs;
 	}
 
 	void SimilarityMeasure::setTargetFrequencies(mat *newTargetFreqs)

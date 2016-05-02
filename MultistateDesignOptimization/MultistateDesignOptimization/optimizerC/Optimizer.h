@@ -1,13 +1,5 @@
 #pragma once
 #include "stdafx.h"
-#include <iostream>
-#include <stdlib.h>
-#include <stdio.h>
-#include <assert.h>
-#include <math.h>
-#include <vector>
-#include <list>
-#include <string>
 
 namespace OPTIMIZER
 {
@@ -88,7 +80,7 @@ namespace OPTIMIZER
 		/// <param name="outName">Name of the out.</param>
 		/// <param name="precision">The precision.</param>
 		/// <param name="frequencies">The frequencies.</param>
-		void writeFrequenciesToFASTA(string *outName, int precision, double **frequencies); 
+		void writeFrequenciesToFASTA(string *outName, int precision, mat *frequencies); 
         		
 		/// <summary>
 		/// Writes the best parameters to text.
@@ -109,7 +101,7 @@ namespace OPTIMIZER
 		/// Uses the algorithm.
 		/// </summary>
 		/// <param name="">The .</param>
-		void useAlgorithm(SearchAlgorithm);
+		void useAlgorithm(SearchAlgorithm *);
 		
 		/// <summary>
 		/// Starts optimization process.
@@ -120,7 +112,7 @@ namespace OPTIMIZER
 		/// Gets the best parameters.
 		/// </summary>
 		/// <returns></returns>
-		double *getBestParameters();
+		double *getBestParameters() { return this->optimizationAlgorithm->getBestParams(); }
 		// this needs to contain the following. i'm going to assume that they are each a float for now, but weights needs to be multiple floats!?
         // for the write functions, it is assumed these are stored in an array of floats.
         
@@ -146,6 +138,8 @@ namespace OPTIMIZER
 		string *toString();
 
 		map<int, Model> *getModels() const;
+
+		mat *getTargetFreqs() const;
 		
 		/// <summary>
 		/// Finalizes an instance of the <see cref="Optimizer"/> class.
@@ -158,7 +152,6 @@ namespace OPTIMIZER
 		int nPositions;
 		int minPosition;
 		mat *targetFrequencies;
-		string *macrostates;
 		int nMacrostates;
 		bool continuousBoltzmann;
 	};

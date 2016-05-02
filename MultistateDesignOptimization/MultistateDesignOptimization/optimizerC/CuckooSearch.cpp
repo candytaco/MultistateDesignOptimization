@@ -1,27 +1,47 @@
+#include "stdafx.h"
+#include "Model.h"
+#include "SimilarityMeasure.h"
 #include "CuckooSearch.h"
-// these should maybe go somewhere else.
-#include <random>
 
 namespace OPTIMIZER
 {
-	CuckooSearch::CuckooSearch()
+	CuckooSearch::CuckooSearch() : SearchAlgorithm(0, NULL, NULL, false),
+		scaleParam(1),
+		populationSize(0),
+		elimination(0.25)
 	{
-		CuckooSearch(0, NULL, NULL, 0, 1, 0.25, false);
+		this->initilizeMembers();
 	}
 
-	CuckooSearch::CuckooSearch(int nMacrostates, map<int, Model> *models, SimilarityMeasure *similarityMeasure, int populationSize, double scaleParam, double elimination)
+	CuckooSearch::CuckooSearch(int nMacrostates, map<int, Model> *models, SimilarityMeasure *similarityMeasure, int populationSize, double scaleParam, double elimination) : SearchAlgorithm(nMacrostates, models, similarityMeasure, false),
+		scaleParam(scaleParam),
+		populationSize(populationSize),
+		elimination(elimination)
 	{
-		CuckooSearch(nMacrostates, models, similarityMeasure, 32, 1, 0.25, false);
+		this->initilizeMembers();
 	}
-	CuckooSearch::CuckooSearch(int nMacrostates, map<int, Model> *models, SimilarityMeasure *similarityMeasure, int populationSize, double scaleParam, double elimination, bool continuousBoltzmann) : SearchAlgorithm(nMacrostates, models, similarityMeasure, continuousBoltzmann)
+	CuckooSearch::CuckooSearch(int nMacrostates, map<int, Model> *models, SimilarityMeasure *similarityMeasure, int populationSize, double scaleParam, double elimination, bool continuousBoltzmann) : SearchAlgorithm(nMacrostates, models, similarityMeasure, continuousBoltzmann),
+		scaleParam(scaleParam),
+		populationSize(populationSize),
+		elimination(elimination)
 	{
-		this->scaleParam = scaleParam;
-		this->populationSize = populationSize;
-		this->elimination = elimination;
+		this->initilizeMembers();
+	}
+
+	void CuckooSearch::initilizeMembers()
+	{
 		population = new vector<Model>();
 		e = new mt19937(time(NULL));
 		normal_dist = new boost::math::normal(0.0, 1.0); // make the normal distribution
 		uniform_dist05 = new boost::random::uniform_real_distribution<double>(0.5, 1); // make the uniform distribution
+		searchWeights = new bool[nMacrostates];
+		for (int i = 0; i < nMacrostates; i++)
+			searchWeights[i] = true;
+	}
+
+	bool CuckooSearch::sortCompModels(const Model&lhs, const Model &rhs)
+	{
+		return lhs > rhs;
 	}
 
 	void CuckooSearch::initPopulation()
@@ -38,7 +58,7 @@ namespace OPTIMIZER
 			for (int i = 0; i < nMacrostates; i++)
 				weights[i] = searchWeights[i] ? randDouble(randGen) : weightMins[i]; // boolean ? <then this> : <else>
             int ensembleSize = searchEnsemble ? ensembleSizes[randGen() % nEnsembleSizes] : ensembleSizes[0];
-            int backrubTemp = searchBackrub ? backrubTemps[randGen() % nBackrubTemps] : backrubTemps[0];
+            double backrubTemp = searchBackrub ? backrubTemps[randGen() % nBackrubTemps] : backrubTemps[0];
             double boltzmannTemp = searchBoltzmann ? boltzmannTemps[randGen() % nBoltzmannTemps] : boltzmannTemps[0];
             
             // should this next line be here?
@@ -53,7 +73,7 @@ namespace OPTIMIZER
 			m->recovery = similarityMeasure->getSimilarity(m->getFrequencies());
 			population->push_back(*m);
 		}
-        sort(population->begin(), population->end(), Model::operator>);
+		sort(population->begin(), population->end(), &CuckooSearch::sortCompModels); // needed a 2-arg comparator
 		//population->sort();
 		recordBestParams();
 	}
@@ -63,10 +83,13 @@ namespace OPTIMIZER
 		// TODO: finish implementing this
         // TODO: a bunch of these things can be set at the beginning of the code.
 		initPopulation();
+		Model *newModel, oldModel;
+		clock_t start = clock();
 		// TODO: MPI things
 		for (int iteration = 0; iteration < maxIterations; iteration++)
 		{
 			//list<Model>::iterator it = population->begin();
+#pragma omp parallel for
 			for (int individual = 0; individual < populationSize; individual++)
 			{
 				Model it = population->at(individual); // because now population is a vector.
@@ -85,7 +108,6 @@ namespace OPTIMIZER
                 double newEnsembleSize = searchEnsemble ? ensembleSizes[randGen() % nEnsembleSizes] : ensembleSizes[0];
 				double newBackrubTemp = searchBackrub ? backrubTemps[randGen() % nBackrubTemps] : backrubTemps[0];
                 
-				Model *newModel;
                 if (!continuousBoltzmann) {
                     double newBoltzmanTemp = searchBoltzmann ? boltzmannTemps[randGen() % nBoltzmannTemps] : boltzmannTemps[0];
                     newModel = new Model(*this->getModelByParams(newBackrubTemp, newEnsembleSize, newBoltzmanTemp), newEnsembleSize, newBackrubTemp, newBackrubTemp, newWeights, newSteep);
@@ -97,7 +119,7 @@ namespace OPTIMIZER
                     boundCheckBoltzmann(&newBoltzmannTemp);
                     newModel = new Model(*this->getModelByParams(newBackrubTemp, newEnsembleSize, newBoltzmannTemp), newEnsembleSize, newBackrubTemp, newBackrubTemp, newWeights, newSteep);
                 }
-                newModel->recovery = similarityMeasure->getSimilarity(newModel->getFrequencies);
+                newModel->recovery = similarityMeasure->getSimilarity(newModel->getFrequencies());
                 
                 if (*newModel > it)
                     population->at(individual) = *newModel;
@@ -111,7 +133,7 @@ namespace OPTIMIZER
 					double *parent1Weights = population->at(randParent1).getWeights();
 					double *parent2Weights = population->at(randParent2).getWeights();
 					newWeights = population->at(individual).getWeights();
-                    for (int i = 0; i < nMacrostates; i++)
+					for (int i = 0; i < nMacrostates; i++)
                         newWeights[i] += multiplier * (parent1Weights[i]-parent2Weights[i]);
                     newSteep = population->at(individual).getSteepness() + steepnessStep;
                     boundCheckSteepness(&newSteep);
@@ -136,6 +158,7 @@ namespace OPTIMIZER
                     
                     newModel->recovery = similarityMeasure->getSimilarity(newModel->getFrequencies());
                     
+					// this is currently a memory leak here - the old model is not deleted
 					population->at(individual) = *newModel; // this is where we will need to sync across the processes!
                 }
                 }
@@ -144,11 +167,14 @@ namespace OPTIMIZER
             
             //TODO: end of this... now quite sure what is supposed to happen
             // should only happen on one process? so we need to bring everything back together!
-            sort(population->begin(), population->end(), Model::operator>);
+			sort(population->begin(), population->end(), &CuckooSearch::sortCompModels);
+			recordBestParams();
 			//elimination of the worst individuals
-			for (int i = 0; i < int(populationSize * elimination); i++)
-				population->pop_back();
+			/*for (int i = 0; i < int(populationSize * elimination); i++)
+				population->pop_back();*/
 		}
+		clock_t end = clock();
+		elapsedTime = double(end - start) / CLOCKS_PER_SEC;
 	}
     
     double CuckooSearch::nextLevyStep()

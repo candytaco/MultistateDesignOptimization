@@ -1,3 +1,4 @@
+#pragma once
 #include "stdafx.h"
 
 namespace OPTIMIZER
@@ -79,7 +80,7 @@ namespace OPTIMIZER
 		/// Gets the backrub temperature.
 		/// </summary>
 		/// <returns></returns>
-		const int getBackrubTemp() { return this->backrubTemp; }
+		const double getBackrubTemp() { return this->backrubTemp; }
 		
 		/// <summary>
 		/// Gets the boltzmann temperature.
@@ -126,9 +127,9 @@ namespace OPTIMIZER
 		double steepness;				// sigmoid steepness
 
 		// armadillo matrices/cubes
-		mat *fitnesses;						// single item
-		mat *frequencies;					// single item
-		cube *macrostateResidueEnergies;	// single item
+		mat fitnesses;						// single item
+		mat frequencies;					// single item
+		cube macrostateResidueEnergies;	// single item
 
 		// when microstates are used
 		bool useMicrostateData;
@@ -150,6 +151,11 @@ namespace OPTIMIZER
 		//double ***residueEnergies;		// double[position][residue][macrostate energy]
 
 		bool fitnessCalculated;
+		
+		/// <summary>
+		/// Initializes member fields.
+		/// </summary>
+		void initializeMembers();
 		
 		/// <summary>
 		/// Calculates fitnesses values.

@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "SearchAlgorithm.h"
 #include "Optimizer.h"
 
@@ -5,12 +6,68 @@ namespace OPTIMIZER
 {
 	SearchAlgorithm::SearchAlgorithm()
 	{
-		SearchAlgorithm(0, NULL, NULL, false);
+		this->models = NULL;
+		this->similarityMeasure = NULL;
+		this->continuousBoltzmann = false;
+		this->nMacrostates = 0;
+
+		maxIterations = 0;
+		ensembleSizes = NULL;
+		backrubTemps = NULL;
+		boltzmannTemps = NULL;
+		steepnessRange = NULL;
+		weightMins = NULL;
+		weightMaxs = NULL;
+
+		searchEnsemble =
+			searchBackrub =
+			searchBoltzmann =
+			searchSteepness = true;
+
+		searchWeights = NULL;
+
+		bestEnsembleSize = -1;
+		bestBackrubTemp = -1;
+		bestBoltzmannTemp = -1;
+		bestSteepness = -1;
+		bestWeights = NULL;
+		bestMatchVal = -1;
+		bestFrequencies = NULL;
+
+		suppressOutputs = true;
 	}
 
 	SearchAlgorithm::SearchAlgorithm(int nMacrostates, map<int, Model> *models, SimilarityMeasure *similarityMeasure)
 	{
-		SearchAlgorithm(nMacrostates, models, similarityMeasure, false);
+		this->models = models;
+		this->similarityMeasure = similarityMeasure;
+		this->continuousBoltzmann = false;
+		this->nMacrostates = nMacrostates;
+
+		maxIterations = 0;
+		ensembleSizes = NULL;
+		backrubTemps = NULL;
+		boltzmannTemps = NULL;
+		steepnessRange = NULL;
+		weightMins = NULL;
+		weightMaxs = NULL;
+
+		searchEnsemble =
+			searchBackrub =
+			searchBoltzmann =
+			searchSteepness = true;
+
+		searchWeights = NULL;
+
+		bestEnsembleSize = -1;
+		bestBackrubTemp = -1;
+		bestBoltzmannTemp = -1;
+		bestSteepness = -1;
+		bestWeights = NULL;
+		bestMatchVal = -1;
+		bestFrequencies = NULL;
+
+		suppressOutputs = true;
 	}
 
 	SearchAlgorithm::SearchAlgorithm(int nMacrostates, map<int, Model> *models, SimilarityMeasure *similarityMeasure, bool continuousBoltzmann)
@@ -33,7 +90,7 @@ namespace OPTIMIZER
 			searchBoltzmann =
 			searchSteepness = true;
 
-		searchWeights = false;
+		searchWeights = NULL;
 
 		bestEnsembleSize = -1;
 		bestBackrubTemp = -1;
@@ -81,6 +138,7 @@ namespace OPTIMIZER
 		this->nEnsembleSizes = nEnsembleSizes;
 		if (this->backrubTemps)
 			delete[] this->backrubTemps;
+		this->backrubTemps = backrubTemps;
 		this->nBackrubTemps = nBackrubTemps;
 		if (this->boltzmannTemps)
 			delete[] this->boltzmannTemps;
@@ -115,16 +173,9 @@ namespace OPTIMIZER
 		return out;
 	}
 
-	double **SearchAlgorithm::getBestFrequencies()
+	mat *SearchAlgorithm::getBestFrequencies()
 	{
-		double **out = new double*[bestFrequencies->n_rows];
-		for (int i = 0; i < bestFrequencies->n_rows; i++)
-		{
-			out[i] = new double[bestFrequencies->n_cols];
-			for (int j = 0; j < bestFrequencies->n_cols; j++)
-				out[i][j] = bestFrequencies->at(i, j);
-		}
-		return out;
+		return new mat(*bestFrequencies);
 	}
 
 	void SearchAlgorithm::boundCheckBoltzmann(double *newBoltzmann)
@@ -159,6 +210,8 @@ namespace OPTIMIZER
 	void SearchAlgorithm::boundCheckWeights(double *weights)
 	{
 		// oh Jesus Christ this is ripe for segfaults if the arrays aren't indexed correctly
+		// 5/1 - added in code to normalize to 1
+		double maxW = 0;
 		for (int i = 0; i < nMacrostates; i++)
 		{
 			if (!searchWeights[i])
@@ -167,8 +220,11 @@ namespace OPTIMIZER
 				weights[i] = weightMins[i];
 			else if (weights[i] > weightMaxs[i])
 				weights[i] = weightMaxs[i];
-			else continue;
+			maxW = weights[i] > maxW ? weights[i] : maxW;
 		}
+
+		for (int i = 0; i < nMacrostates; i++)
+			weights[i] /= maxW;
 	}
 
 	SearchAlgorithm::~SearchAlgorithm()
