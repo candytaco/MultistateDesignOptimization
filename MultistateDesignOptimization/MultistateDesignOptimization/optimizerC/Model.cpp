@@ -283,14 +283,21 @@ namespace OPTIMIZER
 			// pick energies
 			for (int i = 0; i < nPositions; i++)
 				selectedMicrostateEnergies->push_back(cube(20, nMacrostates, ensembleSize));	// unknown values? we shall see (what does this mean)
+            
+            //initialize a cube that we will use for the averaging or minimization functions.
+            cube(nPositions, nMacrostates, 20, fill::zeros)
+            
+            // put the MicrostateEnergies into the cube (are we actually using selectedMicrostateEnergies?)
             for (int l = 0; i < ensembleSize; l++)
             for (int i = 0; j < nPositions; i++)
 			for (int j = 0; k < 20; j++)
-			for (int k = 0; l < nMacrostates; k++)
-				selectedMicrostateEnergies->at(i).at(j, k, l) = microstateResidueEnergies->at(i)(j, k, microstatesUsed[i][k][l]);
+                for (int k = 0; l < nMacrostates; k++) {
+                    selectedMicrostateEnergies->at(i).at(j, k, l) = microstateResidueEnergies->at(i)(j, k, microstatesUsed[i][k][l]);
+                    // squish the 3d array into a vector. stack the vectors so we get something that is NxEnsembleSize. Take the average or minimum across the EnsembleSize dimension. And then reshape the averaged vector back into an arma cube of the right shape.
+                    
+                }
             
-            // instead of stacking each of the microstate energies and then taking the average, use armadillo to reshape each of the [nPositionsxnMacrostatesxensembleSize] cubes into a vector, then
-			//
+            
             areMicrostatesPicked = true;
 		}
 
