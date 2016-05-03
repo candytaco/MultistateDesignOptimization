@@ -1,29 +1,34 @@
-COMPILER=gcc
-FLAGS= -Wall -O3
+COMPILER=g++-5
+FLAGS= -Wall -O3 -fopenmp -std=c++11
+LIBRARY = -larmadillo -llapack -lblas
+
+TARGETS =  stdafx.o SimilarityMeasure.o JensenShannonDistance.o SearchAlgorithm.o CuckooSearch.o  Model.o Optimizer.o test
+
+all: $(TARGETS)
 
 test : optimizerC.cpp stdafx.h Model.h SimilarityMeasure.h JensenShannonDistance.h SearchAlgorithm.h CuckooSearch.h Optimizer.h
-	$(COMPILER) -o $(FLAGS) optimizerC.cpp stdafx.obj Model.obj SimilarityMeasure.obj JensenShannonDistance.obj SearchAlgorithm.obj CuckooSearch.obj Optimizer.obj
+	$(COMPILER) -o $(FLAGS) optimizerC.cpp stdafx.o Model.o SimilarityMeasure.o JensenShannonDistance.o SearchAlgorithm.o CuckooSearch.o Optimizer.o
 
-stdafx.obj : stdafx.h
+stdafx.o : stdafx.h
 	$(COMPILER) -c $(FLAGS) stdafx.cpp
 
-Model.obj : stdafx.h Model.h
-	$(COMPILER) -c $(FLAGS) stdafx.obj Model.cpp
+Model.o : stdafx.h Model.h Optimizer.h
+	$(COMPILER) -c $(FLAGS) stdafx.o Model.cpp
 
-SimilarityMeasure.obj : stdafx.h SimilarityMeasure.h
-	$(COMPILER) -c $(FLAGS) stdafx.obj SimilarityMeasure.cpp
+SimilarityMeasure.o : stdafx.h SimilarityMeasure.h
+	$(COMPILER) -c $(FLAGS) stdafx.o SimilarityMeasure.cpp
 
-JensenShannonDistance.obj : stdafx.h SimilarityMeasure.h JensenShannonDistance.h
-	$(COMPILER) -c $(FLAGS) stdafx.obj SimilarityMeassure.obj JensenShannonDistance.cpp
+JensenShannonDistance.o : stdafx.h SimilarityMeasure.h JensenShannonDistance.h
+	$(COMPILER) -c $(FLAGS) stdafx.o SimilarityMeassure.o JensenShannonDistance.cpp
 
-SearchAlgorithm.obj : stdafx.h Model.h SimilarityMeasure.h SearchAlgorithm.h
-	$(COMPILER) -c $(FLAGS) stdafx.obj Model.obj SimilarityMeasure.obj SearchAlgorithm.cpp
+SearchAlgorithm.o : stdafx.h Model.h SimilarityMeasure.h SearchAlgorithm.h
+	$(COMPILER) -c $(FLAGS) stdafx.o Model.o SimilarityMeasure.o SearchAlgorithm.cpp
 
-CuckooSearch.obj : stdafx.h Model.h SimilarityMeasure.h SearchAlgorithm.h CuckooSearch.h
-	$(COMPILER) -c $(FLAGS) stdafx.obj Model.obj SimilarityMeasure.obj SearchAlgorithm.obj CuckooSearch.cpp
+CuckooSearch.o : stdafx.h Model.h SimilarityMeasure.h SearchAlgorithm.h CuckooSearch.h
+	$(COMPILER) -c $(FLAGS) stdafx.o Model.o SimilarityMeasure.o SearchAlgorithm.o CuckooSearch.cpp
 
-Optimizer.obj: stdafx.h Model.h SimilarityMeasure.h SearchAlgorithm.h Optimizer.h
-	$(COMPILER) -c $(FLAGS) stdafx.obj Model.obj SimilarityMeasure.obj SearchAlgorithm.obj Optimizer.cpp
+Optimizer.o: stdafx.h Model.h SimilarityMeasure.h SearchAlgorithm.h Optimizer.h
+	$(COMPILER) -c $(FLAGS) stdafx.o Model.o SimilarityMeasure.o SearchAlgorithm.o Optimizer.cpp
 
 clean :
-	rm *.obj
+	rm *.o

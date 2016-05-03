@@ -121,6 +121,7 @@ namespace OPTIMIZER
                 }
                 newModel->recovery = similarityMeasure->getSimilarity(newModel->getFrequencies());
                 
+                // i think that this might break the openmp version. we might need a lock around it.
                 if (*newModel > it)
                     population->at(individual) = *newModel;
                 

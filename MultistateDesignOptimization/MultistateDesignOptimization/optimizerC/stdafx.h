@@ -8,7 +8,9 @@
 #include "targetver.h"
 
 #include <stdio.h>
+#ifdef _WIN32
 #include <tchar.h>
+#endif
 #include <string>
 //#include "matrix.h"
 #include <map>
@@ -26,6 +28,8 @@
 #include <math.h>
 #include <ctime>
 #include <omp.h>
+
+
 
 using namespace std;
 using namespace arma;
