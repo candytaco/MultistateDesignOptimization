@@ -1,13 +1,13 @@
 COMPILER=g++-5
-FLAGS= -Wall -O3 -fopenmp -std=c++11
+FLAGS= -Wall -O3 -std=c++11 -fpermissive
 LIBRARY = -larmadillo -llapack -lblas
 
-TARGETS =  stdafx.o SimilarityMeasure.o JensenShannonDistance.o SearchAlgorithm.o CuckooSearch.o  Model.o Optimizer.o test
+TARGETS =  stdafx.o Model.o SimilarityMeasure.o JensenShannonDistance.o SearchAlgorithm.o CuckooSearch.o   Optimizer.o test
 
 all: $(TARGETS)
 
 test : optimizerC.cpp stdafx.h Model.h SimilarityMeasure.h JensenShannonDistance.h SearchAlgorithm.h CuckooSearch.h Optimizer.h
-	$(COMPILER) -o $(FLAGS) optimizerC.cpp stdafx.o Model.o SimilarityMeasure.o JensenShannonDistance.o SearchAlgorithm.o CuckooSearch.o Optimizer.o
+	$(COMPILER) -o optimizerC.o $(FLAGS) optimizerC.cpp stdafx.o Model.o SimilarityMeasure.o JensenShannonDistance.o SearchAlgorithm.o CuckooSearch.o Optimizer.o
 
 stdafx.o : stdafx.h
 	$(COMPILER) -c $(FLAGS) stdafx.cpp
@@ -19,7 +19,7 @@ SimilarityMeasure.o : stdafx.h SimilarityMeasure.h
 	$(COMPILER) -c $(FLAGS) stdafx.o SimilarityMeasure.cpp
 
 JensenShannonDistance.o : stdafx.h SimilarityMeasure.h JensenShannonDistance.h
-	$(COMPILER) -c $(FLAGS) stdafx.o SimilarityMeassure.o JensenShannonDistance.cpp
+	$(COMPILER) -c $(FLAGS) stdafx.o SimilarityMeasure.o JensenShannonDistance.cpp
 
 SearchAlgorithm.o : stdafx.h Model.h SimilarityMeasure.h SearchAlgorithm.h
 	$(COMPILER) -c $(FLAGS) stdafx.o Model.o SimilarityMeasure.o SearchAlgorithm.cpp
