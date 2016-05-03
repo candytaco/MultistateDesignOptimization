@@ -31,6 +31,7 @@ namespace OPTIMIZER
 	void CuckooSearch::initilizeMembers()
 	{
 		population = vector<Model>();
+        population.resize(populationSize);
 		e = new mt19937(time(NULL));
 		normal_dist = new boost::math::normal(0.0, 1.0); // make the normal distribution
 		uniform_dist05 = new boost::random::uniform_real_distribution<double>(0.5, 1); // make the uniform distribution
@@ -48,7 +49,8 @@ namespace OPTIMIZER
 	{
 		// TODO: implement this
 		bestMatchVal = 0;
-		population.clear();
+        // TODO: commented the next line out when trying to debug the model deconstructor.
+		//population.clear();
 		for (int i = 0; i < populationSize; i++)
 		{
             double steepness = searchSteepness ? randDouble(randGen) * (steepnessRange[1] - steepnessRange[0]) + steepnessRange[0] : steepnessRange[0];
@@ -76,7 +78,12 @@ namespace OPTIMIZER
 			}
             //m->macrostatesUsed = searchWeights; // not sure if this line is necessary.
 			m->recovery = similarityMeasure->getSimilarity(m->getFrequencies());
-			population.push_back(*m);
+            printf("Here I am!\n");
+            // this is a memory leak because we aren't deconstructing the models properly... but not sure what to do about that?
+            population.at(i) = *m;
+            //population.push_back(*m);
+            //population[i] = *m;
+            //population.push_back(*m);
 		}
 		sort(population.begin(), population.end(), &CuckooSearch::sortCompModels); // needed a 2-arg comparator
 		//population.sort();
@@ -93,6 +100,7 @@ namespace OPTIMIZER
 		// TODO: MPI things
 		for (int iteration = 0; iteration < maxIterations; iteration++)
 		{
+            printf("Iteration %d! \n",iteration);
 			//list<Model>::iterator it = population.begin();
 #pragma omp parallel for
 			for (int individual = 0; individual < populationSize; individual++)
@@ -100,6 +108,7 @@ namespace OPTIMIZER
 				Model it = population.at(individual); // because now population is a vector.
 				// TODO: the meaty things here.
                 // TODO: can we do the search on a coarse grid first and then the smoother grid?
+                // TODO: all of these things should not be redefined within each iteration. pull them out because this is a memory leak?
 				double newSteep = nextLevyStep() + it.getSteepness();
 				boundCheckSteepness(&newSteep);
                 
@@ -112,13 +121,16 @@ namespace OPTIMIZER
                 
                 double newEnsembleSize = searchEnsemble ? ensembleSizes[randGen() % nEnsembleSizes] : ensembleSizes[0];
 				double newBackrubTemp = searchBackrub ? backrubTemps[randGen() % nBackrubTemps] : backrubTemps[0];
+                double newBoltzmannTemp;
+                
+                // TODO: in the next few lines we generate a new model but we don't clear it. this is also going to cause a memory leak. Do we have a temp model?
                 
                 if (!continuousBoltzmann) {
-                    double newBoltzmanTemp = searchBoltzmann ? boltzmannTemps[randGen() % nBoltzmannTemps] : boltzmannTemps[0];
-                    newModel = new Model(*this->getModelByParams(newBackrubTemp, newEnsembleSize, newBoltzmanTemp), newEnsembleSize, newBackrubTemp, newBoltzmanTemp, newWeights, newSteep);
+                    newBoltzmannTemp = searchBoltzmann ? boltzmannTemps[randGen() % nBoltzmannTemps] : boltzmannTemps[0];
+                    newModel = new Model(*this->getModelByParams(newBackrubTemp, newEnsembleSize, newBoltzmannTemp), newEnsembleSize, newBackrubTemp, newBoltzmannTemp, newWeights, newSteep);
                 }
                 else {
-                    double newBoltzmannTemp = nextLevyStep() + it.getBoltzmannTemp(); //TODO: check and figure out how we want to generate this.
+                    newBoltzmannTemp = nextLevyStep() + it.getBoltzmannTemp(); //TODO: check and figure out how we want to generate this.
                     // python code:
                     //	boltzmannStep = multiplier * (self.population[randParent1].getBoltzmannTemp() - self.population[randParent2].getBoltzmannTemp());
                     boundCheckBoltzmann(&newBoltzmannTemp);
@@ -126,9 +138,13 @@ namespace OPTIMIZER
                 }
                 newModel->recovery = similarityMeasure->getSimilarity(newModel->getFrequencies());
                 
-                // i think that this might break the openmp version. we might need a lock around it.
+                // TODO: can we find a way to do this without using *newModel? Or we just need to clear newModel after this happens I suppose
                 if (*newModel > it)
-                    population.at(individual) = *newModel;
+                    population.at(individual).setParameters(newBackrubTemp,newBoltzmannTemp,newWeights,newSteep,newEnsembleSize);
+                    //population.at(individual) = *newModel;
+                    
+                //TODO: this is causing a segfault.
+                //newModel->clearModel();
                 
                 if (individual!=0) { // we don't want to randomly replace the best nest. this gives us some bias towards the best nest... (because it will always be there to get randomly selected).
                 if (randDouble(randGen) < elimination) {
@@ -148,10 +164,11 @@ namespace OPTIMIZER
                     newEnsembleSize = searchEnsemble ? ensembleSizes[randGen() % nEnsembleSizes] : ensembleSizes[0];
                     newBackrubTemp = searchBackrub ? backrubTemps[randGen() % nBackrubTemps] : backrubTemps[0];
                     
+                    // get rid of the new model here because we are just updating the old model.
 					double newBoltzmannTemp;
                     if (!continuousBoltzmann) {
                         newBoltzmannTemp = searchBoltzmann ? boltzmannTemps[randGen() % nBoltzmannTemps] : boltzmannTemps[0];
-                        newModel = new Model(*this->getModelByParams(newBackrubTemp, newEnsembleSize, newBoltzmannTemp), newEnsembleSize, newBackrubTemp, newBackrubTemp, newWeights, newSteep);
+                        //newModel = new Model(*this->getModelByParams(newBackrubTemp, newEnsembleSize, newBoltzmannTemp), newEnsembleSize, newBackrubTemp, newBackrubTemp, newWeights, newSteep);
                     }
                     else {
                         newBoltzmannTemp = multiplier * (population.at(randParent1).getBoltzmannTemp() - population.at(randParent2).getBoltzmannTemp()); //TODO: check and figure out how we want to generate this.
@@ -159,13 +176,14 @@ namespace OPTIMIZER
                         //	boltzmannStep = multiplier * (self.population[randParent1].getBoltzmannTemp() - self.population[randParent2].getBoltzmannTemp());
                         newBoltzmannTemp += population.at(individual).getBoltzmannTemp();
                         boundCheckBoltzmann(&newBoltzmannTemp);
-                        newModel = new Model(*this->getModelByParams(newBackrubTemp, 0, 0), newEnsembleSize, newBackrubTemp, newBackrubTemp, newWeights, newSteep);
+                        //newModel = new Model(*this->getModelByParams(newBackrubTemp, 0, 0), newEnsembleSize, newBackrubTemp, newBackrubTemp, newWeights, newSteep);
                     }
                     
                     newModel->recovery = similarityMeasure->getSimilarity(newModel->getFrequencies());
                     
 					// this is currently a memory leak here - the old model is not deleted
-					population.at(individual) = *newModel; // this is where we will need to sync across the processes!
+					//population.at(individual) = *newModel; // this is where we will need to sync across the processes!
+                    population.at(individual).setParameters(newBackrubTemp,newBoltzmannTemp,newWeights,newSteep,newEnsembleSize);
                 }
                 }
                 

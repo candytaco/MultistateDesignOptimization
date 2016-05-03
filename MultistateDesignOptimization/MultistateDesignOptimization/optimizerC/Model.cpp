@@ -362,9 +362,55 @@ namespace OPTIMIZER
 		return this->recovery < other.recovery;
 	}
 
+    //TODO: implement this for real...
+    // set default values here as well?
+    void Model::setParameters(double newBackrubTemp, double newBoltzmannTemp, double *newWeights, double newSteepness, int newEnsembleSize)
+    {
+        // do we need to delete these before overwriting them?
+        this->backrubTemp = newBackrubTemp;
+        this->boltzmannTemp = newBoltzmannTemp;
+        for (int i = 0; i < nMacrostates; i++)
+            this->weights[i] = newWeights[i];
+        this->steepness = newSteepness;
+        this->areMicrostatesPicked = false;
+        this->isFrequenciesCalculated = false;
+        this->ensembleSize = newEnsembleSize;
+    }
+    
+    void Model::clearModel()
+    {
+        fitnesses.~Mat();
+         frequencies.~Mat();
+         macrostateResidueEnergies.~Cube();
+         
+         if (microstateCounts)
+         {
+         for (int i = 0; i < nPositions; i++)
+         if (microstateCounts[i])
+         delete[] microstateCounts[i];
+         delete[] microstateCounts;
+         }
+         
+         if (microstatesUsed)
+         {
+         for (int i = 0; i < nPositions; i++)
+         {
+         for (int j = 0; j < nMacrostates; j++)
+         delete[] microstatesUsed[i][j];
+         delete[] microstatesUsed[i];
+         }
+         delete[] microstatesUsed;
+         }
+         
+         if (microstateResidueEnergies)
+         microstateResidueEnergies->~vector();
+         if (selectedMicrostateEnergies)
+         selectedMicrostateEnergies->~vector();
+    }
+    
 	Model::~Model()
 	{
-		/* fitnesses.~Mat();
+        /* fitnesses.~Mat();
 		frequencies.~Mat();
 		macrostateResidueEnergies.~Cube();
 
@@ -391,7 +437,8 @@ namespace OPTIMIZER
 			microstateResidueEnergies->~vector();
 		if (selectedMicrostateEnergies)
 			selectedMicrostateEnergies->~vector();
-         */
+        */
+        
         
 	}
 }

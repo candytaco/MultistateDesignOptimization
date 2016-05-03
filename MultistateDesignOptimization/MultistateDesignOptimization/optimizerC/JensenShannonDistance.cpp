@@ -35,7 +35,7 @@ namespace OPTIMIZER
 		double JSdiv = sqrt(accu(calcs) * 0.5);
 
 		if (JSdiv < 0 || JSdiv > 1)
-			throw exception::exception("calculated value out of bounds");
+			throw std::runtime_error("calculated value out of bounds");
 
 		return JSdiv;
 	}
