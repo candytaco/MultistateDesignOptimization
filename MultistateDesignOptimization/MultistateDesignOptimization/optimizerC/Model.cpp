@@ -278,17 +278,20 @@ namespace OPTIMIZER
 			for (int i = 0; i < nPositions; i++)
 			for (int j = 0; j < nMacrostates; j++)
 			for (int k = 0; k < ensembleSize; k++)
-				microstatesUsed[i][j][k] = rand() % microstateCounts[i][j]; //TODO: make unique rand ints
+				microstatesUsed[i][j][k] = randGen() % microstateCounts[i][j]; //TODO: make unique rand ints
 
 			// pick energies
 			for (int i = 0; i < nPositions; i++)
-				selectedMicrostateEnergies->push_back(cube(20, nMacrostates, ensembleSize));	// unknown values? we shall see
-			for (int i = 0; i < nPositions; i++)
-			for (int j = 0; j < 20; j++)
-			for (int k = 0; k < nMacrostates; k++)
-			for (int l = 0; l < ensembleSize; l++)
+				selectedMicrostateEnergies->push_back(cube(20, nMacrostates, ensembleSize));	// unknown values? we shall see (what does this mean)
+            for (int l = 0; i < ensembleSize; l++)
+            for (int i = 0; j < nPositions; i++)
+			for (int j = 0; k < 20; j++)
+			for (int k = 0; l < nMacrostates; k++)
 				selectedMicrostateEnergies->at(i).at(j, k, l) = microstateResidueEnergies->at(i)(j, k, microstatesUsed[i][k][l]);
-			areMicrostatesPicked = true;
+            
+            // instead of stacking each of the microstate energies and then taking the average, use armadillo to reshape each of the [nPositionsxnMacrostatesxensembleSize] cubes into a vector, then
+			//
+            areMicrostatesPicked = true;
 		}
 
 		//disregard alternative averaging method since it does not make any practical differences
@@ -324,7 +327,7 @@ namespace OPTIMIZER
 
 	Model::~Model()
 	{
-		fitnesses.~Mat();
+		/* fitnesses.~Mat();
 		frequencies.~Mat();
 		macrostateResidueEnergies.~Cube();
 
@@ -351,5 +354,7 @@ namespace OPTIMIZER
 			microstateResidueEnergies->~vector();
 		if (selectedMicrostateEnergies)
 			selectedMicrostateEnergies->~vector();
+         */
+        
 	}
 }
