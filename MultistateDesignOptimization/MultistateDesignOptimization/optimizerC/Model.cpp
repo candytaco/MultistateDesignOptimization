@@ -131,6 +131,9 @@ namespace OPTIMIZER
 		this->areMicrostatesPicked = false;
 		this->useAltAverageingMethod = existing.useAltAverageingMethod;
 
+		if (useMicrostateData)
+			this->macrostateResidueEnergies = cube(nPositions, nMacrostates, 20, fill::zeros);
+
 		if (!useMicrostateData && ensembleSize == existing.ensembleSize)
 			this->macrostateResidueEnergies = cube((existing.macrostateResidueEnergies));
 		else if (useMicrostateData && ensembleSize == existing.ensembleSize)
@@ -188,14 +191,23 @@ namespace OPTIMIZER
 				microstateResidueEnergies->push_back(cube(20, nMACROSTATES, 1024, fill::zeros));
 			microstateCounts = new int*[nPositions];
 			for (int i = 0; i < nPositions; i++)
+			{
 				microstateCounts[i] = new int[nMacrostates];
-			microstatesUsed = new int**[nPositions];
+				for (int j = 0; j < nMacrostates; j++)
+					microstateCounts[i][j] = 0;
+			}
+			// moved to average microstates
+			/*microstatesUsed = new int**[nPositions];
 			for (int i = 0; i < nPositions; i++)
 			{
 				microstatesUsed[i] = new int*[nMacrostates];
 				for (int j = 0; j < nMacrostates; j++)
+				{
 					microstatesUsed[i][j] = new int[ensembleSize];
-			}
+					for (int k = 0; k < ensembleSize; k++)
+						microstatesUsed[i][j][k] = -1;
+				}
+			}*/
 
 		}
 	}
@@ -274,51 +286,69 @@ namespace OPTIMIZER
 		// TODO: implement this
 		if (!areMicrostatesPicked)
 		{
-			// pick random indices
+			microstatesUsed = new int**[nPositions];
 			for (int i = 0; i < nPositions; i++)
-			for (int j = 0; j < nMacrostates; j++)
-			for (int k = 0; k < ensembleSize; k++)
-				microstatesUsed[i][j][k] = randGen() % microstateCounts[i][j]; //TODO: make unique rand ints
+			{
+				microstatesUsed[i] = new int*[nMacrostates];
+				for (int j = 0; j < nMacrostates; j++)
+				{
+					microstatesUsed[i][j] = new int[ensembleSize];
+					for (int k = 0; k < ensembleSize; k++)
+						microstatesUsed[i][j][k] = randGen() % microstateCounts[i][j]; //TODO: make unique rand ints
+				}
+			}
+			//// pick random indices
+			//for (int i = 0; i < nPositions; i++)
+			//for (int j = 0; j < nMacrostates; j++)
+			//for (int k = 0; k < ensembleSize; k++)
+				
 
-			// pick energies
-			for (int i = 0; i < nPositions; i++)
-				selectedMicrostateEnergies->push_back(cube(20, nMacrostates, ensembleSize));	// unknown values? we shall see (what does this mean)
+			//// pick energies
+			//for (int i = 0; i < nPositions; i++)
+			//	selectedMicrostateEnergies->push_back(cube(20, nMacrostates, ensembleSize));	// unknown values? we shall see (what does this mean)
             
             //initialize a cube that we will use for the averaging or minimization functions.
-            cube(nPositions, nMacrostates, 20, fill::zeros)
+			
             
             // put the MicrostateEnergies into the cube (are we actually using selectedMicrostateEnergies?)
-            for (int l = 0; i < ensembleSize; l++)
-            for (int i = 0; j < nPositions; i++)
-			for (int j = 0; k < 20; j++)
-                for (int k = 0; l < nMacrostates; k++) {
-                    selectedMicrostateEnergies->at(i).at(j, k, l) = microstateResidueEnergies->at(i)(j, k, microstatesUsed[i][k][l]);
-                    // squish the 3d array into a vector. stack the vectors so we get something that is NxEnsembleSize. Take the average or minimum across the EnsembleSize dimension. And then reshape the averaged vector back into an arma cube of the right shape.
-                    
-                }
-            
-            
+   //         for (int i = 0; i < ensembleSize; i++)
+   //         for (int j = 0; j < nPositions; j++)
+			//for (int k = 0; k < 20; k++)
+   //             for (int l = 0; l < nMacrostates; l++) {
+   //                 selectedMicrostateEnergies->at(i).at(j, k, l) = microstateResidueEnergies->at(i)(j, k, microstatesUsed[i][k][l]);
+   //                 // squish the 3d array into a vector. stack the vectors so we get something that is NxEnsembleSize. Take the average or minimum across the EnsembleSize dimension. And then reshape the averaged vector back into an arma cube of the right shape.
+   //                 
+   //             }
             areMicrostatesPicked = true;
 		}
 
-		//disregard alternative averaging method since it does not make any practical differences
-		if (boltzmannTemp == 0)
-			//TODO mathy thigns for slicing
-		{
-			for (int i = 0; i < nMacrostates; i++)
-				// TODO: not correct
-				macrostateResidueEnergies.slice(i) = min(selectedMicrostateEnergies->at(i), 2);
-		}
-		else if (boltzmannTemp == -1)
-		{
-			for (int i = 0; i < nMacrostates; i++)
-				macrostateResidueEnergies.slice(i) = mean(selectedMicrostateEnergies->at(i), 2);
-		}
-		else
-		{
-			vector<cube> expMicrostatesNrg(microstateResidueEnergies->size());
-			for (int i = 0; i < microstateResidueEnergies->size(); i++)
+		cube temp(nPositions, 20, ensembleSize, fill::zeros);
+		cube macroTemp(nPositions, 20, nMacrostates, fill::zeros);	// temp cube because degenerate subcubes generate an error, and the span() access is read-only
 
+		for (int macrostate = 0; macrostate < nMacrostates; macrostate++)
+		{
+			for (int i = 0; i < nPositions; i++)
+			for (int j = 0; j < 20; j++)
+			for (int k = 0; k < ensembleSize; k++)
+				temp(i, j, k) = microstateResidueEnergies->at(i)(j, macrostate, microstatesUsed[i][macrostate][k]);
+
+			if (boltzmannTemp == 0)	 // minimum
+				macroTemp.slice(macrostate) = min(temp, 2); // indexing into slices in the 2nd dimension using a degenerate subcube view because the slice() function indexs only along the 3rd dimension.
+			if (boltzmannTemp == -1) // inf
+				macroTemp.slice(macrostate) = mean(temp, 2);
+			else
+			{
+				cube e1 = exp(temp / (-boltzmannTemp));
+				cube e2 = sum(temp % e1, 2);
+				e1 = sum(e1, 2);
+				macroTemp.slice(macrostate) = e2 / e1;
+			}
+
+			// write into the actual container using the correct orderings.
+			for (int i = 0; i < nPositions; i++)
+			for (int j = 0; j < nMacrostates; j++)
+			for (int k = 0; k < 20; k++)
+				macrostateResidueEnergies(i, j, k) = macroTemp(i, k, j);
 		}
 	}
 
