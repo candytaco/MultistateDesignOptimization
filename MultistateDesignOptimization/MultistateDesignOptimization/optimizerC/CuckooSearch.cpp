@@ -30,7 +30,7 @@ namespace OPTIMIZER
 
 	void CuckooSearch::initilizeMembers()
 	{
-		population = new vector<Model>();
+		population = vector<Model>();
 		e = new mt19937(time(NULL));
 		normal_dist = new boost::math::normal(0.0, 1.0); // make the normal distribution
 		uniform_dist05 = new boost::random::uniform_real_distribution<double>(0.5, 1); // make the uniform distribution
@@ -48,7 +48,7 @@ namespace OPTIMIZER
 	{
 		// TODO: implement this
 		bestMatchVal = 0;
-		population->clear();
+		population.clear();
 		for (int i = 0; i < populationSize; i++)
 		{
             double steepness = searchSteepness ? randDouble(randGen) * (steepnessRange[1] - steepnessRange[0]) + steepnessRange[0] : steepnessRange[0];
@@ -71,10 +71,10 @@ namespace OPTIMIZER
 				m = new Model(*this->getModelByParams(backrubTemp, 0, 0), ensembleSize, backrubTemp, boltzmannTemp, weights, steepness);
             //m->macrostatesUsed = searchWeights; // not sure if this line is necessary.
 			m->recovery = similarityMeasure->getSimilarity(m->getFrequencies());
-			population->push_back(*m);
+			population.push_back(*m);
 		}
-		sort(population->begin(), population->end(), &CuckooSearch::sortCompModels); // needed a 2-arg comparator
-		//population->sort();
+		sort(population.begin(), population.end(), &CuckooSearch::sortCompModels); // needed a 2-arg comparator
+		//population.sort();
 		recordBestParams();
 	}
 
@@ -88,11 +88,11 @@ namespace OPTIMIZER
 		// TODO: MPI things
 		for (int iteration = 0; iteration < maxIterations; iteration++)
 		{
-			//list<Model>::iterator it = population->begin();
+			//list<Model>::iterator it = population.begin();
 #pragma omp parallel for
 			for (int individual = 0; individual < populationSize; individual++)
 			{
-				Model it = population->at(individual); // because now population is a vector.
+				Model it = population.at(individual); // because now population is a vector.
 				// TODO: the meaty things here.
                 // TODO: can we do the search on a coarse grid first and then the smoother grid?
 				double newSteep = nextLevyStep() + it.getSteepness();
@@ -123,20 +123,20 @@ namespace OPTIMIZER
                 
                 // i think that this might break the openmp version. we might need a lock around it.
                 if (*newModel > it)
-                    population->at(individual) = *newModel;
+                    population.at(individual) = *newModel;
                 
                 if (individual!=0) { // we don't want to randomly replace the best nest. this gives us some bias towards the best nest... (because it will always be there to get randomly selected).
                 if (randDouble(randGen) < elimination) {
                     int randParent1 = randGen() % populationSize;
                     int randParent2 = randGen() % populationSize;
                     double multiplier = randDouble(randGen);
-                    double steepnessStep = multiplier * (population->at(randParent1).getSteepness() - population->at(randParent2).getSteepness());
-					double *parent1Weights = population->at(randParent1).getWeights();
-					double *parent2Weights = population->at(randParent2).getWeights();
-					newWeights = population->at(individual).getWeights();
+                    double steepnessStep = multiplier * (population.at(randParent1).getSteepness() - population.at(randParent2).getSteepness());
+					double *parent1Weights = population.at(randParent1).getWeights();
+					double *parent2Weights = population.at(randParent2).getWeights();
+					newWeights = population.at(individual).getWeights();
 					for (int i = 0; i < nMacrostates; i++)
                         newWeights[i] += multiplier * (parent1Weights[i]-parent2Weights[i]);
-                    newSteep = population->at(individual).getSteepness() + steepnessStep;
+                    newSteep = population.at(individual).getSteepness() + steepnessStep;
                     boundCheckSteepness(&newSteep);
                     boundCheckWeights(newWeights);
                     
@@ -149,10 +149,10 @@ namespace OPTIMIZER
                         newModel = new Model(*this->getModelByParams(newBackrubTemp, newEnsembleSize, newBoltzmannTemp), newEnsembleSize, newBackrubTemp, newBackrubTemp, newWeights, newSteep);
                     }
                     else {
-                        newBoltzmannTemp = multiplier * (population->at(randParent1).getBoltzmannTemp() - population->at(randParent2).getBoltzmannTemp()); //TODO: check and figure out how we want to generate this.
+                        newBoltzmannTemp = multiplier * (population.at(randParent1).getBoltzmannTemp() - population.at(randParent2).getBoltzmannTemp()); //TODO: check and figure out how we want to generate this.
                         // python code:
                         //	boltzmannStep = multiplier * (self.population[randParent1].getBoltzmannTemp() - self.population[randParent2].getBoltzmannTemp());
-                        newBoltzmannTemp += population->at(individual).getBoltzmannTemp();
+                        newBoltzmannTemp += population.at(individual).getBoltzmannTemp();
                         boundCheckBoltzmann(&newBoltzmannTemp);
                         newModel = new Model(*this->getModelByParams(newBackrubTemp, newEnsembleSize, newBoltzmannTemp), newEnsembleSize, newBackrubTemp, newBackrubTemp, newWeights, newSteep);
                     }
@@ -160,7 +160,7 @@ namespace OPTIMIZER
                     newModel->recovery = similarityMeasure->getSimilarity(newModel->getFrequencies());
                     
 					// this is currently a memory leak here - the old model is not deleted
-					population->at(individual) = *newModel; // this is where we will need to sync across the processes!
+					population.at(individual) = *newModel; // this is where we will need to sync across the processes!
                 }
                 }
                 
@@ -168,11 +168,11 @@ namespace OPTIMIZER
             
             //TODO: end of this... now quite sure what is supposed to happen
             // should only happen on one process? so we need to bring everything back together!
-			sort(population->begin(), population->end(), &CuckooSearch::sortCompModels);
+			sort(population.begin(), population.end(), &CuckooSearch::sortCompModels);
 			recordBestParams();
 			//elimination of the worst individuals
 			/*for (int i = 0; i < int(populationSize * elimination); i++)
-				population->pop_back();*/
+				population.pop_back();*/
 		}
 		clock_t end = clock();
 		elapsedTime = double(end - start) / CLOCKS_PER_SEC;
@@ -220,7 +220,7 @@ namespace OPTIMIZER
 
 	void CuckooSearch::recordBestParams()
 	{
-		Model *best = &population->front();
+		Model *best = &population.front();
 		bestEnsembleSize = best->getEnsembleSize();
 		bestBackrubTemp = best->getBackrubTemp();
 		bestBoltzmannTemp = best->getBoltzmannTemp();

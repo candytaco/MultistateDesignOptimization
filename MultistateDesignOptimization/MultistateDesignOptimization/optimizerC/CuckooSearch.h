@@ -30,7 +30,7 @@ namespace OPTIMIZER
 		double scaleParam;
 		double elimination;
 		int populationSize;
-		vector<Model> *population;
+		vector<Model> population;
 		mt19937 *e;
 		boost::math::normal *normal_dist;
 		boost::random::uniform_real_distribution<double> *uniform_dist05;

@@ -11,7 +11,7 @@
 
 using namespace OPTIMIZER;
 
-#ifdef _WIN32
+#ifdef BOOP
 int _tmain(int argc, _TCHAR* argv[])
 {
     string defaultFileName("C:\\Users\\candy_000\\Source\\Repos\\MultistateDesignOptimization\\MultistateDesignOptimization\\MultistateDesignOptimization\\optimizerC\\macrostates.dat");
@@ -53,7 +53,7 @@ int _tmain(int argc, _TCHAR* argv[])
 int main( int argc, char* argv[] )
 {
     string defaultFileName("./macrostates.dat");
-    string defaultTarget("./targetFreqs.fasta");
+    string defaultTarget("./targetFreqs.dat");
 
     string fileName, targetFreqs;
     if (argc > 1)
