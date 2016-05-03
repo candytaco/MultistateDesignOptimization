@@ -117,7 +117,7 @@ namespace OPTIMIZER
                     // python code:
                     //	boltzmannStep = multiplier * (self.population[randParent1].getBoltzmannTemp() - self.population[randParent2].getBoltzmannTemp());
                     boundCheckBoltzmann(&newBoltzmannTemp);
-                    newModel = new Model(*this->getModelByParams(newBackrubTemp, newEnsembleSize, newBoltzmannTemp), newEnsembleSize, newBackrubTemp, newBackrubTemp, newWeights, newSteep);
+                    newModel = new Model(*this->getModelByParams(newBackrubTemp, 0, 0), newEnsembleSize, newBackrubTemp, newBackrubTemp, newWeights, newSteep);
                 }
                 newModel->recovery = similarityMeasure->getSimilarity(newModel->getFrequencies());
                 
@@ -154,7 +154,7 @@ namespace OPTIMIZER
                         //	boltzmannStep = multiplier * (self.population[randParent1].getBoltzmannTemp() - self.population[randParent2].getBoltzmannTemp());
                         newBoltzmannTemp += population.at(individual).getBoltzmannTemp();
                         boundCheckBoltzmann(&newBoltzmannTemp);
-                        newModel = new Model(*this->getModelByParams(newBackrubTemp, newEnsembleSize, newBoltzmannTemp), newEnsembleSize, newBackrubTemp, newBackrubTemp, newWeights, newSteep);
+                        newModel = new Model(*this->getModelByParams(newBackrubTemp, 0, 0), newEnsembleSize, newBackrubTemp, newBackrubTemp, newWeights, newSteep);
                     }
                     
                     newModel->recovery = similarityMeasure->getSimilarity(newModel->getFrequencies());

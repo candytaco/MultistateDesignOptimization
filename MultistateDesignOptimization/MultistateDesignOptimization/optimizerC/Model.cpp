@@ -299,6 +299,17 @@ namespace OPTIMIZER
 				// TODO: not correct
 				macrostateResidueEnergies.slice(i) = min(selectedMicrostateEnergies->at(i), 2);
 		}
+		else if (boltzmannTemp == -1)
+		{
+			for (int i = 0; i < nMacrostates; i++)
+				macrostateResidueEnergies.slice(i) = mean(selectedMicrostateEnergies->at(i), 2);
+		}
+		else
+		{
+			vector<cube> expMicrostatesNrg(microstateResidueEnergies->size());
+			for (int i = 0; i < microstateResidueEnergies->size(); i++)
+
+		}
 	}
 
 	bool Model::operator==(const Model &other) const
