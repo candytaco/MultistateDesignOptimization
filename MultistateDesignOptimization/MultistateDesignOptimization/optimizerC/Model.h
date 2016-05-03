@@ -69,6 +69,9 @@ namespace OPTIMIZER
 		/// <param name="position">The position.</param>
 		/// <param name="energies">The energies.</param>
 		void addMicrostateData(int macrostate, int position, double *energies);
+
+
+		void setParameters(double backrubTemp, double boltzmannTemp, double *weights, double steepness);
 		
 		/// <summary>
 		/// Gets the size of the ensemble.
