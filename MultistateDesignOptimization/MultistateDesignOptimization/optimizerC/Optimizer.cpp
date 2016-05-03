@@ -120,7 +120,46 @@ void Optimizer::readData(string *inFile)
 
 void Optimizer::readMicrostateData(string *inFile)
 {
-	cout << "THIS ISN'T IMPLEMENTED" << endl;
+	//cout << "THIS ISN'T IMPLEMENTED" << endl;
+	ifstream datFile(inFile->c_str());
+
+	int minPosition, nPositions, nEntries;
+	datFile >> nMacrostates >> minPosition >> nPositions >> nEntries;
+
+	Model *temp;
+	double energies[20];
+	int macrostate, position;
+	double backrub;
+	double *weights = new double[nMacrostates];
+	for (int i = 0; i < nMacrostates; i++)
+		weights[i] = 0;
+
+	for (int i = 0; i < nEntries; i++)
+	{
+		datFile >> macrostate >> backrub >> position;
+		if (position < minPosition)
+			continue;
+		position -= minPosition;
+		if (position > nPositions)
+			continue;
+		for (int j = 0; j < 20; j++)
+			datFile >> energies[j];
+
+		int ID = calcParamsID(backrub, 0, 0);
+		if (models->count(ID) > 0)
+			models->at(ID).addMicrostateData(macrostate, position, energies);
+		else
+		{
+			/*cout << "new model created" << endl;
+			cout << backrub << endl << ensembleSize << endl << boltzmann << endl;
+			cout << ID << endl;*/
+			temp = new Model(nMacrostates, 0, backrub, 0, weights, 0, nPositions, 0, true);
+			temp->addMicrostateData(macrostate, position, energies);
+			models->emplace(ID, *temp);
+		}
+	}
+	delete[] weights;
+	datFile.close();
 }
 
 void Optimizer::readTargetFrequencies(string *inFile)
@@ -179,11 +218,11 @@ void Optimizer::writeFrequenciesToFASTA(string *outName, int precision, mat *fre
 		{
 			numbers[i][j] = int((*frequencies)(i, j) * nEntries);
 #ifdef _DEBUG
-			cout << (*frequencies)(i, j) << " ";
+		//	cout << (*frequencies)(i, j) << " ";
 #endif
 		}
 #ifdef _DEBUG
-		cout << endl;
+	//	cout << endl;
 #endif
 
 	}

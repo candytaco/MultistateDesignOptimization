@@ -120,6 +120,9 @@ namespace OPTIMIZER
 		~Model();
 
 	private:
+
+		mt19937 randGen;
+
 		int nMacrostates;				// number of macrostates
 		int ensembleSize;				// ensemble size
 		int nPositions;					// number of position examined
