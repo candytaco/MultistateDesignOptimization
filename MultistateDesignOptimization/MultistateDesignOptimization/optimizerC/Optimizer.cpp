@@ -120,7 +120,7 @@ void Optimizer::readData(string *inFile)
 
 void Optimizer::readMicrostateData(string *inFile)
 {
-	cout << "THIS ISN'T IMPLEMENTED" << endl;
+	//cout << "THIS ISN'T IMPLEMENTED" << endl;
 	ifstream datFile(inFile->c_str());
 
 	int minPosition, nPositions, nEntries;
@@ -218,11 +218,11 @@ void Optimizer::writeFrequenciesToFASTA(string *outName, int precision, mat *fre
 		{
 			numbers[i][j] = int((*frequencies)(i, j) * nEntries);
 #ifdef _DEBUG
-			cout << (*frequencies)(i, j) << " ";
+		//	cout << (*frequencies)(i, j) << " ";
 #endif
 		}
 #ifdef _DEBUG
-		cout << endl;
+	//	cout << endl;
 #endif
 
 	}

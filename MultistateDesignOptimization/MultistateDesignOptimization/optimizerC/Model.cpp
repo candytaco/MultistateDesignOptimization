@@ -282,7 +282,7 @@ namespace OPTIMIZER
 
 	void Model::averageMicrostates()
 	{
-		cout << "Average microstates is not working" << endl;
+		//cout << "Average microstates is not working" << endl;
 		// TODO: implement this
 		if (!areMicrostatesPicked)
 		{

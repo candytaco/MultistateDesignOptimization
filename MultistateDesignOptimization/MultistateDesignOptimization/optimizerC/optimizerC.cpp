@@ -73,13 +73,13 @@ int main( int argc, char* argv[] )
     CuckooSearch *cs = new CuckooSearch(6, optimizer->getModels(), new JensenShannonDistance(optimizer->getTargetFreqs()), 32, 1, 0.2, true);
     cs->setMaxIterations(2);
     // search parameters
-    int ensembleSizes[] = { 20, 50 };
+    int ensembleSizes[] = { 20, 50, 75, 100 };
     double backrubTemps[] = { 0.3, 0.6, 0.9, 1.2, 1.5, 1.8 };
-    double boltzmannTemps[] = { 1, 5, -1, 0 };
+    double boltzmannTemps[] = {-1, 5};
     double steepness[] = { 1.0, 7.0 };
     double weightMins[] = { 0, 0, 0, 0, 0 };
     double weightMaxs[] = { 1, 1, 1, 1, 1 };
-    cs->setParameterBounds(ensembleSizes, 2, backrubTemps, 6, boltzmannTemps, 4, steepness, weightMins, weightMaxs);
+    cs->setParameterBounds(ensembleSizes, 4, backrubTemps, 6, boltzmannTemps, 4, steepness, weightMins, weightMaxs);
     optimizer->useAlgorithm(cs);
     optimizer->optimize();
     string testf = "test2.fasta";
