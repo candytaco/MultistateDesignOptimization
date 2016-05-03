@@ -181,7 +181,7 @@ namespace OPTIMIZER
 	void SearchAlgorithm::boundCheckBoltzmann(double *newBoltzmann)
 	{
 		if (!continuousBoltzmann)
-			throw exception::exception("This search not on continuous Boltzmann range");
+			throw std::runtime_error("This search not on continuous Boltzmann range");
 
 		if (!searchBoltzmann)
 			*newBoltzmann = boltzmannTemps[0];
