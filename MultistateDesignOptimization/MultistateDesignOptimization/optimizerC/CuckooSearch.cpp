@@ -106,10 +106,13 @@ namespace OPTIMIZER
             
 			//list<Model>::iterator it = population.begin();
             int individual;
-            #pragma omp parallel for
+#pragma omp parallel
+            {
+                Model *newModel;
+                bool createModel = true;
+            #pragma omp for
 			for (individual = 0; individual < populationSize; individual++)
 			{
-                Model *newModel, oldModel;
                 int numthreads = omp_get_num_threads();
                 printf("number of openmp threads = %d\n",numthreads);
 				Model it = population.at(individual); // because now population is a vector.
@@ -134,14 +137,26 @@ namespace OPTIMIZER
                 
                 if (!continuousBoltzmann) {
                     newBoltzmannTemp = searchBoltzmann ? boltzmannTemps[randGen() % nBoltzmannTemps] : boltzmannTemps[0];
-                    newModel = new Model(*this->getModelByParams(newBackrubTemp, newEnsembleSize, newBoltzmannTemp), newEnsembleSize, newBackrubTemp, newBoltzmannTemp, newWeights, newSteep);
+                    if (createModel)
+                    {
+                        newModel = new Model(*this->getModelByParams(newBackrubTemp, newEnsembleSize, newBoltzmannTemp), newEnsembleSize, newBackrubTemp, newBoltzmannTemp, newWeights, newSteep);
+                        createModel = false;
+                    }
+                    else
+                        newModel->setParameters(newBackrubTemp,newBoltzmannTemp,newWeights,newSteep,newEnsembleSize);
                 }
                 else {
                     newBoltzmannTemp = nextLevyStep() + it.getBoltzmannTemp(); //TODO: check and figure out how we want to generate this.
                     // python code:
                     //	boltzmannStep = multiplier * (self.population[randParent1].getBoltzmannTemp() - self.population[randParent2].getBoltzmannTemp());
                     boundCheckBoltzmann(&newBoltzmannTemp);
-					newModel = new Model(*this->getModelByParams(newBackrubTemp, 0, 0), newEnsembleSize, newBackrubTemp, newBoltzmannTemp, newWeights, newSteep);
+                    if (createModel)
+                    {
+                        newModel = new Model(*this->getModelByParams(newBackrubTemp, 0, 0), newEnsembleSize, newBackrubTemp, newBoltzmannTemp, newWeights, newSteep);
+                        createModel = false;
+                    }
+                    else
+                        newModel->setParameters(newBackrubTemp,newBoltzmannTemp,newWeights,newSteep,newEnsembleSize);
                 }
                 newModel->recovery = similarityMeasure->getSimilarity(newModel->getFrequencies());
                 
@@ -202,6 +217,7 @@ namespace OPTIMIZER
                 }
                 
 			}
+            }
             
             //TODO: end of this... now quite sure what is supposed to happen
             // should only happen on one process? so we need to bring everything back together!
