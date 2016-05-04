@@ -359,17 +359,17 @@ namespace OPTIMIZER
 
     //TODO: implement this for real...
     // set default values here as well?
-    void Model::setParameters(double newBackrubTemp, double newBoltzmannTemp, double *newWeights, double newSteepness, int newEnsembleSize)
+    void Model::setParameters(double newBoltzmannTemp, double *newWeights, double newSteepness, int newEnsembleSize)
     {
-        // do we need to delete these before overwriting them?
-        this->backrubTemp = newBackrubTemp;
-        this->boltzmannTemp = newBoltzmannTemp;
-        for (int i = 0; i < nMacrostates; i++)
-            this->weights[i] = newWeights[i];
-        this->steepness = newSteepness;
-        this->areMicrostatesPicked = false;
-        this->isFrequenciesCalculated = false;
-        this->ensembleSize = newEnsembleSize;
+		// do we need to delete these before overwriting them?
+		//this->backrubTemp = newBackrubTemp;
+		this->boltzmannTemp = newBoltzmannTemp;
+		delete[] weights;
+		weights = newWeights;
+		this->steepness = newSteepness;
+		this->areMicrostatesPicked = false;
+		this->isFrequenciesCalculated = false;
+		this->ensembleSize = newEnsembleSize;
     }
     
     void Model::clearModel()

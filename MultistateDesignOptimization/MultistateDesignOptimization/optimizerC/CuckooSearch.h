@@ -25,12 +25,12 @@ namespace OPTIMIZER
 		double nextLevyStep();
 		double *nextLevySteps(int n);
 		void recordBestParams() override;
-		static bool sortCompModels(const Model &lhs, const Model &rhs);
+		static bool sortCompModels(const Model *lhs, const Model *rhs);
 
 		double scaleParam;
 		double elimination;
 		int populationSize;
-		vector<Model> population;
+		vector<Model*> population;
 		mt19937 *e;
 		boost::math::normal *normal_dist;
 		boost::random::uniform_real_distribution<double> *uniform_dist05;
