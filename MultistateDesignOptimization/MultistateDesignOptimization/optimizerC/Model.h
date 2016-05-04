@@ -114,7 +114,7 @@ namespace OPTIMIZER
 		bool operator<=(const Model &other) const { return !(*this > other); }
 		bool operator>=(const Model &other) const { return !(*this < other); }
         
-        void setParameters(double newBackrubTemp, double newBoltzmannTemp, double *newWeights, double newSteepness, int newEnsembleSize);
+        void setParameters(double newBoltzmannTemp, double *newWeights, double newSteepness, int newEnsembleSize);
         
 		~Model();
         

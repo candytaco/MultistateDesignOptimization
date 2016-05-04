@@ -25,6 +25,9 @@ namespace OPTIMIZER
 	double JensenShannonDistance::getSimilarity(mat *expFrequencies)
 	{
 		// TODO: check for correctness and memory leaks
+		if (expFrequencies == NULL)
+			throw std::runtime_error("Null matrix");
+
 		mat efreqs = (*expFrequencies) / accu(*expFrequencies);
 		mat calcs = *h(&efreqs);
 		mat calcs2 = *targetFrequencies + efreqs;
