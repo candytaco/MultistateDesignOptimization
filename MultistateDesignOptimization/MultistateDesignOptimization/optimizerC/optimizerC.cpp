@@ -70,7 +70,7 @@ int main( int argc, char* argv[] )
     Optimizer *optimizer = new Optimizer(5, true);
     optimizer->readTargetFrequencies(&targetFreqs);
     optimizer->readMicrostateData(&fileName);
-    CuckooSearch *cs = new CuckooSearch(6, optimizer->getModels(), new JensenShannonDistance(optimizer->getTargetFreqs()), 64, 1, 0.2, true);
+    CuckooSearch *cs = new CuckooSearch(5, optimizer->getModels(), new JensenShannonDistance(optimizer->getTargetFreqs()), 64, 1, 0.2, true);
     cs->setMaxIterations(1024);
     // search parameters
     int ensembleSizes[] = { 20, 50, 75, 100 };
