@@ -85,7 +85,7 @@ namespace OPTIMIZER
 			//population[i] = *m;
 			//population.push_back(*m);
 		}
-		sort(population.begin(), population.end(), &CuckooSearch::sortCompModels); // needed a 2-arg comparator
+		std::sort(population.begin(), population.end(), &CuckooSearch::sortCompModels); // needed a 2-arg comparator
 		//population.sort();
 		recordBestParams();
 	}
@@ -98,23 +98,29 @@ namespace OPTIMIZER
 		clock_t start = clock();
 		omp_lock_t lock;
 		omp_init_lock(&lock);
+
 		// TODO: MPI things
 		// TODO: make all of the variables private?
 		for (int iteration = 0; iteration < maxIterations; iteration++)
 		{
-			printf("Iteration %d! \n", iteration);
+			omp_set_num_threads(12);
 
 			//list<Model>::iterator it = population.begin();
 			int individual;
 #pragma omp parallel
 			{
+				int numthreads = omp_get_num_threads();
+#pragma omp master
+				{printf("Iteration %d! \n", iteration);
+				printf("number of openmp threads = %d\n", numthreads); }
+
 				Model *newModel = NULL, *temp = NULL;
 				//bool createModel = true;
 #pragma omp for private(newModel) private(temp)	// is this correct? - these should be private, right?
 				for (individual = 0; individual < populationSize; individual++)
 				{
-					int numthreads = omp_get_num_threads();
-					//printf("number of openmp threads = %d\n", numthreads);
+
+
 					Model it = *population.at(individual); // because now population is a vector.
 					// TODO: the meaty things here.
 					// TODO: can we do the search on a coarse grid first and then the smoother grid?
@@ -141,7 +147,7 @@ namespace OPTIMIZER
 						//if (createModel)
 						{
 							newModel = new Model(*this->getModelByParams(newBackrubTemp, newEnsembleSize, newBoltzmannTemp), newEnsembleSize, newBackrubTemp, newBoltzmannTemp, newWeights, newSteep);
-						//	createModel = false;
+							//	createModel = false;
 						}
 						//else
 						//	newModel->setParameters(newBoltzmannTemp, newWeights, newSteep, newEnsembleSize);
@@ -154,7 +160,7 @@ namespace OPTIMIZER
 						boundCheckBoltzmann(&newBoltzmannTemp);
 						//if (createModel)
 						//{
-							newModel = new Model(*this->getModelByParams(newBackrubTemp, 0, 0), newEnsembleSize, newBackrubTemp, newBoltzmannTemp, newWeights, newSteep);
+						newModel = new Model(*this->getModelByParams(newBackrubTemp, 0, 0), newEnsembleSize, newBackrubTemp, newBoltzmannTemp, newWeights, newSteep);
 						//	createModel = false;
 						//}
 						//else
@@ -253,7 +259,7 @@ namespace OPTIMIZER
 
 			//TODO: end of this... now quite sure what is supposed to happen
 			// should only happen on one process? so we need to bring everything back together!
-			sort(population.begin(), population.end(), &CuckooSearch::sortCompModels);
+			std::sort(population.begin(), population.end(), &CuckooSearch::sortCompModels);
 			recordBestParams();
 			//elimination of the worst individuals
 			/*for (int i = 0; i < int(populationSize * elimination); i++)
