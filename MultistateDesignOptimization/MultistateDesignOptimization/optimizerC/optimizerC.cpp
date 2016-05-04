@@ -9,6 +9,7 @@
 #include "CuckooSearch.h"
 #include "Optimizer.h"
 
+
 using namespace OPTIMIZER;
 
 #ifdef BOOP
@@ -50,11 +51,28 @@ int _tmain(int argc, _TCHAR* argv[])
 }
 
 #else
+#include <sys/time.h>
+#include <time.h>
+
+double read_timer( )
+{
+    static bool initialized = false;
+    static struct timeval start;
+    struct timeval end;
+    if( !initialized )
+    {
+        gettimeofday( &start, NULL );
+        initialized = true;
+    }
+    gettimeofday( &end, NULL );
+    return (end.tv_sec - start.tv_sec) + 1.0e-6 * (end.tv_usec - start.tv_usec);
+}
+
 int main( int argc, char* argv[] )
 {
     string defaultFileName("./microstates.dat");
     string defaultTarget("./targetFreqs.dat");
-
+    double simulation_time = read_timer( );
     string fileName, targetFreqs;
     if (argc > 1)
     {
@@ -70,7 +88,8 @@ int main( int argc, char* argv[] )
     Optimizer *optimizer = new Optimizer(5, true);
     optimizer->readTargetFrequencies(&targetFreqs);
     optimizer->readMicrostateData(&fileName);
-    CuckooSearch *cs = new CuckooSearch(6, optimizer->getModels(), new JensenShannonDistance(optimizer->getTargetFreqs()), 64, 1, 0.2, true);
+    int thisPopulationSize = 256;
+    CuckooSearch *cs = new CuckooSearch(6, optimizer->getModels(), new JensenShannonDistance(optimizer->getTargetFreqs()), thisPopulationSize, 1, 0.2, true);
     cs->setMaxIterations(1024);
     // search parameters
     int ensembleSizes[] = { 20, 50, 75, 100 };
@@ -82,6 +101,8 @@ int main( int argc, char* argv[] )
     cs->setParameterBounds(ensembleSizes, 4, backrubTemps, 6, boltzmannTemps, 4, steepness, weightMins, weightMaxs);
     optimizer->useAlgorithm(cs);
     optimizer->optimize();
+    simulation_time = read_timer( ) - simulation_time;
+    printf( "populationSize = %d,iterations = %d, simulation time = %g seconds", thisPopulationSize,1024,simulation_time);
     string testf = "test2.fasta";
     string testt = "test2.txt";
     optimizer->writeFrequenciesToFASTA(&testf);

@@ -102,7 +102,7 @@ namespace OPTIMIZER
 		// TODO: make all of the variables private?
 		for (int iteration = 0; iteration < maxIterations; iteration++)
 		{
-			printf("Iteration %d! \n", iteration);
+			//printf("Iteration %d! \n", iteration);
 
 			//list<Model>::iterator it = population.begin();
 			int individual;
@@ -110,7 +110,7 @@ namespace OPTIMIZER
 			{
 				Model *newModel = NULL, *temp = NULL;
 				//bool createModel = true;
-#pragma omp for private(newModel) private(temp)	// is this correct? - these should be private, right?
+#pragma omp for private(newModel, temp) schedule(static,24) // is this correct? - these should be private, right?
 				for (individual = 0; individual < populationSize; individual++)
 				{
 					int numthreads = omp_get_num_threads();
@@ -165,7 +165,7 @@ namespace OPTIMIZER
 					// TODO: can we find a way to do this without using *newModel? Or we just need to clear newModel after this happens I suppose
 					if (*newModel > it)
 					{
-						omp_set_lock(&lock);
+						//omp_set_lock(&lock);
 						if (newBackrubTemp == population.at(individual)->getBackrubTemp())
 						{
 							population.at(individual)->setParameters(newBoltzmannTemp, newWeights, newSteep, newEnsembleSize);
@@ -179,7 +179,7 @@ namespace OPTIMIZER
 							newModel = NULL;
 							//	createModel = true;
 						}
-						omp_unset_lock(&lock);
+						//omp_unset_lock(&lock);
 					}
 					else
 						delete newModel;
@@ -230,7 +230,7 @@ namespace OPTIMIZER
 
 							// this is currently a memory leak here - the old model is not deleted
 							//population.at(individual) = *newModel; // this is where we will need to sync across the processes!
-							omp_set_lock(&lock);
+							//omp_set_lock(&lock);
 							if (newBackrubTemp == population.at(individual)->getBackrubTemp())
 							{
 								population.at(individual)->setParameters(newBoltzmannTemp, newWeights, newSteep, newEnsembleSize);
@@ -244,7 +244,7 @@ namespace OPTIMIZER
 								newModel = NULL;
 								//	createModel = true;
 							}
-							omp_unset_lock(&lock);
+							//omp_unset_lock(&lock);
 						}
 					}
 
