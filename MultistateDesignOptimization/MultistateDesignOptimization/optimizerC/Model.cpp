@@ -144,18 +144,13 @@ namespace OPTIMIZER
 		else
 		{
 			this->areMicrostatesPicked = false;
-			this->microstateResidueEnergies = new vector<cube>(*existing.microstateResidueEnergies);
-			this->microstateCounts = new int*[nPositions];
-			for (int i = 0; i < nPositions; i++)
-			{
-				microstateCounts[i] = new int[nMacrostates];
-				for (int j = 0; j < nMacrostates; j++)
-					microstateCounts[i][j] = existing.microstateCounts[i][j];
-			}
+			this->microstateResidueEnergies = existing.microstateResidueEnergies; // SHALLOW COPY
+			this->microstateCounts = existing.microstateCounts; // SHALLOW COPY
 		}
 
-		// TODO: shallow or deep copy?
+		// deep copy because the microstatesUsed field may chance
 		if (existing.microstatesUsed != NULL)
+			//this->microstatesUsed = existing.microstatesUsed;
 		{
 			this->microstatesUsed = new int**[nPositions];
 			for (int i = 0; i < nPositions; i++)
@@ -416,19 +411,15 @@ namespace OPTIMIZER
     
 	Model::~Model()
 	{
-        /* fitnesses.~Mat();
-		frequencies.~Mat();
-		macrostateResidueEnergies.~Cube();
-
-		if (microstateCounts)
+		/*if (microstateCounts)
 		{
 			for (int i = 0; i < nPositions; i++)
 			if (microstateCounts[i])
 				delete[] microstateCounts[i];
 			delete[] microstateCounts;
-		}
+		}*/
 
-		if (microstatesUsed)
+		/*if (microstatesUsed)
 		{
 			for (int i = 0; i < nPositions; i++)
 			{
@@ -437,14 +428,12 @@ namespace OPTIMIZER
 				delete[] microstatesUsed[i];
 			}
 			delete[] microstatesUsed;
-		}
+		}*/
 
-		if (microstateResidueEnergies)
+		/*if (microstateResidueEnergies)
 			microstateResidueEnergies->~vector();
 		if (selectedMicrostateEnergies)
-			selectedMicrostateEnergies->~vector();
-        */
-        
+			selectedMicrostateEnergies->~vector();*/
         
 	}
 }
