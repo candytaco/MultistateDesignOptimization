@@ -95,16 +95,23 @@ namespace OPTIMIZER
 		// TODO: finish implementing this
         // TODO: a bunch of these things can be set at the beginning of the code.
 		initPopulation();
-		Model *newModel, oldModel;
 		clock_t start = clock();
+        omp_lock_t lock;
+        omp_init_lock(&lock);
 		// TODO: MPI things
+        // TODO: make all of the variables private?
 		for (int iteration = 0; iteration < maxIterations; iteration++)
 		{
             printf("Iteration %d! \n",iteration);
+            
 			//list<Model>::iterator it = population.begin();
-#pragma omp parallel for
-			for (int individual = 0; individual < populationSize; individual++)
+            int individual;
+            #pragma omp parallel for
+			for (individual = 0; individual < populationSize; individual++)
 			{
+                Model *newModel, oldModel;
+                int numthreads = omp_get_num_threads();
+                printf("number of openmp threads = %d\n",numthreads);
 				Model it = population.at(individual); // because now population is a vector.
 				// TODO: the meaty things here.
                 // TODO: can we do the search on a coarse grid first and then the smoother grid?
@@ -140,11 +147,16 @@ namespace OPTIMIZER
                 
                 // TODO: can we find a way to do this without using *newModel? Or we just need to clear newModel after this happens I suppose
                 if (*newModel > it)
+                {
+                    omp_set_lock(&lock);
                     population.at(individual).setParameters(newBackrubTemp,newBoltzmannTemp,newWeights,newSteep,newEnsembleSize);
+                    omp_unset_lock(&lock);
+                }
                     //population.at(individual) = *newModel;
                     
                 //TODO: this is causing a segfault.
                 //newModel->clearModel();
+                //delete[] newModel;
                 
                 if (individual!=0) { // we don't want to randomly replace the best nest. this gives us some bias towards the best nest... (because it will always be there to get randomly selected).
                 if (randDouble(randGen) < elimination) {
@@ -183,7 +195,9 @@ namespace OPTIMIZER
                     
 					// this is currently a memory leak here - the old model is not deleted
 					//population.at(individual) = *newModel; // this is where we will need to sync across the processes!
+                    omp_set_lock(&lock);
                     population.at(individual).setParameters(newBackrubTemp,newBoltzmannTemp,newWeights,newSteep,newEnsembleSize);
+                    omp_unset_lock(&lock);
                 }
                 }
                 

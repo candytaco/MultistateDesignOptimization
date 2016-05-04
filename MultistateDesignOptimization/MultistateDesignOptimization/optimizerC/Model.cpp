@@ -379,33 +379,39 @@ namespace OPTIMIZER
     
     void Model::clearModel()
     {
+        printf("I made it to clear Model\n");
         fitnesses.~Mat();
-         frequencies.~Mat();
-         macrostateResidueEnergies.~Cube();
-         
-         if (microstateCounts)
-         {
-         for (int i = 0; i < nPositions; i++)
-         if (microstateCounts[i])
-         delete[] microstateCounts[i];
-         delete[] microstateCounts;
-         }
-         
-         if (microstatesUsed)
-         {
-         for (int i = 0; i < nPositions; i++)
-         {
-         for (int j = 0; j < nMacrostates; j++)
-         delete[] microstatesUsed[i][j];
-         delete[] microstatesUsed[i];
-         }
-         delete[] microstatesUsed;
-         }
-         
-         if (microstateResidueEnergies)
-         microstateResidueEnergies->~vector();
-         if (selectedMicrostateEnergies)
-         selectedMicrostateEnergies->~vector();
+        printf("1");
+        frequencies.~Mat();
+        printf("2");
+        macrostateResidueEnergies.~Cube();
+        
+        printf("3");
+        if (microstateCounts)
+            {
+                for (int i = 0; i < nPositions; i++)
+                    if (microstateCounts[i])
+                        delete[] microstateCounts[i];
+                delete[] microstateCounts;
+        }
+        
+        printf("4");
+        if (microstatesUsed)
+        {
+            for (int i = 0; i < nPositions; i++)
+            {
+                for (int j = 0; j < nMacrostates; j++)
+                    delete[] microstatesUsed[i][j];
+                delete[] microstatesUsed[i];
+            }
+            delete[] microstatesUsed;
+        }
+        
+        printf("5");
+        if (microstateResidueEnergies)
+            microstateResidueEnergies->~vector();
+        if (selectedMicrostateEnergies)
+            selectedMicrostateEnergies->~vector();
     }
     
 	Model::~Model()
