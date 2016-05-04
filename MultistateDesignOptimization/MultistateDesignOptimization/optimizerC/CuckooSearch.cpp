@@ -57,8 +57,8 @@ namespace OPTIMIZER
 			double *weights = new double[nMacrostates];
             //TODO: add the range from the pyton code is going ton with the range?
 			// assumes weight ranges are all [0, 1]
-			for (int i = 0; i < nMacrostates; i++)
-				weights[i] = searchWeights[i] ? randDouble(randGen) : weightMins[i]; // boolean ? <then this> : <else>
+			for (int j = 0; j < nMacrostates; j++)
+				weights[j] = searchWeights[j] ? randDouble(randGen) : weightMins[j]; // boolean ? <then this> : <else>
             int ensembleSize = searchEnsemble ? ensembleSizes[randGen() % nEnsembleSizes] : ensembleSizes[0];
             double backrubTemp = searchBackrub ? backrubTemps[randGen() % nBackrubTemps] : backrubTemps[0];
             
@@ -269,6 +269,12 @@ namespace OPTIMIZER
 
 	string *CuckooSearch::toString()
 	{
-		return new string("Cuckoo search");
+		char out[200];
+#ifndef _WIN32
+		sprintf(out, "Cuckoo search running for %d generations", maxIterations);
+#else
+		sprintf_s(out, 200, "Cuckoo search running for %d generations", maxIterations);
+#endif
+		return new string(out);
 	}
 }
