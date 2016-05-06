@@ -144,18 +144,13 @@ namespace OPTIMIZER
 		else
 		{
 			this->areMicrostatesPicked = false;
-			this->microstateResidueEnergies = new vector<cube>(*existing.microstateResidueEnergies);
-			this->microstateCounts = new int*[nPositions];
-			for (int i = 0; i < nPositions; i++)
-			{
-				microstateCounts[i] = new int[nMacrostates];
-				for (int j = 0; j < nMacrostates; j++)
-					microstateCounts[i][j] = existing.microstateCounts[i][j];
-			}
+			this->microstateResidueEnergies = existing.microstateResidueEnergies; // SHALLOW COPY
+			this->microstateCounts = existing.microstateCounts; // SHALLOW COPY
 		}
 
-		// TODO: shallow or deep copy?
+		// deep copy because the microstatesUsed field may chance
 		if (existing.microstatesUsed != NULL)
+			//this->microstatesUsed = existing.microstatesUsed;
 		{
 			this->microstatesUsed = new int**[nPositions];
 			for (int i = 0; i < nPositions; i++)
@@ -362,21 +357,69 @@ namespace OPTIMIZER
 		return this->recovery < other.recovery;
 	}
 
+    //TODO: implement this for real...
+    // set default values here as well?
+    void Model::setParameters(double newBoltzmannTemp, double *newWeights, double newSteepness, int newEnsembleSize)
+    {
+		// do we need to delete these before overwriting them?
+		//this->backrubTemp = newBackrubTemp;
+		this->boltzmannTemp = newBoltzmannTemp;
+		delete[] weights;
+		weights = newWeights;
+		this->steepness = newSteepness;
+		this->areMicrostatesPicked = false;
+		this->isFrequenciesCalculated = false;
+		this->ensembleSize = newEnsembleSize;
+    }
+    
+    void Model::clearModel()
+    {
+        printf("I made it to clear Model\n");
+        fitnesses.~Mat();
+        printf("1");
+        frequencies.~Mat();
+        printf("2");
+        macrostateResidueEnergies.~Cube();
+        
+        printf("3");
+        if (microstateCounts)
+            {
+                for (int i = 0; i < nPositions; i++)
+                    if (microstateCounts[i])
+                        delete[] microstateCounts[i];
+                delete[] microstateCounts;
+        }
+        
+        printf("4");
+        if (microstatesUsed)
+        {
+            for (int i = 0; i < nPositions; i++)
+            {
+                for (int j = 0; j < nMacrostates; j++)
+                    delete[] microstatesUsed[i][j];
+                delete[] microstatesUsed[i];
+            }
+            delete[] microstatesUsed;
+        }
+        
+        printf("5");
+        if (microstateResidueEnergies)
+            microstateResidueEnergies->~vector();
+        if (selectedMicrostateEnergies)
+            selectedMicrostateEnergies->~vector();
+    }
+    
 	Model::~Model()
 	{
-		/* fitnesses.~Mat();
-		frequencies.~Mat();
-		macrostateResidueEnergies.~Cube();
-
-		if (microstateCounts)
+		/*if (microstateCounts)
 		{
 			for (int i = 0; i < nPositions; i++)
 			if (microstateCounts[i])
 				delete[] microstateCounts[i];
 			delete[] microstateCounts;
-		}
+		}*/
 
-		if (microstatesUsed)
+		/*if (microstatesUsed)
 		{
 			for (int i = 0; i < nPositions; i++)
 			{
@@ -385,13 +428,12 @@ namespace OPTIMIZER
 				delete[] microstatesUsed[i];
 			}
 			delete[] microstatesUsed;
-		}
+		}*/
 
-		if (microstateResidueEnergies)
+		/*if (microstateResidueEnergies)
 			microstateResidueEnergies->~vector();
 		if (selectedMicrostateEnergies)
-			selectedMicrostateEnergies->~vector();
-         */
+			selectedMicrostateEnergies->~vector();*/
         
 	}
 }

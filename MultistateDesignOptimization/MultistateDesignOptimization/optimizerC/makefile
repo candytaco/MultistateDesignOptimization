@@ -1,5 +1,5 @@
 COMPILER=g++-5
-FLAGS= -Wall -O3 -std=c++11 -fpermissive
+FLAGS= -Wall -O3 -std=c++11 -fpermissive -fopenmp
 LIBRARY = -larmadillo -llapack -lblas
 
 TARGETS =  stdafx.o Model.o SimilarityMeasure.o JensenShannonDistance.o SearchAlgorithm.o CuckooSearch.o   Optimizer.o test
