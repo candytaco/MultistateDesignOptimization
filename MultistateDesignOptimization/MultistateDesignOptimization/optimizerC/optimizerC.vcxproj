@@ -82,6 +82,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CuckooSearch.h" />
+    <ClInclude Include="Hogwash.h" />
     <ClInclude Include="JensenShannonDistance.h" />
     <ClInclude Include="Matrix3D.h" />
     <ClInclude Include="Model.h" />
@@ -93,6 +94,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CuckooSearch.cpp" />
+    <ClCompile Include="Hogwash.cpp" />
     <ClCompile Include="JensenShannonDistance.cpp" />
     <ClCompile Include="Model.cpp" />
     <ClCompile Include="Optimizer.cpp" />

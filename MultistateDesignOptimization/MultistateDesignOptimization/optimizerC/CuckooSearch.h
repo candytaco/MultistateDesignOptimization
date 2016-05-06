@@ -15,11 +15,11 @@ namespace OPTIMIZER
 		CuckooSearch(int nMacrostates, map<int, Model> *models, SimilarityMeasure *similarityMeasure, int populationSize, double scaleParam, double elimination, bool continuousBoltzmann);
 
 		inline void startSearch() override { this->iterate(); };
-		void iterate() override;
+		virtual void iterate() override;
 
 		string *toString() override;
 
-	private:
+	protected:
 		void initilizeMembers();
 		void initPopulation();
 		double nextLevyStep();
