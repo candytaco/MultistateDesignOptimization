@@ -1,5 +1,5 @@
-COMPILER=g++-5
-FLAGS= -Wall -O3 -std=c++11 -fpermissive -fopenmp
+COMPILER=CC
+FLAGS= -I/global/homes/j/jfeather/clibs/usr/include -I/usr/common/usg/boost/1.54.0-20160127/intel/include/ -L/global/homes/j/jfeather/clibs/usr/lib64 -Wall -O3 -std=c++11 -fpermissive -fopenmp
 LIBRARY = -larmadillo -llapack -lblas
 
 TARGETS =  stdafx.o Model.o SimilarityMeasure.o JensenShannonDistance.o SearchAlgorithm.o CuckooSearch.o   Optimizer.o test

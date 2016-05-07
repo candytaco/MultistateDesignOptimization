@@ -88,7 +88,7 @@ int main( int argc, char* argv[] )
     Optimizer *optimizer = new Optimizer(5, true);
     optimizer->readTargetFrequencies(&targetFreqs);
     optimizer->readMicrostateData(&fileName);
-    int thisPopulationSize = 256;
+    int thisPopulationSize = 128;
     CuckooSearch *cs = new CuckooSearch(6, optimizer->getModels(), new JensenShannonDistance(optimizer->getTargetFreqs()), thisPopulationSize, 1, 0.2, true);
     cs->setMaxIterations(1024);
     // search parameters
