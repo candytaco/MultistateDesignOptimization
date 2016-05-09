@@ -78,7 +78,7 @@ namespace OPTIMIZER
 			}
 			//m->macrostatesUsed = searchWeights; // not sure if this line is necessary.
 			m->recovery = similarityMeasure->getSimilarity(m->getFrequencies());
-			printf("Here I am!\n");
+//			printf("Here I am!\n");
 			// this is a memory leak because we aren't deconstructing the models properly... but not sure what to do about that?
 			population.at(i) = m;
 			//population.push_back(*m);
@@ -103,17 +103,16 @@ namespace OPTIMIZER
 		// TODO: make all of the variables private?
 		for (int iteration = 0; iteration < maxIterations; iteration++)
 		{
-			omp_set_num_threads(12);
+//			omp_set_num_threads(12);
 
 			//list<Model>::iterator it = population.begin();
 			int individual;
 #pragma omp parallel
 			{
 				int numthreads = omp_get_num_threads();
-#pragma omp master
-				{printf("Iteration %d! \n", iteration);
-				printf("number of openmp threads = %d\n", numthreads); }
-
+//#pragma omp master 
+//				{printf("Iteration %d! \n", iteration);
+//				printf("number of openmp threads = %d\n", numthreads); }
 				Model *newModel = NULL, *temp = NULL;
 				//bool createModel = true;
 #pragma omp for private(newModel) private(temp)	// is this correct? - these should be private, right?
